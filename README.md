@@ -5,4 +5,4 @@ The aim of this project is to develop free and open source application that can 
 
 If you find this project helpful for your own studies, please don't hesitate to contribute.
 
-![Scatter](/../screenshots/screenshots/PlotScatter.png)
+![Scatter](/../main/screenshots/Main.png)
