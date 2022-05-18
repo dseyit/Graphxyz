@@ -5,4 +5,8 @@ The aim of this project is to develop free and open source application that can 
 
 If you find this project helpful for your own studies, please don't hesitate to contribute.
 
+I am planning to publish demo videos <a href= 'https://www.youtube.com/channel/UCnIIN0N92-SQEIZNQeXrzJw'> here </a>.
+
+Documentation is also under construction. You are welcome to try without and guidance until then.
+
 ![Scatter](/../main/screenshots/main.png)
