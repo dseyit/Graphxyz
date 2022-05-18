@@ -7,7 +7,7 @@ If you find this project helpful for your own studies, please don't hesitate to 
 
 I am planning to publish demo videos <a href= 'https://www.youtube.com/channel/UCnIIN0N92-SQEIZNQeXrzJw'> here </a>.
 
-Intro video can be found in this <a href='https://youtu.be/Q1QfCpT_8oc'> link<a/>. I highly suggest watching this video in order to getting started with the software.
+Intro video can be found in this <a href='https://youtu.be/Q1QfCpT_8oc'> link<a/>. I highly suggest watching this video in order to get started with the software.
 
 Documentation is also under construction. You are welcome to try without any guidance until then using the intro video above.
 
