@@ -7,6 +7,6 @@ If you find this project helpful for your own studies, please don't hesitate to 
 
 I am planning to publish demo videos <a href= 'https://www.youtube.com/channel/UCnIIN0N92-SQEIZNQeXrzJw'> here </a>.
 
-Documentation is also under construction. You are welcome to try without and guidance until then.
+Documentation is also under construction. You are welcome to try without any guidance until then.
 
 ![Scatter](/../main/screenshots/main.png)
