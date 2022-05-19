@@ -8,6 +8,8 @@ If you find this project helpful for your own studies, please don't hesitate to 
 I am planning to publish demo videos <a href= 'https://www.youtube.com/channel/UCnIIN0N92-SQEIZNQeXrzJw'> here </a>.
 
 Intro video can be found in this <a href='https://youtu.be/Q1QfCpT_8oc'> link<a/>. I highly suggest watching this video in order to get started with the software.
+  
+  The main purpose of this software is to combine mutliple data types from various scientific instruments under single data structure so that they can all be combined in one software environment. Please disregard sudden crashes on the released binary files (Graphxyz.exe and Graphxyz.app), as they are due to unhandled exceptions, I need to work on those. Those releases are for experimental purposes and far from being stable (yet). Source file Graphxyz.py should work without major issues.
 
 Documentation is also under construction. You are welcome to try without any guidance until then using the intro video above.
 
