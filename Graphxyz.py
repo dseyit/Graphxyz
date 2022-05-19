@@ -53,8 +53,7 @@ import math
 # exception shortcut:
 # except Exception as Argument:
 #     self.genLogforException(Argument)    
-
-#test31234213
+#test
 def getResourcePath(relative_path):
     rel_path = pathlib.Path(relative_path)
     dev_base_path = pathlib.Path(__file__).resolve().parent
