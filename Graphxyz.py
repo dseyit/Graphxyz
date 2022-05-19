@@ -11,13 +11,13 @@ import platform
 import csv
 import pickle
 import ast
-from PyQt5.QtWidgets import QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
+from PyQt5.QtWidgets import QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
 from PyQt5 import QtWidgets
 import matplotlib
 import pandas as pd
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, uic
-from PyQt5.QtCore import pyqtSignal, QMimeData, QUrl, Qt, QAbstractTableModel, QPoint, QObject, QSettings, QTimer
+from PyQt5.QtCore import QEasingCurve, pyqtSignal, QMimeData, QUrl, Qt, QAbstractTableModel, QPoint, QObject, QSettings, QTimer,QPropertyAnimation
 from PyQt5.QtGui import QFont, QColor, QScreen, QPixmap, QIcon 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 import matplotlib.backends.backend_svg
@@ -909,6 +909,7 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
     def refreshBtn(self):
         try:
+            self.showPopInfo("Loading files...", durationToShow = 1.5)
             filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
             filesloc = getResourcePath(filesloc)
             datfoldnames=self.xyzdatagenerator(filesloc)
@@ -963,6 +964,7 @@ class AppWindow(QDialog):
         self.dGrtemp=dict()
     def addBtn(self):
         try:
+            self.showPopInfo("Adding folder...", durationToShow = 1.5)
             if self.impw.ui.xyz.isChecked():
                 self.figure2D.setChecked(True)
                 self.figureDyn.setChecked(True)
@@ -995,6 +997,44 @@ class AppWindow(QDialog):
             dtemp=datfoldnames[0]
             #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
             self.d={**self.d, **dtemp}
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def addallBtn(self):
+        self.showPopInfo("Adding all folders...", durationToShow = 1.5)
+        try:
+            if self.impw.ui.xyz.isChecked():
+                self.figure2D.setChecked(True)
+                self.figureDyn.setChecked(True)
+                self.figureSpec.setChecked(True)
+            else:
+                self.figureDyn.setChecked(True)
+            self.d=dict()
+            for i in range (self.filesLoc.count()):
+                filesloc=self.ui.filesLoc.itemText(i).split('   -Import preset:')[0]
+                filesloc = getResourcePath(filesloc)
+                datfoldnames=self.xyzdatagenerator(filesloc)
+                data_names=datfoldnames[1]
+                fold_names=datfoldnames[2]
+                fold_data_names_temp=[]
+                for fi in range(len(data_names)):
+                    fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
+                fold_data_names_temp.sort()
+                self.ui.dataBox.addItems(fold_data_names_temp)
+                dtemp=datfoldnames[0]
+                #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
+                self.d={**self.d, **dtemp}
+            ind=self.ui.dataBox.findText(fold_data_names_temp[0])
+            self.ui.dataBox.setCurrentIndex(ind)
+            if self.impw.ui.xyz.isChecked():
+                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+            elif not self.impw.ui.xyz.isChecked():
+                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
         except Exception as Argument:
             self.genLogforException(Argument)
     def addGrBtn(self):
@@ -1032,50 +1072,16 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
     def xGrremBtn(self):
-        listy=self.xyzmaker.ui.xGrList
-        if listy.selectedItems():
-            for listitems in listy.selectedItems():
-                listy.takeItem(listy.row(listitems))
-                self.xlistGr.pop(listy.row(listitems))
-        else:
-            listy.takeItem(listy.row(listy.item(0)))
-            self.xlistGr.pop(0)
-        self.autogenX()
-    def addallBtn(self):
-        if self.impw.ui.xyz.isChecked():
-            self.figure2D.setChecked(True)
-            self.figureDyn.setChecked(True)
-            self.figureSpec.setChecked(True)
-        else:
-            self.figureDyn.setChecked(True)
-        self.d=dict()
-        for i in range (self.filesLoc.count()):
-            filesloc=self.ui.filesLoc.itemText(i).split('   -Import preset:')[0]
-            filesloc = getResourcePath(filesloc)
-            datfoldnames=self.xyzdatagenerator(filesloc)
-            data_names=datfoldnames[1]
-            fold_names=datfoldnames[2]
-            fold_data_names_temp=[]
-            for fi in range(len(data_names)):
-                fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
-            fold_data_names_temp.sort()
-            self.ui.dataBox.addItems(fold_data_names_temp)
-            dtemp=datfoldnames[0]
-            #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
-            self.d={**self.d, **dtemp}
         try:
-            ind=self.ui.dataBox.findText(fold_data_names_temp[0])
-            self.ui.dataBox.setCurrentIndex(ind)
-            if self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
-                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
-            elif not self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
-                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+            listy=self.xyzmaker.ui.xGrList
+            if listy.selectedItems():
+                for listitems in listy.selectedItems():
+                    listy.takeItem(listy.row(listitems))
+                    self.xlistGr.pop(listy.row(listitems))
+            else:
+                listy.takeItem(listy.row(listy.item(0)))
+                self.xlistGr.pop(0)
+            self.autogenX()
         except Exception as Argument:
             self.genLogforException(Argument)
     def submitButtonPushed(self, noMessage = False):
@@ -1092,361 +1098,393 @@ class AppWindow(QDialog):
         if self.ui.dataBox.count()==0 and not noMessage:
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Information)
-            msgBox.setText("Please <FONT COLOR='#800000'>Find</FONT> and <FONT COLOR='#800000'>Load/Add</FONT> the <FONT COLOR='Green'>Data</FONT> before plotting!")
+            msgBox.setText("Please <FONT COLOR='#800000'>Find</FONT> and <FONT COLOR='#800000'>Load/Add</FONT> the <FONT COLOR='Green'>Data</FONT> before plotting! <br> Make sure you have preset of the correct instrument is set")
             msgBox.setWindowTitle("Warning!")
             msgBox.exec()
         elif self.ui.dataBox.count()!=0:
             if self.impw.ui.xyz.isChecked():
                 if self.plotModes.checkedAction().text()=="Selected":
-                    self.nd=[self.ui.dataBox.currentText()]
-                    self.w=[float(self.ui.yValue.text())]
-                    self.tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())] 
-            
-                    self.t=[float(self.ui.xValue.text())]
-                    self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
-                    self.twr=self.tr+self.wr
-                    if self.ui.xbgValue.text()!='0':
-                        self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
-                    else:
-                        self.tsc=[0]
-                    
-                    yold=float(self.ui.yValue.text())
-                    xold=float(self.ui.xValue.text())
-                    self.ui.sliderx.setMinimum(int(float(self.ui.xminValue.text()))*10)
-                    self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text()))*10)
-                    self.ui.sliderx.setSingleStep(int(1))
-                    
-                    if int(float(self.ui.yminValue.text()))*2>int(float(self.ui.ymaxValue.text()))*2:
-                        self.ui.slidery.setMinimum(int(float(self.ui.ymaxValue.text()))*2)
-                        self.ui.slidery.setMaximum(int(float(self.ui.yminValue.text()))*2)
-                    else:
-                        self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text()))*2)
-                        self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text()))*2)
-                    self.ui.slidery.setSingleStep(int(1))
-                    
-                    self.ax2D.clear()
-                    self.ax2D.tick_params(direction='in',pad=-25,labelcolor=self.axcolor2D)
-                    if not self.optsDynW.holdcb.isChecked():
-                        self.axdyn.set_prop_cycle(None)
-                        if not self.axdyn.get_legend()==None:
-                            self.axdyn.get_legend().remove()
-                        if not self.axdyn.get_title()=='':
-                            self.axdyn.set_title('')
-                        for artist in self.axdyn.lines + self.axdyn.collections:
-                            artist.remove()
-                    if not self.optsSpecW.holdcb.isChecked():
-                        self.axspec.set_prop_cycle(None)
-                        if not self.axspec.get_legend()==None:
-                            self.axspec.get_legend().remove()
-                        if not self.axspec.get_title()=='':
-                            self.axspec.set_title('')
-                        for artist in self.axspec.lines + self.axspec.collections:
-                            artist.remove()
-                    
-                    #Plot
-                    self.sliderx.setValue(int(float(xold*10)))
-                    self.slidery.setValue(int(float(yold*2)))
-                    self.lineplotdyn=self.plotdyn(multmodex=False,tsc=self.tsc)
-                    self.lineplotspec=self.plotspec(multmodex=False,tsc=self.tsc)
-                    if not self.ui.darkCheck.isChecked():
-                        color3Dtemp='jet'
-                    else:
-                        color3Dtemp='twilight'
-                    self.plotxyz(self.d,0,self.nd,self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
-                    
-                    #Draw to copy background only, will be used to update line position
-                    self.line2Dy=self.ax2D.axhline(self.w,ls=':',color='w',alpha=0.35)
-                    self.l2Dyrem+=1
-                    self.m2D.draw()
-                    self.axbackground2Dx=self.m2D.copy_from_bbox(self.ax2D.bbox)
-                    self.line2Dy.remove()
-                    self.l2Dyrem-=1
-                    self.line2Dx=self.ax2D.axvline(self.t,ls=':',color='w',alpha=0.35)
-                    self.l2Dxrem+=1
-                    self.m2D.draw()
-                    self.axbackground2Dy=self.m2D.copy_from_bbox(self.ax2D.bbox)
-                    self.line2Dy=self.ax2D.axhline(self.w,ls=':',color='w',alpha=0.35)
-                    self.l2Dyrem+=1
-                    #Cosmetics
-                    self.linedyn=self.axdyn.axvline(self.t,ls=':',color='r',alpha=0.25)
-                    self.linespec=self.axspec.axvline(self.w,ls=':',color='r',alpha=0.25)
-                    self.linespec0=self.axspec.axhline(0,ls=':',color='orange',alpha=0.5)
-                    self.ax2D.margins(x=0)
-                    self.axspec.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
-                    self.axdyn.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
-                    self.m2D.draw()
-                    self.mdyn.draw()
-                    self.mspec.draw()
-                #multiple xy mode
-                elif self.plotModes.checkedAction().text()=="Single at multiple x and y":
-                    self.nd=self.getitems(self.ui.dataList)
-                    self.w=[float(i) for i in self.getitems(self.ui.yList)]
-                    self.tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())]
-            
-                    self.t=[float(i) for i in self.getitems(self.ui.xList)]
-                    self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
-                    self.twr=np.concatenate((self.tr,self.wr))
-                    if self.ui.xbgValue.text()!='0':
-                        self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
-                    else:
-                        self.tsc=[0]
-                    
-                    self.ui.sliderx.setMinimum(int(float(self.ui.xminValue.text()))*10)
-                    self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text()))*10)
-                    self.ui.sliderx.setSingleStep(int(1))
-                    
-                    self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text())*2))
-                    self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text())*2))
-                    self.ui.slidery.setSingleStep(int(1))
-                    
-                    #Plots
-                    if not self.optsDynW.holdcb.isChecked():
-                        self.axdyn.set_prop_cycle(None)
-                        if not self.axdyn.get_legend()==None:
-                            self.axdyn.get_legend().remove()
-                        if not self.axdyn.get_title()=='':
-                            self.axdyn.set_title('')
-                        for artist in self.axdyn.lines + self.axdyn.collections:
-                            artist.remove()
-                    if not self.optsSpecW.holdcb.isChecked():
-                        self.axspec.set_prop_cycle(None)
-                        if not self.axspec.get_legend()==None:
-                            self.axspec.get_legend().remove()
-                        if not self.axspec.get_title()=='':
-                            self.axspec.set_title('')
-                        for artist in self.axspec.lines + self.axspec.collections:
-                            artist.remove()
-                    self.lineplotdyn=self.plotdyn(plmd=2.2,tsc=self.tsc)
-                    self.lineplotspec=self.plotspec(plmd=1.2,tsc=self.tsc)
-                    
-                    if not self.ui.darkCheck.isChecked():
-                        color3Dtemp='jet'
-                    else:
-                        color3Dtemp='twilight'
-                    self.ax2D.clear()
-                    self.plotxyz(self.d,0,[self.ui.dataBox.currentText()],self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
-                    
-                    #Draw to copy background only, will be used to update line position
-                    self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dyrem+=1
-                    self.m2D.draw()
-                    self.axbackground2Dx=self.m2D.copy_from_bbox(self.ax2D.bbox)
-                    self.line2Dy.remove()
-                    self.l2Dyrem-=1
-                    self.line2Dx=self.ax2D.axvline([float(self.ui.xValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dxrem+=1
-                    self.m2D.draw()
-                    self.axbackground2Dy=self.m2D.copy_from_bbox(self.ax2D.bbox)
-                    self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dyrem+=1
-                    
-                    #Cosmetics
                     try:
+                        self.nd=[self.ui.dataBox.currentText()]
+                        self.w=[float(self.ui.yValue.text())]
+                        self.tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())] 
+                
+                        self.t=[float(self.ui.xValue.text())]
+                        self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
+                        self.twr=self.tr+self.wr
+                        if self.ui.xbgValue.text()!='0':
+                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                        else:
+                            self.tsc=[0]
+                        
+                        yold=float(self.ui.yValue.text())
+                        xold=float(self.ui.xValue.text())
+                        self.ui.sliderx.setMinimum(int(float(self.ui.xminValue.text()))*10)
+                        self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text()))*10)
+                        self.ui.sliderx.setSingleStep(int(1))
+                        
+                        if int(float(self.ui.yminValue.text()))*2>int(float(self.ui.ymaxValue.text()))*2:
+                            self.ui.slidery.setMinimum(int(float(self.ui.ymaxValue.text()))*2)
+                            self.ui.slidery.setMaximum(int(float(self.ui.yminValue.text()))*2)
+                        else:
+                            self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text()))*2)
+                            self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text()))*2)
+                        self.ui.slidery.setSingleStep(int(1))
+                        
+                        self.ax2D.clear()
+                        self.ax2D.tick_params(direction='in',pad=-25,labelcolor=self.axcolor2D)
+                        if not self.optsDynW.holdcb.isChecked():
+                            self.axdyn.set_prop_cycle(None)
+                            if not self.axdyn.get_legend()==None:
+                                self.axdyn.get_legend().remove()
+                            if not self.axdyn.get_title()=='':
+                                self.axdyn.set_title('')
+                            for artist in self.axdyn.lines + self.axdyn.collections:
+                                artist.remove()
+                        if not self.optsSpecW.holdcb.isChecked():
+                            self.axspec.set_prop_cycle(None)
+                            if not self.axspec.get_legend()==None:
+                                self.axspec.get_legend().remove()
+                            if not self.axspec.get_title()=='':
+                                self.axspec.set_title('')
+                            for artist in self.axspec.lines + self.axspec.collections:
+                                artist.remove()
+                        
+                        #Plot
+                        self.sliderx.setValue(int(float(xold*10)))
+                        self.slidery.setValue(int(float(yold*2)))
+                        self.lineplotdyn=self.plotdyn(multmodex=False,tsc=self.tsc)
+                        self.lineplotspec=self.plotspec(multmodex=False,tsc=self.tsc)
+                        if not self.ui.darkCheck.isChecked():
+                            color3Dtemp='jet'
+                        else:
+                            color3Dtemp='twilight'
+                        self.plotxyz(self.d,0,self.nd,self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
+                        
+                        #Draw to copy background only, will be used to update line position
+                        self.line2Dy=self.ax2D.axhline(self.w,ls=':',color='w',alpha=0.35)
+                        self.l2Dyrem+=1
+                        self.m2D.draw()
+                        self.axbackground2Dx=self.m2D.copy_from_bbox(self.ax2D.bbox)
+                        self.line2Dy.remove()
+                        self.l2Dyrem-=1
+                        self.line2Dx=self.ax2D.axvline(self.t,ls=':',color='w',alpha=0.35)
+                        self.l2Dxrem+=1
+                        self.m2D.draw()
+                        self.axbackground2Dy=self.m2D.copy_from_bbox(self.ax2D.bbox)
+                        self.line2Dy=self.ax2D.axhline(self.w,ls=':',color='w',alpha=0.35)
+                        self.l2Dyrem+=1
+                        #Cosmetics
+                        self.linedyn=self.axdyn.axvline(self.t,ls=':',color='r',alpha=0.25)
+                        self.linespec=self.axspec.axvline(self.w,ls=':',color='r',alpha=0.25)
+                        self.linespec0=self.axspec.axhline(0,ls=':',color='orange',alpha=0.5)
+                        self.ax2D.margins(x=0)
                         self.axspec.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
                         self.axdyn.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
+                        self.m2D.draw()
+                        self.mdyn.draw()
+                        self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
-                    self.linedyn=self.axdyn.axvline([float(self.ui.xValue.text())],ls=':',color='r',alpha=0.25)
-                    self.linespec=self.axspec.axvline([float(self.ui.yValue.text())],ls=':',color='r',alpha=0.25)
-                    self.linespec0=self.axspec.axhline(0,ls=':',color='orange',alpha=0.5)
-                    self.m2D.draw()
-                    self.mdyn.draw()
-                    self.mspec.draw()
+                #multiple xy mode
+                elif self.plotModes.checkedAction().text()=="Single at multiple x and y":
+                    if self.ui.dataList.count()==0:
+                        msgBox = QMessageBox()
+                        msgBox.setIcon(QMessageBox.Information)
+                        msgBox.setText("Multiple x and y mode: make sure to add at least one parameter to <FONT COLOR='#800000'> Data List </FONT>. Also add x and y slices")
+                        msgBox.setWindowTitle("Warning!")
+                        msgBox.exec()
+                    try:
+                        self.nd=self.getitems(self.ui.dataList)
+                        self.w=[float(i) for i in self.getitems(self.ui.yList)]
+                        self.tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())]
+                
+                        self.t=[float(i) for i in self.getitems(self.ui.xList)]
+                        self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
+                        self.twr=np.concatenate((self.tr,self.wr))
+                        if self.ui.xbgValue.text()!='0':
+                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                        else:
+                            self.tsc=[0]
+                        
+                        self.ui.sliderx.setMinimum(int(float(self.ui.xminValue.text()))*10)
+                        self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text()))*10)
+                        self.ui.sliderx.setSingleStep(int(1))
+                        
+                        self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text())*2))
+                        self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text())*2))
+                        self.ui.slidery.setSingleStep(int(1))
+                        
+                        #Plots
+                        if not self.optsDynW.holdcb.isChecked():
+                            self.axdyn.set_prop_cycle(None)
+                            if not self.axdyn.get_legend()==None:
+                                self.axdyn.get_legend().remove()
+                            if not self.axdyn.get_title()=='':
+                                self.axdyn.set_title('')
+                            for artist in self.axdyn.lines + self.axdyn.collections:
+                                artist.remove()
+                        if not self.optsSpecW.holdcb.isChecked():
+                            self.axspec.set_prop_cycle(None)
+                            if not self.axspec.get_legend()==None:
+                                self.axspec.get_legend().remove()
+                            if not self.axspec.get_title()=='':
+                                self.axspec.set_title('')
+                            for artist in self.axspec.lines + self.axspec.collections:
+                                artist.remove()
+                        self.lineplotdyn=self.plotdyn(plmd=2.2,tsc=self.tsc)
+                        self.lineplotspec=self.plotspec(plmd=1.2,tsc=self.tsc)
+                        
+                        if not self.ui.darkCheck.isChecked():
+                            color3Dtemp='jet'
+                        else:
+                            color3Dtemp='twilight'
+                        self.ax2D.clear()
+                        self.plotxyz(self.d,0,[self.ui.dataBox.currentText()],self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
+                        
+                        #Draw to copy background only, will be used to update line position
+                        self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dyrem+=1
+                        self.m2D.draw()
+                        self.axbackground2Dx=self.m2D.copy_from_bbox(self.ax2D.bbox)
+                        self.line2Dy.remove()
+                        self.l2Dyrem-=1
+                        self.line2Dx=self.ax2D.axvline([float(self.ui.xValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dxrem+=1
+                        self.m2D.draw()
+                        self.axbackground2Dy=self.m2D.copy_from_bbox(self.ax2D.bbox)
+                        self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dyrem+=1
+                        
+                        #Cosmetics
+                        try:
+                            self.axspec.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
+                            self.axdyn.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
+                        except Exception as Argument:
+                            self.genLogforException(Argument)
+                        self.linedyn=self.axdyn.axvline([float(self.ui.xValue.text())],ls=':',color='r',alpha=0.25)
+                        self.linespec=self.axspec.axvline([float(self.ui.yValue.text())],ls=':',color='r',alpha=0.25)
+                        self.linespec0=self.axspec.axhline(0,ls=':',color='orange',alpha=0.5)
+                        self.m2D.draw()
+                        self.mdyn.draw()
+                        self.mspec.draw()
+                    except Exception as Argument:
+                        self.genLogforException(Argument)
                 #multiple d mode
                 elif self.plotModes.checkedAction().text()=="Multiple at single x and y":
                     if self.ui.dataList.count()==0:
                         msgBox = QMessageBox()
                         msgBox.setIcon(QMessageBox.Information)
-                        msgBox.setText("Make sure to define at least one <FONT COLOR='#800000'> Dataset </FONT> variable")
+                        msgBox.setText("Multiple data mode: make sure to add at least one parameter to <FONT COLOR='#800000'> Data List </FONT>. Also add x and y slice")
                         msgBox.setWindowTitle("Warning!")
                         msgBox.exec()
-                    self.nd=self.getitems(self.ui.dataList)
-                    self.w=[float(i) for i in self.getitems(self.ui.yList)]
-                    self.tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())]
-            
-                    self.t=[float(i) for i in self.getitems(self.ui.xList)]
-                    self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
-                    self.twr=np.concatenate((self.tr,self.wr))
-                    if self.ui.xbgValue.text()!='0':
-                        self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
-                    else:
-                        self.tsc=[0]
-                    
-                    self.ui.sliderx.setMinimum(int(float(self.ui.xminValue.text())*10))
-                    self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text())*10))
-                    self.ui.sliderx.setSingleStep(int(1))
-                    
-                    self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text())*2))
-                    self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text())*2))
-                    self.ui.slidery.setSingleStep(int(1))
-                    
-                    #Plot
-                    if not self.optsDynW.holdcb.isChecked():
-                        self.axdyn.set_prop_cycle(None)
-                        if not self.axdyn.get_legend()==None:
-                            self.axdyn.get_legend().remove()
-                        if not self.axdyn.get_title()=='':
-                            self.axdyn.set_title('')
-                        for artist in self.axdyn.lines + self.axdyn.collections:
-                            artist.remove()
-                    if not self.optsSpecW.holdcb.isChecked():
-                        self.axspec.set_prop_cycle(None)
-                        if not self.axspec.get_legend()==None:
-                            self.axspec.get_legend().remove()
-                        if not self.axspec.get_title()=='':
-                            self.axspec.set_title('')
-                        for artist in self.axspec.lines + self.axspec.collections:
-                            artist.remove()
-                    self.lineplotdyn=self.plotdyn(plmd=2,tsc=self.tsc)
-                    self.lineplotspec=self.plotspec(plmd=1,tsc=self.tsc)
-                    
-                    if not self.ui.darkCheck.isChecked():
-                        color3Dtemp='jet'
-                    else:
-                        color3Dtemp='twilight'
-                    self.ax2D.clear()
-                    self.plotxyz(self.d,0,[self.ui.dataBox.currentText()],self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
-                    
-                    #Draw to copy background only, will be used to update line position
-                    self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dyrem+=1
-                    self.m2D.draw()
-                    self.axbackground2Dx=self.m2D.copy_from_bbox(self.ax2D.bbox)
-                    self.line2Dy.remove()
-                    self.l2Dyrem-=1
-                    self.line2Dx=self.ax2D.axvline([float(self.ui.xValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dxrem+=1
-                    self.m2D.draw()
-                    self.axbackground2Dy=self.m2D.copy_from_bbox(self.ax2D.bbox)
-                    self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dyrem+=1
-                    
-                    #Cosmetics
-                    self.axspec.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
-                    self.axdyn.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
-                    self.linedyn=self.axdyn.axvline([float(self.ui.xValue.text())],ls=':',color='r',alpha=0.25)
-                    self.linespec=self.axspec.axvline([float(self.ui.yValue.text())],ls=':',color='r',alpha=0.25)
-                    self.linespec0=self.axspec.axhline(0,ls=':',color='orange',alpha=0.5)
-                    self.m2D.draw()
-                    self.mdyn.draw()
-                    self.mspec.draw()
+                    try:
+                        self.nd=self.getitems(self.ui.dataList)
+                        self.w=[float(i) for i in self.getitems(self.ui.yList)]
+                        self.tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())]
+                
+                        self.t=[float(i) for i in self.getitems(self.ui.xList)]
+                        self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
+                        self.twr=np.concatenate((self.tr,self.wr))
+                        if self.ui.xbgValue.text()!='0':
+                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                        else:
+                            self.tsc=[0]
+                        
+                        self.ui.sliderx.setMinimum(int(float(self.ui.xminValue.text())*10))
+                        self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text())*10))
+                        self.ui.sliderx.setSingleStep(int(1))
+                        
+                        self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text())*2))
+                        self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text())*2))
+                        self.ui.slidery.setSingleStep(int(1))
+                        
+                        #Plot
+                        if not self.optsDynW.holdcb.isChecked():
+                            self.axdyn.set_prop_cycle(None)
+                            if not self.axdyn.get_legend()==None:
+                                self.axdyn.get_legend().remove()
+                            if not self.axdyn.get_title()=='':
+                                self.axdyn.set_title('')
+                            for artist in self.axdyn.lines + self.axdyn.collections:
+                                artist.remove()
+                        if not self.optsSpecW.holdcb.isChecked():
+                            self.axspec.set_prop_cycle(None)
+                            if not self.axspec.get_legend()==None:
+                                self.axspec.get_legend().remove()
+                            if not self.axspec.get_title()=='':
+                                self.axspec.set_title('')
+                            for artist in self.axspec.lines + self.axspec.collections:
+                                artist.remove()
+                        self.lineplotdyn=self.plotdyn(plmd=2,tsc=self.tsc)
+                        self.lineplotspec=self.plotspec(plmd=1,tsc=self.tsc)
+                        
+                        if not self.ui.darkCheck.isChecked():
+                            color3Dtemp='jet'
+                        else:
+                            color3Dtemp='twilight'
+                        self.ax2D.clear()
+                        self.plotxyz(self.d,0,[self.ui.dataBox.currentText()],self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
+                        
+                        #Draw to copy background only, will be used to update line position
+                        self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dyrem+=1
+                        self.m2D.draw()
+                        self.axbackground2Dx=self.m2D.copy_from_bbox(self.ax2D.bbox)
+                        self.line2Dy.remove()
+                        self.l2Dyrem-=1
+                        self.line2Dx=self.ax2D.axvline([float(self.ui.xValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dxrem+=1
+                        self.m2D.draw()
+                        self.axbackground2Dy=self.m2D.copy_from_bbox(self.ax2D.bbox)
+                        self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dyrem+=1
+                        
+                        #Cosmetics
+                        self.axspec.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
+                        self.axdyn.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
+                        self.linedyn=self.axdyn.axvline([float(self.ui.xValue.text())],ls=':',color='r',alpha=0.25)
+                        self.linespec=self.axspec.axvline([float(self.ui.yValue.text())],ls=':',color='r',alpha=0.25)
+                        self.linespec0=self.axspec.axhline(0,ls=':',color='orange',alpha=0.5)
+                        self.m2D.draw()
+                        self.mdyn.draw()
+                        self.mspec.draw()
+                    except Exception as Argument:
+                        self.genLogforException(Argument)
                 #multiple xy and d matched mode
                 elif self.plotModes.checkedAction().text()=="Matched with x and y":
-                    self.nd=self.getitems(self.ui.dataList)
-                    self.w=[float(i) for i in self.getitems(self.ui.yList)]
-                    self.tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())] 
-            
-                    self.t=[float(i) for i in self.getitems(self.ui.xList)]
-                    self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
-                    self.twr=np.concatenate((self.tr,self.wr))
-                    if self.ui.xbgValue.text()!='0':
-                        self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
-                    else:
-                        self.tsc=[0]
-                    
-                    self.ui.sliderx.setMinimum(int(float(self.ui.xminValue.text()))*10)
-                    self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text()))*10)
-                    self.ui.sliderx.setSingleStep(int(1))
-                    
-                    self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text()))*2)
-                    self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text()))*2)
-                    self.ui.slidery.setSingleStep(int(1))
-                    #Plot
-                    if not self.optsDynW.holdcb.isChecked():
-                        self.axdyn.set_prop_cycle(None)
-                        if not self.axdyn.get_legend()==None:
-                            self.axdyn.get_legend().remove()
-                        if not self.axdyn.get_title()=='':
-                            self.axdyn.set_title('')
-                        for artist in self.axdyn.lines + self.axdyn.collections:
-                            artist.remove()
-                    if not self.optsSpecW.holdcb.isChecked():
-                        self.axspec.set_prop_cycle(None)
-                        if not self.axspec.get_legend()==None:
-                            self.axspec.get_legend().remove()
-                        if not self.axspec.get_title()=='':
-                            self.axspec.set_title('')
-                        for artist in self.axspec.lines + self.axspec.collections:
-                            artist.remove()
-                    self.lineplotdyn=self.plotdyn(plmd=2.5,tsc=self.tsc)
-                    self.lineplotspec=self.plotspec(plmd=1.5,tsc=self.tsc)
-                    
-                    if not self.ui.darkCheck.isChecked():
-                        color3Dtemp='jet'
-                    else:
-                        color3Dtemp='twilight'
-                    self.ax2D.clear()
-                    self.plotxyz(self.d,0,[self.ui.dataBox.currentText()],self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
-                    
-                    self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dyrem+=1
-                    self.m2D.draw()
-                    self.axbackground2Dx=self.m2D.copy_from_bbox(self.ax2D.bbox)
-                    self.line2Dy.remove()
-                    self.l2Dyrem-=1
-                    self.line2Dx=self.ax2D.axvline([float(self.ui.xValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dxrem+=1
-                    self.m2D.draw()
-                    self.axbackground2Dy=self.m2D.copy_from_bbox(self.ax2D.bbox)
-                    self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
-                    self.l2Dyrem+=1
-                    
-                    #Cosmetics
-                    self.axspec.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
-                    self.axdyn.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
-                    self.linedyn=self.axdyn.axvline([float(self.ui.xValue.text())],ls=':',color='r',alpha=0.25)
-                    self.linespec=self.axspec.axvline([float(self.ui.yValue.text())],ls=':',color='r',alpha=0.25)
-                    self.linespec0=self.axspec.axhline(0,ls=':',color='orange',alpha=0.25)
-                    self.mdyn.draw()
-                    self.mspec.draw()
+                    msgBox = QMessageBox()
+                    msgBox.setIcon(QMessageBox.Information)
+                    msgBox.setText("Match mode: Make sure equal number of <FONT COLOR='#800000'> Data List </FONT> with x and y slices are added")
+                    msgBox.setWindowTitle("Warning!")
+                    msgBox.exec()
+                    try:
+                        self.nd=self.getitems(self.ui.dataList)
+                        self.w=[float(i) for i in self.getitems(self.ui.yList)]
+                        self.tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())] 
                 
-                #Dyn
-                noofddyn=(len(self.axdyn.lines)-1)
-                lenofx_lines=[]
-                for i in range(noofddyn):
-                    lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
-                self.lenofx=max([max(lenofx_lines),100])
-                self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
-                self.csvarray[:][:] = np.nan
-                for i in range(noofddyn):
-                   try:
-                       self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
-                   except Exception as Argument:
-                       self.genLogforException(Argument)
-                       
-                   self.csvarray[0][1+2*(i)]=''
-                   self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
-                   self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
-                   self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
-                   self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
-                presetsDir = self.makeFolderinDocuments('Data')
-                dataPath = presetsDir / 'dataxz.csv'
-                np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
-                
-                #Spec
-                noofdspec=(len(self.axspec.lines)-2)
-                lenofx_lines=[]
-                for i in range(noofddyn):
-                    lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
-                #print(lenofx_lines)
-                self.lenofx=max([max(lenofx_lines),100])
-                
-                #For column data:
-                self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
-                self.csvarray[:][:] = np.nan
-                for i in range(noofdspec):
-                   try:
-                       self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
-                   except Exception as Argument:
-                       self.genLogforException(Argument)
-                   self.csvarray[0][1+2*(i)]=''
-                   self.csvarray[1][0+2*(i)]= self.impw.ui.ylabel.text()
-                   self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
-                   self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
-                   self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
-                presetsDir = self.makeFolderinDocuments('Data')
-                dataPath = presetsDir / 'datayz.csv'
-                np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                        self.t=[float(i) for i in self.getitems(self.ui.xList)]
+                        self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
+                        self.twr=np.concatenate((self.tr,self.wr))
+                        if self.ui.xbgValue.text()!='0':
+                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                        else:
+                            self.tsc=[0]
+                        
+                        self.ui.sliderx.setMinimum(int(float(self.ui.xminValue.text()))*10)
+                        self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text()))*10)
+                        self.ui.sliderx.setSingleStep(int(1))
+                        
+                        self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text()))*2)
+                        self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text()))*2)
+                        self.ui.slidery.setSingleStep(int(1))
+                        #Plot
+                        if not self.optsDynW.holdcb.isChecked():
+                            self.axdyn.set_prop_cycle(None)
+                            if not self.axdyn.get_legend()==None:
+                                self.axdyn.get_legend().remove()
+                            if not self.axdyn.get_title()=='':
+                                self.axdyn.set_title('')
+                            for artist in self.axdyn.lines + self.axdyn.collections:
+                                artist.remove()
+                        if not self.optsSpecW.holdcb.isChecked():
+                            self.axspec.set_prop_cycle(None)
+                            if not self.axspec.get_legend()==None:
+                                self.axspec.get_legend().remove()
+                            if not self.axspec.get_title()=='':
+                                self.axspec.set_title('')
+                            for artist in self.axspec.lines + self.axspec.collections:
+                                artist.remove()
+                        self.lineplotdyn=self.plotdyn(plmd=2.5,tsc=self.tsc)
+                        self.lineplotspec=self.plotspec(plmd=1.5,tsc=self.tsc)
+                        
+                        if not self.ui.darkCheck.isChecked():
+                            color3Dtemp='jet'
+                        else:
+                            color3Dtemp='twilight'
+                        self.ax2D.clear()
+                        self.plotxyz(self.d,0,[self.ui.dataBox.currentText()],self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
+                        
+                        self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dyrem+=1
+                        self.m2D.draw()
+                        self.axbackground2Dx=self.m2D.copy_from_bbox(self.ax2D.bbox)
+                        self.line2Dy.remove()
+                        self.l2Dyrem-=1
+                        self.line2Dx=self.ax2D.axvline([float(self.ui.xValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dxrem+=1
+                        self.m2D.draw()
+                        self.axbackground2Dy=self.m2D.copy_from_bbox(self.ax2D.bbox)
+                        self.line2Dy=self.ax2D.axhline([float(self.ui.yValue.text())],ls=':',color='w',alpha=0.35)
+                        self.l2Dyrem+=1
+                        
+                        #Cosmetics
+                        self.axspec.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
+                        self.axdyn.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
+                        self.linedyn=self.axdyn.axvline([float(self.ui.xValue.text())],ls=':',color='r',alpha=0.25)
+                        self.linespec=self.axspec.axvline([float(self.ui.yValue.text())],ls=':',color='r',alpha=0.25)
+                        self.linespec0=self.axspec.axhline(0,ls=':',color='orange',alpha=0.25)
+                        self.mdyn.draw()
+                        self.mspec.draw()
+                    except Exception as Argument:
+                        self.genLogforException(Argument)
+                try:
+                    #Dyn
+                    noofddyn=(len(self.axdyn.lines)-1)
+                    lenofx_lines=[]
+                    for i in range(noofddyn):
+                        lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
+                    self.lenofx=max([max(lenofx_lines),100])
+                    self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
+                    self.csvarray[:][:] = np.nan
+                    for i in range(noofddyn):
+                       try:
+                           self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                       except Exception as Argument:
+                           self.genLogforException(Argument)
+                           
+                       self.csvarray[0][1+2*(i)]=''
+                       self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                       self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
+                       self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
+                       self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
+                    presetsDir = self.makeFolderinDocuments('Data')
+                    dataPath = presetsDir / 'dataxz.csv'
+                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                    
+                    #Spec
+                    noofdspec=(len(self.axspec.lines)-2)
+                    lenofx_lines=[]
+                    for i in range(noofddyn):
+                        lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
+                    #print(lenofx_lines)
+                    self.lenofx=max([max(lenofx_lines),100])
+                    
+                    #For column data:
+                    self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
+                    self.csvarray[:][:] = np.nan
+                    for i in range(noofdspec):
+                       try:
+                           self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                       except Exception as Argument:
+                           self.genLogforException(Argument)
+                       self.csvarray[0][1+2*(i)]=''
+                       self.csvarray[1][0+2*(i)]= self.impw.ui.ylabel.text()
+                       self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
+                       self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
+                       self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
+                    presetsDir = self.makeFolderinDocuments('Data')
+                    dataPath = presetsDir / 'datayz.csv'
+                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                    # msgBox = QMessageBox()
+                    # msgBox.setIcon(QMessageBox.Information)
+                    # msgBox.setText("Data is succesfully saved in Username/Documents/Graphxyz")
+                    # msgBox.setWindowTitle("Warning!")
+                    # msgBox.exec()
+                    #print(uisize)
+                    self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
+                except Exception as Argument:
+                    self.genLogforException(Argument)
             elif not self.impw.ui.xyz.isChecked():
                 if self.plotModes.checkedAction().text()=="Multiple":
                     self.nd=self.getitems(self.ui.dataList)
@@ -1456,75 +1494,80 @@ class AppWindow(QDialog):
         
                 self.yr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
                 self.xyr=self.xr+self.yr
-                if self.ui.xbgValue.text()!=0:
-                    self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
-                else:
-                    self.tsc=[0]
-                if self.ui.graphsel.currentText()=='plot left':
-                    if not self.optsDynW.holdcb.isChecked():
-                        #This is used to clear axis in order not change the limits, instead of axdyn.clear()
-                        self.axdyn.set_prop_cycle(None)
-                        if not self.axdyn.get_legend()==None:
-                            self.axdyn.get_legend().remove()
-                        if not self.axdyn.get_title()=='':
-                            self.axdyn.set_title('')
-                        for artist in self.axdyn.lines + self.axdyn.collections:
-                            artist.remove()
-                    self.plotxymode(self.figdyn,self.axdyn,tsc=self.tsc,absmode=self.optsDynW.absz.isChecked())
-                    self.mdyn.draw()
-                    
-                    #Below line output line by line data:
-                    noofddyn=(len(self.axdyn.lines)-0)
-                    lenofx_lines=[]
-                    for i in range(noofddyn):
-                        lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
-                    self.lenofx=max([max(lenofx_lines),100])
-                    
-                    # For column by column data:
-                    self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
-                    self.csvarray[:][:] = np.nan
-                    for i in range(noofddyn):
-                       self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
-                       self.csvarray[0][1+2*(i)]=''
-                       self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
-                       self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
-                       self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
-                       self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
-                    presetsDir = self.makeFolderinDocuments('Data')
-                    dataPath = presetsDir / 'dataleft.csv'
-                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
-                if self.ui.graphsel.currentText()=='plot right':
-                    if not self.optsSpecW.holdcb.isChecked():
-                        self.axspec.set_prop_cycle(None)
-                        if not self.axspec.get_legend()==None:
-                            self.axspec.get_legend().remove()
-                        if not self.axspec.get_title()=='':
-                            self.axspec.set_title('')
-                        for artist in self.axspec.lines + self.axspec.collections:
-                            artist.remove()
-                    self.plotxymode(self.figspec,self.axspec,tsc=self.tsc,absmode=self.optsSpecW.absz.isChecked())
-                    self.mspec.draw()
-                    
-                    #Below code is used to save data afterwards:
-                    noofdspec=(len(self.axspec.lines)-0)
-                    lenofx_lines=[]
-                    for i in range(noofdspec):
-                        lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
-                    self.lenofx=max([max(lenofx_lines),100])
-                    
-                    #For column data:
-                    self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
-                    self.csvarray[:][:] = np.nan
-                    for i in range(noofdspec):
-                       self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
-                       self.csvarray[0][1+2*(i)]=''
-                       self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
-                       self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
-                       self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
-                       self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
-                    presetsDir = self.makeFolderinDocuments('Data')
-                    dataPath = presetsDir / 'dataright.csv'
-                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                try:
+                    if self.ui.xbgValue.text()!=0:
+                        self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                    else:
+                        self.tsc=[0]
+                    if self.ui.graphsel.currentText()=='plot left':
+                        if not self.optsDynW.holdcb.isChecked():
+                            #This is used to clear axis in order not change the limits, instead of axdyn.clear()
+                            self.axdyn.set_prop_cycle(None)
+                            if not self.axdyn.get_legend()==None:
+                                self.axdyn.get_legend().remove()
+                            if not self.axdyn.get_title()=='':
+                                self.axdyn.set_title('')
+                            for artist in self.axdyn.lines + self.axdyn.collections:
+                                artist.remove()
+                        self.plotxymode(self.figdyn,self.axdyn,tsc=self.tsc,absmode=self.optsDynW.absz.isChecked())
+                        self.mdyn.draw()
+                        
+                        #Below line output line by line data:
+                        noofddyn=(len(self.axdyn.lines)-0)
+                        lenofx_lines=[]
+                        for i in range(noofddyn):
+                            lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
+                        self.lenofx=max([max(lenofx_lines),100])
+                        
+                        # For column by column data:
+                        self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
+                        self.csvarray[:][:] = np.nan
+                        for i in range(noofddyn):
+                           self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                           self.csvarray[0][1+2*(i)]=''
+                           self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                           self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
+                           self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
+                           self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
+                        presetsDir = self.makeFolderinDocuments('Data')
+                        dataPath = presetsDir / 'dataleft.csv'
+                        np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                        self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
+                    if self.ui.graphsel.currentText()=='plot right':
+                        if not self.optsSpecW.holdcb.isChecked():
+                            self.axspec.set_prop_cycle(None)
+                            if not self.axspec.get_legend()==None:
+                                self.axspec.get_legend().remove()
+                            if not self.axspec.get_title()=='':
+                                self.axspec.set_title('')
+                            for artist in self.axspec.lines + self.axspec.collections:
+                                artist.remove()
+                        self.plotxymode(self.figspec,self.axspec,tsc=self.tsc,absmode=self.optsSpecW.absz.isChecked())
+                        self.mspec.draw()
+                        
+                        #Below code is used to save data afterwards:
+                        noofdspec=(len(self.axspec.lines)-0)
+                        lenofx_lines=[]
+                        for i in range(noofdspec):
+                            lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
+                        self.lenofx=max([max(lenofx_lines),100])
+                        
+                        #For column data:
+                        self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
+                        self.csvarray[:][:] = np.nan
+                        for i in range(noofdspec):
+                           self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                           self.csvarray[0][1+2*(i)]=''
+                           self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                           self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
+                           self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
+                           self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
+                        presetsDir = self.makeFolderinDocuments('Data')
+                        dataPath = presetsDir / 'dataright.csv'
+                        np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                        self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
+                except Exception as Argument:
+                    self.genLogforException(Argument)
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
@@ -4437,17 +4480,20 @@ class AppWindow(QDialog):
         return [short_leg,titletouse]
     
     def autogenX (self):
-        self.dlistGr=self.getitems(self.xyzmaker.ui.dataGrList)
-        if self.xyzmaker.ui.addautocb.isChecked():
-            self.xlistGr=self.legshorten(self.getitems(self.xyzmaker.ui.dataGrList))[0]
-            for i in range(len(self.dlistGr)):
-                self.xlistGr[i]=self.xlistGr[i].replace(' ','')
-                self.xlistGr[i]=self.xlistGr[i].replace(self.xyzmaker.ui.unitGr.text(),'')
-            self.xyzmaker.ui.xGrList.clear()
-            self.xyzmaker.ui.xGrList.addItems(self.xlistGr)
-        self.xdataGr=np.array(self.xlistGr).astype(float)
-        self.xdataGrnotsort=np.array(self.xlistGr).astype(float)
-        self.xdataGr.sort()
+        try:
+            self.dlistGr=self.getitems(self.xyzmaker.ui.dataGrList)
+            if self.xyzmaker.ui.addautocb.isChecked():
+                self.xlistGr=self.legshorten(self.getitems(self.xyzmaker.ui.dataGrList))[0]
+                for i in range(len(self.dlistGr)):
+                    self.xlistGr[i]=self.xlistGr[i].replace(' ','')
+                    self.xlistGr[i]=self.xlistGr[i].replace(self.xyzmaker.ui.unitGr.text(),'')
+                self.xyzmaker.ui.xGrList.clear()
+                self.xyzmaker.ui.xGrList.addItems(self.xlistGr)
+            self.xdataGr=np.array(self.xlistGr).astype(float)
+            self.xdataGrnotsort=np.array(self.xlistGr).astype(float)
+            self.xdataGr.sort()
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def addtoGroup(self):
         dtemp3D=dict()
         lenlist=[]
@@ -4506,6 +4552,49 @@ class AppWindow(QDialog):
         newSize = self.geometry()
         self.screenSizeChanged.emit(newSize)
         return super().resizeEvent(event)
+    def showPopInfo(self,labelToShow,durationToShow = 2):
+        # labelToShow='this is information'
+        # durationToShow = 4
+        # locationToShow = [500,500]
+        
+        # labelToShow=arr[0]
+        # durationToShow = arr[1]
+        # locationToShow = arr[2]
+        uisize = self.mbar.mapToGlobal(QPoint(0, 0))
+        locationToShow = [uisize.x()+self.mbar.geometry().width()/2,uisize.y()+self.mbar.geometry().height()/4]
+
+        start = time.time()
+        testlabel = QLabel()
+        testlabel.setStyleSheet("QLabel { background-color : white; color : green; }")
+        testlabel.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
+        testlabel.setText(labelToShow)
+
+        # eff = QGraphicsOpacityEffect()
+        # testlabel.setGraphicsEffect(eff)
+        # a = QPropertyAnimation(eff,b"opacity")
+        # a.setDuration(durationToShow*1000*3)
+        # a.setStartValue(0)
+        # a.setEndValue(1)
+        # a.setEasingCurve(QEasingCurve.InBack)
+        # a.start(QPropertyAnimation.DeleteWhenStopped)
+
+        eff = QGraphicsOpacityEffect()
+        testlabel.setGraphicsEffect(eff)
+        a = QPropertyAnimation(eff,b"opacity")
+        a.setDuration(durationToShow*1000*3)
+        a.setStartValue(1)
+        a.setEndValue(0)
+        a.setEasingCurve(QEasingCurve.OutBack)
+        a.start(QPropertyAnimation.DeleteWhenStopped)
+
+        testlabel.move(locationToShow[0],locationToShow[1])
+        testlabel.show()
+        testlabel.raise_()
+
+        while time.time()-start<=durationToShow:
+            QApplication.processEvents()
+
+        testlabel.close()
 class PlotCanvas(FigureCanvasQTAgg):
     def __init__(self, parent=None, width=5, height=4, dpi=100, left=0.075, bottom=0.12, right=0.95, top=0.9):
         fig = Figure(figsize=(width, height), dpi=dpi)
