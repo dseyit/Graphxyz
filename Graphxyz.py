@@ -151,8 +151,10 @@ class AppWindow(QDialog):
         
         
         #self.copyInternalPreset()
+        
+        #Load internal presets if default does not exist
         try:
-            self.loadDefimpBtn() #Loads default presets file to import options menu
+            self.loadDefimpBtn()
             ind=self.ui.listprefs_main.findText(self.defPreset); self.ui.listprefs_main.setCurrentIndex(ind)
             self.prefimp_main() #Loads default presets file to main menu
         except:
@@ -799,129 +801,135 @@ class AppWindow(QDialog):
             self.m2DTlb.setMaximumSize(QtCore.QSize(1250, int(25*self.k_vert)))
         self.fontBtn(str(int(9*self.k_font)))
     def getFolderLoc(self):
-        file_dialog = QFileDialog()
-        if self.importTypes.checkedAction().text()=='Folders':
-            file_dialog.setFileMode(QFileDialog.DirectoryOnly)
-            file_dialog.setOption(QFileDialog.DontUseNativeDialog, True)
-            file_view = file_dialog.findChild(QListView, 'listView')
-            if file_view:
-                file_view.setSelectionMode(QAbstractItemView.MultiSelection)
-            f_tree_view = file_dialog.findChild(QTreeView)
-            if f_tree_view:
-                f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
-            if file_dialog.exec():
-                folderLoc = file_dialog.selectedFiles()
-        elif self.importTypes.checkedAction().text()=='Folder':
-            options = file_dialog.Options()
-            folderLoc = file_dialog.getExistingDirectory(self, "Select Directory",options=options)
-        elif self.importTypes.checkedAction().text()=='Files':
-            filter=''.join([self.impw.ui.dendwith.currentText(),'(*',self.impw.ui.dendwith.currentText(),')'])
-
-            file_dialog.setNameFilters([filter])
-            file_dialog.setOption(QFileDialog.DontUseNativeDialog, True)
-            file_view = file_dialog.findChild(QListView, 'listView')
-            if file_view:
-                file_view.setSelectionMode(QAbstractItemView.MultiSelection)
-            f_tree_view = file_dialog.findChild(QTreeView)
-            if f_tree_view:
-                f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
-            if file_dialog.exec():
-                folderLoc = file_dialog.selectedFiles()
-        if not folderLoc=='' and self.importTypes.checkedAction().text()=='Folders':
-            for i in range(len(folderLoc)):
-                folderLoc[i]='   -Import preset:'.join([folderLoc[i],self.impw.listprefs.currentText()])
-            self.ui.filesLoc.addItems(folderLoc)
-            self.ui.filesLoc.setCurrentIndex(self.ui.filesLoc.count()-1)
-            
-            self.ui.addButton.setEnabled(True)
-            self.ui.addallButton.setEnabled(True)
-            self.ui.refreshButton.setEnabled(True)
-            
-            self.addoneAction.setEnabled(True)
-            self.addallAction.setEnabled(True)
-            self.loadAction.setEnabled(True)
-        if not folderLoc=='' and self.importTypes.checkedAction().text()=='Files':
-            for i in range(len(folderLoc)):
-                folderLoc[i]='   -Import preset:'.join([folderLoc[i],self.impw.listprefs.currentText()])
-            self.ui.filesLoc.addItems(folderLoc)
-            self.ui.filesLoc.setCurrentIndex(self.ui.filesLoc.count()-1)
-            self.ui.addButton.setEnabled(True)
-            self.ui.addallButton.setEnabled(True)
-            self.ui.refreshButton.setEnabled(True)
-            
-            self.addoneAction.setEnabled(True)
-            self.addallAction.setEnabled(True)
-            self.loadAction.setEnabled(True)
-        elif not folderLoc=='' and self.importTypes.checkedAction().text()=='Folder':
-            self.ui.filesLoc.addItem('   -Import preset:'.join([folderLoc,self.impw.listprefs.currentText()]))
-            self.ui.filesLoc.setCurrentIndex(self.ui.filesLoc.count()-1)
-            self.ui.addButton.setEnabled(True)
-            self.ui.addallButton.setEnabled(True)
-            self.ui.refreshButton.setEnabled(True)
-            
-            self.addoneAction.setEnabled(True)
-            self.ui.addallButton.setEnabled(True)
-            self.addallAction.setEnabled(True)
-            self.loadAction.setEnabled(True)
-        elif self.ui.filesLoc.count()==0:
-            self.ui.addButton.setEnabled(False)
-            self.addoneAction.setEnabled(False)
-            self.ui.addallButton.setEnabled(False)
-            self.addallAction.setEnabled(False)
-            self.ui.refreshButton.setEnabled(False)
-            self.loadAction.setEnabled(False)
-    def getGrFolderLoc(self):        
-        file_dialog = QFileDialog()
-        folderLoc=''
-        if self.ui.addmode.currentText()=='Folders':
-            file_dialog.setFileMode(QFileDialog.DirectoryOnly)
-            file_dialog.setOption(QFileDialog.DontUseNativeDialog, True)
-            file_view = file_dialog.findChild(QListView, 'listView')
-            if file_view:
-                file_view.setSelectionMode(QAbstractItemView.MultiSelection)
-            f_tree_view = file_dialog.findChild(QTreeView)
-            if f_tree_view:
-                f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
-            if file_dialog.exec():
-                folderLoc = file_dialog.selectedFiles()
-        elif self.ui.addmode.currentText()=='Folder':
-            options = file_dialog.Options()
-            folderLoc = file_dialog.getExistingDirectory(self, "Select Directory",options=options)
-        if not folderLoc=='' and self.ui.addmode.currentText()=='Folders':
-            for i in range(len(folderLoc)):
-                folderLoc[i]='   -Import preset:'.join([folderLoc[i],self.impw.listprefs.currentText()])
-            self.xyzmaker.ui.GrLoc.addItems(folderLoc)
-            self.xyzmaker.ui.GrLoc.setCurrentIndex(self.xyzmaker.ui.GrLoc.count()-1)
-            self.xyzmaker.ui.addGrButton.setEnabled(True)
-        elif not folderLoc=='' and self.ui.addmode.currentText()=='Folder':
-            self.xyzmaker.ui.GrLoc.addItem('   -Import preset:'.join([folderLoc,self.impw.listprefs.currentText()]))
-            self.xyzmaker.ui.GrLoc.setCurrentIndex(self.xyzmaker.ui.GrLoc.count()-1)
-            self.xyzmaker.ui.addGrButton.setEnabled(True)
-        else:
-            self.xyzmaker.ui.addGrButton.setEnabled(False)
-    def refreshBtn(self):
-        filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
-        filesloc = getResourcePath(filesloc)
-        datfoldnames=self.xyzdatagenerator(filesloc)
-        data_names=datfoldnames[1]
-        fold_names=datfoldnames[2]
-        fold_data_names=[]
-        if self.impw.ui.xyz.isChecked():
-            self.figure2D.setChecked(True)
-            self.figureDyn.setChecked(True)
-            self.figureSpec.setChecked(True)
-        else:
-            self.figureDyn.setChecked(True)
-        for fi in range(len(data_names)):
-            fold_data_names.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
-        fold_data_names.sort()
-        self.ui.dataBox.clear()
-        self.ui.dataBox.addItems(fold_data_names)
-        if self.importTypes.checkedAction().text()=='Folder':
-            self.d=datfoldnames[0]
-        elif self.importTypes.checkedAction().text()=='Files':
-            self.d=self.xyzdatagenerator(filesloc,addmode='single')[0]
         try:
+            file_dialog = QFileDialog()
+            if self.importTypes.checkedAction().text()=='Folders':
+                file_dialog.setFileMode(QFileDialog.DirectoryOnly)
+                file_dialog.setOption(QFileDialog.DontUseNativeDialog, True)
+                file_view = file_dialog.findChild(QListView, 'listView')
+                if file_view:
+                    file_view.setSelectionMode(QAbstractItemView.MultiSelection)
+                f_tree_view = file_dialog.findChild(QTreeView)
+                if f_tree_view:
+                    f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
+                if file_dialog.exec():
+                    folderLoc = file_dialog.selectedFiles()
+            elif self.importTypes.checkedAction().text()=='Folder':
+                options = file_dialog.Options()
+                folderLoc = file_dialog.getExistingDirectory(self, "Select Directory",options=options)
+            elif self.importTypes.checkedAction().text()=='Files':
+                filter=''.join([self.impw.ui.dendwith.currentText(),'(*',self.impw.ui.dendwith.currentText(),')'])
+    
+                file_dialog.setNameFilters([filter])
+                file_dialog.setOption(QFileDialog.DontUseNativeDialog, True)
+                file_view = file_dialog.findChild(QListView, 'listView')
+                if file_view:
+                    file_view.setSelectionMode(QAbstractItemView.MultiSelection)
+                f_tree_view = file_dialog.findChild(QTreeView)
+                if f_tree_view:
+                    f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
+                if file_dialog.exec():
+                    folderLoc = file_dialog.selectedFiles()
+            if not folderLoc=='' and self.importTypes.checkedAction().text()=='Folders':
+                for i in range(len(folderLoc)):
+                    folderLoc[i]='   -Import preset:'.join([folderLoc[i],self.impw.listprefs.currentText()])
+                self.ui.filesLoc.addItems(folderLoc)
+                self.ui.filesLoc.setCurrentIndex(self.ui.filesLoc.count()-1)
+                
+                self.ui.addButton.setEnabled(True)
+                self.ui.addallButton.setEnabled(True)
+                self.ui.refreshButton.setEnabled(True)
+                
+                self.addoneAction.setEnabled(True)
+                self.addallAction.setEnabled(True)
+                self.loadAction.setEnabled(True)
+            if not folderLoc=='' and self.importTypes.checkedAction().text()=='Files':
+                for i in range(len(folderLoc)):
+                    folderLoc[i]='   -Import preset:'.join([folderLoc[i],self.impw.listprefs.currentText()])
+                self.ui.filesLoc.addItems(folderLoc)
+                self.ui.filesLoc.setCurrentIndex(self.ui.filesLoc.count()-1)
+                self.ui.addButton.setEnabled(True)
+                self.ui.addallButton.setEnabled(True)
+                self.ui.refreshButton.setEnabled(True)
+                
+                self.addoneAction.setEnabled(True)
+                self.addallAction.setEnabled(True)
+                self.loadAction.setEnabled(True)
+            elif not folderLoc=='' and self.importTypes.checkedAction().text()=='Folder':
+                self.ui.filesLoc.addItem('   -Import preset:'.join([folderLoc,self.impw.listprefs.currentText()]))
+                self.ui.filesLoc.setCurrentIndex(self.ui.filesLoc.count()-1)
+                self.ui.addButton.setEnabled(True)
+                self.ui.addallButton.setEnabled(True)
+                self.ui.refreshButton.setEnabled(True)
+                
+                self.addoneAction.setEnabled(True)
+                self.ui.addallButton.setEnabled(True)
+                self.addallAction.setEnabled(True)
+                self.loadAction.setEnabled(True)
+            elif self.ui.filesLoc.count()==0:
+                self.ui.addButton.setEnabled(False)
+                self.addoneAction.setEnabled(False)
+                self.ui.addallButton.setEnabled(False)
+                self.addallAction.setEnabled(False)
+                self.ui.refreshButton.setEnabled(False)
+                self.loadAction.setEnabled(False)
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def getGrFolderLoc(self):        
+        try:
+            file_dialog = QFileDialog()
+            folderLoc=''
+            if self.ui.addmode.currentText()=='Folders':
+                file_dialog.setFileMode(QFileDialog.DirectoryOnly)
+                file_dialog.setOption(QFileDialog.DontUseNativeDialog, True)
+                file_view = file_dialog.findChild(QListView, 'listView')
+                if file_view:
+                    file_view.setSelectionMode(QAbstractItemView.MultiSelection)
+                f_tree_view = file_dialog.findChild(QTreeView)
+                if f_tree_view:
+                    f_tree_view.setSelectionMode(QAbstractItemView.MultiSelection)
+                if file_dialog.exec():
+                    folderLoc = file_dialog.selectedFiles()
+            elif self.ui.addmode.currentText()=='Folder':
+                options = file_dialog.Options()
+                folderLoc = file_dialog.getExistingDirectory(self, "Select Directory",options=options)
+            if not folderLoc=='' and self.ui.addmode.currentText()=='Folders':
+                for i in range(len(folderLoc)):
+                    folderLoc[i]='   -Import preset:'.join([folderLoc[i],self.impw.listprefs.currentText()])
+                self.xyzmaker.ui.GrLoc.addItems(folderLoc)
+                self.xyzmaker.ui.GrLoc.setCurrentIndex(self.xyzmaker.ui.GrLoc.count()-1)
+                self.xyzmaker.ui.addGrButton.setEnabled(True)
+            elif not folderLoc=='' and self.ui.addmode.currentText()=='Folder':
+                self.xyzmaker.ui.GrLoc.addItem('   -Import preset:'.join([folderLoc,self.impw.listprefs.currentText()]))
+                self.xyzmaker.ui.GrLoc.setCurrentIndex(self.xyzmaker.ui.GrLoc.count()-1)
+                self.xyzmaker.ui.addGrButton.setEnabled(True)
+            else:
+                self.xyzmaker.ui.addGrButton.setEnabled(False)
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def refreshBtn(self):
+        try:
+            filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
+            filesloc = getResourcePath(filesloc)
+            datfoldnames=self.xyzdatagenerator(filesloc)
+            data_names=datfoldnames[1]
+            fold_names=datfoldnames[2]
+            fold_data_names=[]
+            if self.impw.ui.xyz.isChecked():
+                self.figure2D.setChecked(True)
+                self.figureDyn.setChecked(True)
+                self.figureSpec.setChecked(True)
+            else:
+                self.figureDyn.setChecked(True)
+            for fi in range(len(data_names)):
+                fold_data_names.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
+            fold_data_names.sort()
+            self.ui.dataBox.clear()
+            self.ui.dataBox.addItems(fold_data_names)
+            if self.importTypes.checkedAction().text()=='Folder':
+                self.d=datfoldnames[0]
+            elif self.importTypes.checkedAction().text()=='Files':
+                self.d=self.xyzdatagenerator(filesloc,addmode='single')[0]
             if self.impw.ui.xyz.isChecked():
                 self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
                 self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
@@ -954,24 +962,24 @@ class AppWindow(QDialog):
         self.dGr=dict()
         self.dGrtemp=dict()
     def addBtn(self):
-        if self.impw.ui.xyz.isChecked():
-            self.figure2D.setChecked(True)
-            self.figureDyn.setChecked(True)
-            self.figureSpec.setChecked(True)
-        else:
-            self.figureDyn.setChecked(True)
-        filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
-        filesloc = getResourcePath(filesloc)
-        datfoldnames=self.xyzdatagenerator(filesloc)
-        data_names=datfoldnames[1]
-        fold_names=datfoldnames[2]
-        fold_data_names_temp=[]
-        for fi in range(len(data_names)):
-            fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
-        fold_data_names_temp.sort()
-        self.ui.dataBox.addItems(fold_data_names_temp)
-        
         try:
+            if self.impw.ui.xyz.isChecked():
+                self.figure2D.setChecked(True)
+                self.figureDyn.setChecked(True)
+                self.figureSpec.setChecked(True)
+            else:
+                self.figureDyn.setChecked(True)
+            filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
+            filesloc = getResourcePath(filesloc)
+            datfoldnames=self.xyzdatagenerator(filesloc)
+            data_names=datfoldnames[1]
+            fold_names=datfoldnames[2]
+            fold_data_names_temp=[]
+            for fi in range(len(data_names)):
+                fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
+            fold_data_names_temp.sort()
+            self.ui.dataBox.addItems(fold_data_names_temp)
+            
             ind=self.ui.dataBox.findText(fold_data_names_temp[0])
             self.ui.dataBox.setCurrentIndex(ind)
             if self.impw.ui.xyz.isChecked():
@@ -984,40 +992,45 @@ class AppWindow(QDialog):
                 self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
                 self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
                 self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+            dtemp=datfoldnames[0]
+            #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
+            self.d={**self.d, **dtemp}
         except Exception as Argument:
             self.genLogforException(Argument)
-        
-        dtemp=datfoldnames[0]
-        #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
-        self.d={**self.d, **dtemp}
     def addGrBtn(self):
-        filesloc=self.xyzmaker.ui.GrLoc.currentText().split('   -Import preset:')[0]
-        data_names=self.xyzdatagenerator(filesloc)[1]
-        fold_names=self.xyzdatagenerator(filesloc)[2]
-        fold_data_names_temp=[]
-        for fi in range(len(data_names)):
-            fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
-        fold_data_names_temp.sort()
-        self.xyzmaker.ui.dataGrBox.addItems(fold_data_names_temp)
-        self.dGrtemp=self.xyzdatagenerator(filesloc)[0]
-        #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
-        self.xyzmaker.ui.dataGrList.addItems(fold_data_names_temp)
-        self.dGrtemp={**self.dGrtemp, **self.dGrtemp}
-        self.autogenX()
+        try:
+            filesloc=self.xyzmaker.ui.GrLoc.currentText().split('   -Import preset:')[0]
+            data_names=self.xyzdatagenerator(filesloc)[1]
+            fold_names=self.xyzdatagenerator(filesloc)[2]
+            fold_data_names_temp=[]
+            for fi in range(len(data_names)):
+                fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
+            fold_data_names_temp.sort()
+            self.xyzmaker.ui.dataGrBox.addItems(fold_data_names_temp)
+            self.dGrtemp=self.xyzdatagenerator(filesloc)[0]
+            #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
+            self.xyzmaker.ui.dataGrList.addItems(fold_data_names_temp)
+            self.dGrtemp={**self.dGrtemp, **self.dGrtemp}
+            self.autogenX()
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def xGraddBtn(self):
-        items = [0]*self.xyzmaker.ui.xGrList.count()
-        listy=self.xyzmaker.ui.xGrList
-        if not items:
-            listy.addItem(self.xyzmaker.ui.xGrValue.text())
-            self.xlistGr.insert(0,self.xyzmaker.ui.xGrValue.text())
-        elif listy.selectedItems():
-            for listitems in listy.selectedItems():
-                listy.insertItem(listy.row(listitems)+1,self.xyzmaker.ui.xGrValue.text())
-                self.xlistGr.insert(listy.row(listitems)+1,self.xyzmaker.ui.xGrValue.text())
-        else:
-            listy.insertItem(0,self.xyzmaker.ui.xGrValue.text())
-            self.xlistGr.insert(0,self.xyzmaker.ui.xGrValue.text())
-        self.autogenX()
+        try:
+            items = [0]*self.xyzmaker.ui.xGrList.count()
+            listy=self.xyzmaker.ui.xGrList
+            if not items:
+                listy.addItem(self.xyzmaker.ui.xGrValue.text())
+                self.xlistGr.insert(0,self.xyzmaker.ui.xGrValue.text())
+            elif listy.selectedItems():
+                for listitems in listy.selectedItems():
+                    listy.insertItem(listy.row(listitems)+1,self.xyzmaker.ui.xGrValue.text())
+                    self.xlistGr.insert(listy.row(listitems)+1,self.xyzmaker.ui.xGrValue.text())
+            else:
+                listy.insertItem(0,self.xyzmaker.ui.xGrValue.text())
+                self.xlistGr.insert(0,self.xyzmaker.ui.xGrValue.text())
+            self.autogenX()
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def xGrremBtn(self):
         listy=self.xyzmaker.ui.xGrList
         if listy.selectedItems():
@@ -1131,8 +1144,8 @@ class AppWindow(QDialog):
                             artist.remove()
                     
                     #Plot
-                    self.sliderx.setValue(int(xold*10))
-                    self.slidery.setValue(int(yold*2))
+                    self.sliderx.setValue(int(float(xold*10)))
+                    self.slidery.setValue(int(float(yold*2)))
                     self.lineplotdyn=self.plotdyn(multmodex=False,tsc=self.tsc)
                     self.lineplotspec=self.plotspec(multmodex=False,tsc=self.tsc)
                     if not self.ui.darkCheck.isChecked():
@@ -2790,15 +2803,15 @@ class AppWindow(QDialog):
         
         if addmode !="single":
             Xis=self.impw.ui.bgx.checkedButton().text()
-            rowXst=int(self.impw.ui.rowXst.text())
-            colXst=int(self.impw.ui.colXst.text())
+            rowXst=int(float(self.impw.ui.rowXst.text()))
+            colXst=int(float(self.impw.ui.colXst.text()))
             coefx=float(self.impw.ui.coefx.text())
             
             Yis=self.impw.ui.bgy.checkedButton().text()
-            rowYst=int(self.impw.ui.rowYst.text())
-            colYst=int(self.impw.ui.colYst.text())
-            colZst = int(self.impw.ui.colZst.text())
-            rowZst = int(self.impw.ui.rowZst.text())
+            rowYst=int(float(self.impw.ui.rowYst.text()))
+            colYst=int(float(self.impw.ui.colYst.text()))
+            colZst = int(float(self.impw.ui.colZst.text()))
+            rowZst = int(float(self.impw.ui.rowZst.text()))
         else:
             Xis='col'
             rowXst=1
@@ -3154,8 +3167,8 @@ class AppWindow(QDialog):
                 self.legendtext_dyn=temp[0]
                 temptitle=' @'.join([temp[1],str(wt[0])])
                 temptitle=''.join([temptitle,'nm'])
-                ax.set_title(temptitle, fontsize = int(self.ui.fontsizeval.text())-1)
-                ax.legend(self.legendtext_dyn,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                ax.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
         elif plmd==2.2:
             cltracker=0
@@ -3210,8 +3223,8 @@ class AppWindow(QDialog):
                 temp=self.legshorten(self.legendtext_dyn)
                 self.legendtext_dyn=temp[0]
                 temptitle=temp[1]
-                ax.set_title(temptitle, fontsize = int(self.ui.fontsizeval.text())-1)
-                ax.legend(self.legendtext_dyn,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                ax.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
     
         elif plmd==2.5:
@@ -3271,8 +3284,8 @@ class AppWindow(QDialog):
                 temp=self.legshorten(self.legendtext_dyn)
                 self.legendtext_dyn=temp[0]
                 temptitle=temp[1]
-                ax.set_title(temptitle, fontsize = int(self.ui.fontsizeval.text())-1)
-                ax.legend(self.legendtext_dyn,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                ax.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
     
         elif plmd==1:
@@ -3373,8 +3386,8 @@ class AppWindow(QDialog):
                 self.legendtext_spec=temp[0]
                 temptitle=' @'.join([temp[1],str(wt[0])])
                 temptitle=''.join([temptitle,'ps'])
-                ax.set_title(temptitle, fontsize = int(self.ui.fontsizeval.text())-1)
-                ax.legend(self.legendtext_spec,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                ax.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
         elif plmd==1.2:
             cltracker=0
@@ -3443,8 +3456,8 @@ class AppWindow(QDialog):
                 temp=self.legshorten(self.legendtext_spec)
                 self.legendtext_spec=temp[0]
                 temptitle=temp[1]
-                ax.set_title(temptitle, fontsize = int(self.ui.fontsizeval.text())-1)
-                ax.legend(self.legendtext_spec,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                ax.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
         elif plmd==1.5:
             cltracker=0
@@ -3499,8 +3512,8 @@ class AppWindow(QDialog):
                 temp=self.legshorten(self.legendtext_spec)
                 self.legendtext_spec=temp[0]
                 temptitle=temp[1]
-                ax.set_title(temptitle, fontsize = int(self.ui.fontsizeval.text())-1)
-                ax.legend(self.legendtext_spec,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                ax.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
         elif plmd==0:
             t=d[nd[0]]['t']
@@ -3642,8 +3655,8 @@ class AppWindow(QDialog):
             self.c_map_ax.tick_params(left=False,labelleft=False,bottom=False,labelbottom=False)
             self.c_map_ax.set(frame_on=False)
             self.c_map_ax.set_ylabel(self.ztoplb,rotation=0)
-        self.axspec.xaxis.get_label().set_fontsize(int(self.ui.fontsizeval.text()))
-        self.axspec.yaxis.get_label().set_fontsize(int(self.ui.fontsizeval.text()))
+        self.axspec.xaxis.get_label().set_fontsize(int(float(self.ui.fontsizeval.text())))
+        self.axspec.yaxis.get_label().set_fontsize(int(float(self.ui.fontsizeval.text())))
         if self.impw.ui.xyz.isChecked():
             if not self.axspec.get_legend()==None:
                 temptxt=self.axspec.get_legend().get_texts()
@@ -3651,7 +3664,7 @@ class AppWindow(QDialog):
                 for legtx in temptxt:
                     self.legendtext_spec.append(legtx.get_text())
             if self.ui.legcb.isChecked():
-                self.axspec.legend(self.legendtext_spec,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                self.axspec.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
         elif not self.impw.ui.xyz.isChecked() and self.graphsel.currentText()=="plot right":
             if not self.axspec.get_legend()==None:
                 temptxt=self.axspec.get_legend().get_texts()
@@ -3659,13 +3672,13 @@ class AppWindow(QDialog):
                 for legtx in temptxt:
                     self.legendtext_spec.append(legtx.get_text())
             if self.ui.legcb.isChecked():
-                self.axspec.legend(self.legendtext_spec,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                self.axspec.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
         
         for label in (self.axspec.get_xticklabels() + self.axspec.get_yticklabels()):
-            label.set_fontsize(int(self.ui.fontsizeval.text()))
+            label.set_fontsize(int(float(self.ui.fontsizeval.text())))
         
-        self.axdyn.xaxis.get_label().set_fontsize(int(self.ui.fontsizeval.text()))
-        self.axdyn.yaxis.get_label().set_fontsize(int(self.ui.fontsizeval.text()))
+        self.axdyn.xaxis.get_label().set_fontsize(int(float(self.ui.fontsizeval.text())))
+        self.axdyn.yaxis.get_label().set_fontsize(int(float(self.ui.fontsizeval.text())))
         if self.impw.ui.xyz.isChecked():
             if not self.axdyn.get_legend()==None:
                 self.legendtext_dyn=[]
@@ -3673,7 +3686,7 @@ class AppWindow(QDialog):
                 for legtx in temptxt:
                     self.legendtext_dyn.append(legtx.get_text())
             if self.ui.legcb.isChecked():
-                self.axdyn.legend(self.legendtext_dyn,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                self.axdyn.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
         elif not self.impw.ui.xyz.isChecked() and self.graphsel.currentText()=="plot left":
             if not self.axdyn.get_legend()==None:
                 self.legendtext_dyn=[]
@@ -3681,12 +3694,12 @@ class AppWindow(QDialog):
                 for legtx in temptxt:
                     self.legendtext_dyn.append(legtx.get_text())
             if self.ui.legcb.isChecked():
-                self.axdyn.legend(self.legendtext_dyn,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                self.axdyn.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             
         for label in (self.axdyn.get_xticklabels() + self.axdyn.get_yticklabels()):
-            label.set_fontsize(int(self.ui.fontsizeval.text()))
-        self.axdyn.title.set_fontsize(int(self.ui.fontsizeval.text()))
-        self.axspec.title.set_fontsize(int(self.ui.fontsizeval.text()))
+            label.set_fontsize(int(float(self.ui.fontsizeval.text())))
+        self.axdyn.title.set_fontsize(int(float(self.ui.fontsizeval.text())))
+        self.axspec.title.set_fontsize(int(float(self.ui.fontsizeval.text())))
         self.mdyn.figure.tight_layout()
         self.mspec.figure.tight_layout()
         self.mspec.draw()
@@ -3720,14 +3733,14 @@ class AppWindow(QDialog):
                 for legtx in temptxt:
                     self.legendtext_spec.append(legtx.get_text())
                 if self.ui.legcb.isChecked():
-                    self.axspec.legend(self.legendtext_spec,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                    self.axspec.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             elif not self.impw.ui.xyz.isChecked() and self.graphsel.currentText()=="plot right":
                 temptxt=self.axspec.get_legend().get_texts()
                 self.legendtext_spec=[]
                 for legtx in temptxt:
                     self.legendtext_spec.append(legtx.get_text())
                 if self.ui.legcb.isChecked():
-                    self.axspec.legend(self.legendtext_spec,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                    self.axspec.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
         except Exception as Argument:
             self.genLogforException(Argument)
         try:
@@ -3737,18 +3750,18 @@ class AppWindow(QDialog):
                 for legtx in temptxt:
                     self.legendtext_dyn.append(legtx.get_text())
                 if self.ui.legcb.isChecked():
-                    self.axdyn.legend(self.legendtext_dyn,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                    self.axdyn.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             elif not self.impw.ui.xyz.isChecked() and self.graphsel.currentText()=="plot left":
                 self.legendtext_dyn=[]
                 temptxt=self.axdyn.get_legend().get_texts()
                 for legtx in temptxt:
                     self.legendtext_dyn.append(legtx.get_text())
                 if self.ui.legcb.isChecked():
-                    self.axdyn.legend(self.legendtext_dyn,prop={"size":int(self.ui.fontsizeval.text())},loc='best',framealpha=0).set_draggable(True)
+                    self.axdyn.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
         except Exception as Argument:
             self.genLogforException(Argument)
-        self.axdyn.title.set_fontsize(int(self.ui.fontsizeval.text()))
-        self.axspec.title.set_fontsize(int(self.ui.fontsizeval.text()))
+        self.axdyn.title.set_fontsize(int(float(self.ui.fontsizeval.text())))
+        self.axspec.title.set_fontsize(int(float(self.ui.fontsizeval.text())))
         self.mdyn.figure.tight_layout()
         self.mspec.figure.tight_layout()
         self.mspec.draw()
@@ -3801,8 +3814,8 @@ class AppWindow(QDialog):
             # self.lenofx=self.lenofx*100
             self.fitw.x_fit=linspace(np.nanmin(self.fitw.xdata),np.nanmax(self.fitw.xdata),self.lenofx)
             self.x_sim=self.fitw.x_fit
-            self.psim=[0]*int(self.fitw.ui.parsValue.text())
-            for i in range(int(self.fitw.ui.parsValue.text())):
+            self.psim=[0]*int(float(self.fitw.ui.parsValue.text()))
+            for i in range(int(float(self.fitw.ui.parsValue.text()))):
                 self.psim[i]=float(self.fitw.psliders[i].slval.text())
             funstr=self.fitw.ui.fValue.text()
             def simfun(x,p):
@@ -3818,8 +3831,8 @@ class AppWindow(QDialog):
             #self.fitw.x_fit=linspace(np.nanmin(self.fitw.xdata),np.nanmax(self.fitw.xdata),self.lenofx)
             self.fitw.x_fit=self.fitw.xdata
             self.x_try=self.fitw.x_fit
-            self.ptry=[0]*int(self.fitw.ui.parsValue.text())
-            for i in range(int(self.fitw.ui.parsValue.text())):
+            self.ptry=[0]*int(float(self.fitw.ui.parsValue.text()))
+            for i in range(int(float(self.fitw.ui.parsValue.text()))):
                 self.ptry[i]=float(self.fitw.psliders[i].slval.text())
             funstr=self.fitw.ui.fValue.text()
             def tryfun(x,p):
@@ -3841,10 +3854,10 @@ class AppWindow(QDialog):
             funstr=self.fitw.ui.fValue.text()
             def fitfun(x,*p): 
                 return eval(funstr)
-            self.p0=[0]*int(self.fitw.ui.parsValue.text())
-            self.lb=[0]*int(self.fitw.ui.parsValue.text())
-            self.ub=[0]*int(self.fitw.ui.parsValue.text())
-            for i in range(int(self.fitw.ui.parsValue.text())):
+            self.p0=[0]*int(float(self.fitw.ui.parsValue.text()))
+            self.lb=[0]*int(float(self.fitw.ui.parsValue.text()))
+            self.ub=[0]*int(float(self.fitw.ui.parsValue.text()))
+            for i in range(int(float(self.fitw.ui.parsValue.text()))):
                 self.p0[i]=float(self.fitw.psliders[i].slval.text())
                 self.lb[i]=float(self.fitw.psliders[i].slmin.text())
                 self.ub[i]=float(self.fitw.psliders[i].slmax.text())
@@ -3897,7 +3910,7 @@ class AppWindow(QDialog):
                         self.plotpars=plotpars.split(',')
                         xpl=self.xy
                         for i in range(len(self.plotpars)):
-                            ypl=self.poptarrnp[0:len(xpl),int(self.plotpars[i])]
+                            ypl=self.poptarrnp[0:len(xpl),int(float(self.plotpars[i]))]
                             plt.plot(xpl, ypl,"o", ms=3, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=1)
                         plt.gca().legend(self.fitw.ui.plotparsleg.text().split(','),framealpha=0.25)
                         plt.show()
@@ -3908,7 +3921,7 @@ class AppWindow(QDialog):
                 plt.cla()
                 xpl=self.xy
                 for i in range(len(self.plotpars)):
-                    ypl=self.poptarrnp[0:len(xpl),int(self.plotpars[i])]
+                    ypl=self.poptarrnp[0:len(xpl),int(float(self.plotpars[i]))]
                     plt.plot(xpl, ypl,"o", ms=3, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=1)
                 plt.gca().legend(self.fitw.ui.plotparsleg.text().split(','),framealpha=0.25)
                 plt.show()
@@ -4015,7 +4028,7 @@ class AppWindow(QDialog):
         verticalalignment='center')
         self.fitw.mFun.draw()
     def addremparam(self):
-        no_ofpar=int(self.fitw.ui.parsValue.text())
+        no_ofpar=int(float(self.fitw.ui.parsValue.text()))
         if no_ofpar>(self.fitw.ui.sliderlayout.count()):
             no_ofpars_toadd=no_ofpar-self.fitw.ui.sliderlayout.count()
             #indcs=[]
@@ -4032,8 +4045,8 @@ class AppWindow(QDialog):
                 self.fitw.ui.sliderlayout.itemAt(lastind).widget().deleteLater()
                 self.fitw.ui.sliderlayout.removeWidget(self.fitw.ui.sliderlayout.itemAt(lastind).widget())
                 del self.fitw.psliders[lastind]
-        self.ptry=[0]*int(self.fitw.ui.parsValue.text())
-        self.psim=[0]*int(self.fitw.ui.parsValue.text())
+        self.ptry=[0]*int(float(self.fitw.ui.parsValue.text()))
+        self.psim=[0]*int(float(self.fitw.ui.parsValue.text()))
     def paramchanged(self, n,ind):
         if self.fitw.ui.simulatecb.isChecked():
             self.psim[ind]=float(self.fitw.psliders[ind].slval.text())
@@ -4283,7 +4296,7 @@ class AppWindow(QDialog):
             widgets.setChecked(s)
             k=k+1
         
-        for ind in range(int(self.fitw.ui.parsValue.text())):
+        for ind in range(int(float(self.fitw.ui.parsValue.text()))):
             sliderObj.minlimchanged(self.fitw.psliders[ind])
         
         self.fitw.ui.fValue.setText(list_toload[k])
@@ -5382,25 +5395,10 @@ class MainWindow(QMainWindow):
 #             self.myApp.show()
 
 #         self.counter += 1
-# def copyConnector (arr):
-#     #These are needed in order to be able to copy the figures to clipboard
-#     arr[0].tbw.lastaddedtab.lbleft.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mdyn, apptouse=arr[1]))
-#     arr[0].tbw.lastaddedtab.lbright.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mspec, apptouse=arr[1]))
-#     arr[0].tbw.lastaddedtab.fitw.cpfitbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.fitfigcanvas,apptouse=arr[1]))
-#     arr[0].tbw.lastaddedtab.fitw.cpeqbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.eqcanvas,apptouse=arr[1]))
+
 if __name__=='__main__':
     app = QApplication(sys.argv)
-    wnd = MainWindow(app = app)
-    
-    # wnd.tbw.currentWidget().lbleft.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mdyn, apptouse=app))
-    # wnd.tbw.currentWidget().lbright.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mspec, apptouse=app))
-    # wnd.tbw.currentWidget().fitw.cpfitbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.fitfigcanvas,apptouse=app))
-    # wnd.tbw.currentWidget().fitw.cpeqbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.eqcanvas,apptouse=app))
-    
-    
-    # arr = [wnd,app]
-    # wnd.tbw.currentWidget().addTab.triggered.connect(lambda state, arr=arr: copyConnector(arr))
-    
+    wnd = MainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
     wnd.raise_()
     sys.exit(app.exec())
     
