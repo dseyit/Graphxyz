@@ -54,6 +54,8 @@ import math
 # except Exception as Argument:
 #     self.genLogforException(Argument)    
 
+test = 2
+
 def getResourcePath(relative_path):
     rel_path = pathlib.Path(relative_path)
     dev_base_path = pathlib.Path(__file__).resolve().parent
@@ -1175,8 +1177,8 @@ class AppWindow(QDialog):
                     self.ui.sliderx.setMaximum(int(float(self.ui.xmaxValue.text()))*10)
                     self.ui.sliderx.setSingleStep(int(1))
                     
-                    self.ui.slidery.setMinimum(int(self.ui.yminValue.text())*2)
-                    self.ui.slidery.setMaximum(int(self.ui.ymaxValue.text())*2)
+                    self.ui.slidery.setMinimum(int(float(self.ui.yminValue.text())*2))
+                    self.ui.slidery.setMaximum(int(float(self.ui.ymaxValue.text())*2))
                     self.ui.slidery.setSingleStep(int(1))
                     
                     #Plots
@@ -2485,21 +2487,24 @@ class AppWindow(QDialog):
         self.prefimp()
         self.prefimp_main()
     def loadimpBtn(self):
-        #DataDir = getResourcePath("prs")
-        DataDir = self.makeFolderinDocuments('Instrument Presets')
-        prPath = DataDir / 'presets_default.txt'
-        self.impw_list=np.loadtxt(prPath, delimiter = " ",dtype=str).tolist()
-        if self.impw_list==[]:
-            prnames=[]
-        else:
-            prnames=self.impw_list[0].split(',')
-            prnames.sort()
-        self.impw.ui.listprefs.clear()
-        self.ui.listprefs_main.clear()
-        self.impw.ui.listprefs.addItems(prnames)
-        self.ui.listprefs_main.addItems(prnames)
-        self.prefimp()
-        self.prefimp_main()
+        try:
+            #DataDir = getResourcePath("prs")
+            DataDir = self.makeFolderinDocuments('Instrument Presets')
+            prPath = DataDir / 'presets_default.txt'
+            self.impw_list=np.loadtxt(prPath, delimiter = " ",dtype=str).tolist()
+            if self.impw_list==[]:
+                prnames=[]
+            else:
+                prnames=self.impw_list[0].split(',')
+                prnames.sort()
+            self.impw.ui.listprefs.clear()
+            self.ui.listprefs_main.clear()
+            self.impw.ui.listprefs.addItems(prnames)
+            self.ui.listprefs_main.addItems(prnames)
+            self.prefimp()
+            self.prefimp_main()
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def prefimp_main(self):
         ind=self.impw.ui.listprefs.findText(self.ui.listprefs_main.currentText())
         self.impw.ui.listprefs.setCurrentIndex(ind)
@@ -2995,6 +3000,7 @@ class AppWindow(QDialog):
                 else:
                     y=y/y[self.v2in(x,xnorm)]
                 
+            #print(y)
             self.minmax_xy.append(np.nanmin(y))
             self.minmax_xy.append(np.nanmax(y))
             if self.clrCbspec.isChecked() and self.ui.graphsel.currentText()=='plot right':
