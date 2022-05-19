@@ -60,6 +60,7 @@ def getResourcePath(relative_path):
     base_path = getattr(sys,"_MEIPASS",dev_base_path)
     return base_path / rel_path
 #code
+#code 2
 class AppWindow(QDialog):
     screenSizeChanged = QtCore.pyqtSignal(QtCore.QRect)
     def __init__(self):
