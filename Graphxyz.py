@@ -59,12 +59,10 @@ def getResourcePath(relative_path):
     dev_base_path = pathlib.Path(__file__).resolve().parent
     base_path = getattr(sys,"_MEIPASS",dev_base_path)
     return base_path / rel_path
-#code
-#code 2
-#code 3
+
 class AppWindow(QDialog):
     screenSizeChanged = QtCore.pyqtSignal(QtCore.QRect)
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         #self.tempapp = QApplication([])
         self.exceptionLogLocation = self.makeFolderinDocuments('.logs')
@@ -72,6 +70,7 @@ class AppWindow(QDialog):
         icnDir = getResourcePath("icns")
         uiPath = DataDir / 'graphxyz.ui'
         self.ui = uic.loadUi(uiPath,self)
+        self.app = app
         
         # This will add menubar to each tab of the application
         self.mbar = self.menuAdder()
@@ -249,8 +248,8 @@ class AppWindow(QDialog):
         self.fitw.psliders=[]
         self.fitw.ui.savefitButton.clicked.connect(self.savefitBtn)
         self.fitw.ui.loadfitButton.clicked.connect(self.loadfitBtn)
-        #self.fitw.cpfitbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.fitfigcanvas))
-        #self.fitw.cpeqbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.eqcanvas))
+        self.fitw.cpfitbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.fitfigcanvas))
+        self.fitw.cpeqbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.eqcanvas))
         self.fitw.ui.quickaddParam.clicked.connect(self.quickparamaddBtn)
         
         #Imp window button connects
@@ -267,8 +266,8 @@ class AppWindow(QDialog):
         self.impw.ui.defpresetButton.clicked.connect(self.saveDefPresetBtn)
         
         #Graph options, copy button connects
-        #self.lbleft.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.mdyn))
-        #self.lbright.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.mspec))
+        self.lbleft.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.mdyn))
+        self.lbright.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.mspec))
         self.optleft.clicked.connect(self.optsDyn)
         self.optright.clicked.connect(self.optsSpec)
         self.opt2D.clicked.connect(self.opts2D)
@@ -911,6 +910,8 @@ class AppWindow(QDialog):
             self.figure2D.setChecked(True)
             self.figureDyn.setChecked(True)
             self.figureSpec.setChecked(True)
+        else:
+            self.figureDyn.setChecked(True)
         for fi in range(len(data_names)):
             fold_data_names.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
         fold_data_names.sort()
@@ -957,6 +958,8 @@ class AppWindow(QDialog):
             self.figure2D.setChecked(True)
             self.figureDyn.setChecked(True)
             self.figureSpec.setChecked(True)
+        else:
+            self.figureDyn.setChecked(True)
         filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
         filesloc = getResourcePath(filesloc)
         datfoldnames=self.xyzdatagenerator(filesloc)
@@ -1030,6 +1033,8 @@ class AppWindow(QDialog):
             self.figure2D.setChecked(True)
             self.figureDyn.setChecked(True)
             self.figureSpec.setChecked(True)
+        else:
+            self.figureDyn.setChecked(True)
         self.d=dict()
         for i in range (self.filesLoc.count()):
             filesloc=self.ui.filesLoc.itemText(i).split('   -Import preset:')[0]
@@ -4334,7 +4339,7 @@ class AppWindow(QDialog):
         list_tosave.append(self.fitw.ui.fValue.text())
         np.save(self.fitw.ui.fitsavename.text(),list_tosave) #needs fix, use pathlib
         
-    def copyfig(self,fromcanvas,apptouse):
+    def copyfig(self,fromcanvas):
         figloc = self.makeFolderinDocuments('Saved Figures')
         figloc = figloc/'tempimg.svg'
         fromcanvas.figure.savefig(figloc, format='svg', dpi=1200,bbox_inches=0, transparent=True)
@@ -4342,7 +4347,7 @@ class AppWindow(QDialog):
         pathtofile=os.path.abspath(figloc)
         url = QUrl.fromLocalFile(pathtofile)
         datatocopy.setUrls([url])
-        apptouse.clipboard().setMimeData(datatocopy)
+        self.app.clipboard().setMimeData(datatocopy)
     def legshorten(self,long_leg):
         def find_all(a_str, sub):
             start = 0
@@ -5111,17 +5116,18 @@ class NavigationToolbar_new(NavigationToolbar):
             self.mainDialog.ui.yminValue.setText("{0:.1f}".format(xlims[0]))
             self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(xlims[1]))
 class TabWindow(QTabWidget):
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         self.apptemp=[] #Necessary when closing temporary application during copying the figure
         self.wndws=[]        
+        self.app = app
         self.setMinimumSize(QtCore.QSize(600, 720))
         self.setTabsClosable(True)
         self.setMovable(True)
         self.tablayout = QtWidgets.QGridLayout(self)
         self.tablayout.setContentsMargins(1, 1, 1, 1)
         self.tablayout.setSpacing(0)
-        self.wdg=AppWindow()
+        self.wdg=AppWindow(self.app)
         self.addTab(self.wdg,'Home')
         self.setTabText(self.currentIndex(),self.wdg.ui.listprefs_main.currentText())
         self.tabBar().setTabButton(0, self.tabBar().LeftSide,None)
@@ -5136,7 +5142,7 @@ class TabWindow(QTabWidget):
         self.wndws.append(self.wdg)
         self.show()
     def newBtn(self):
-        temwdg=AppWindow()
+        temwdg=AppWindow(self.app)
         temwdg.addTab.triggered.connect(self.newBtn)
         temwdg.impw.ui.listprefs.currentTextChanged.connect(self.renameTab)
         temwdg.fitter.triggered.connect(lambda wdg: self.addfitwdg(wdg=temwdg.fitw))
@@ -5162,7 +5168,7 @@ class TabWindow(QTabWidget):
             QApplication.quit()
 class MainWindow(QMainWindow):
     screenChanged = QtCore.pyqtSignal(QScreen, QScreen)
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         
         desktop = QApplication.desktop()
@@ -5172,12 +5178,12 @@ class MainWindow(QMainWindow):
         
         self.resize(int(width/2.5),int(height/2))
         self.setWindowTitle('Graphx-y-z')
-            
+        self.app = app
         
         global uisize_main
         uisize_main=self.geometry()
         
-        self.tbw = TabWindow()
+        self.tbw = TabWindow(self.app)
         self.setCentralWidget(self.tbw)
         
         # This will get saved settings values:
@@ -5376,16 +5382,24 @@ class MainWindow(QMainWindow):
 #             self.myApp.show()
 
 #         self.counter += 1
-
+# def copyConnector (arr):
+#     #These are needed in order to be able to copy the figures to clipboard
+#     arr[0].tbw.lastaddedtab.lbleft.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mdyn, apptouse=arr[1]))
+#     arr[0].tbw.lastaddedtab.lbright.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mspec, apptouse=arr[1]))
+#     arr[0].tbw.lastaddedtab.fitw.cpfitbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.fitfigcanvas,apptouse=arr[1]))
+#     arr[0].tbw.lastaddedtab.fitw.cpeqbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.eqcanvas,apptouse=arr[1]))
 if __name__=='__main__':
     app = QApplication(sys.argv)
-    wnd = MainWindow()
+    wnd = MainWindow(app = app)
     
-    #These are needed in order to be able to copy the figures to clipboard
-    wnd.tbw.currentWidget().lbleft.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mdyn, apptouse=app))
-    wnd.tbw.currentWidget().lbright.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mspec, apptouse=app))
-    wnd.tbw.currentWidget().fitw.cpfitbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.fitfigcanvas,apptouse=app))
-    wnd.tbw.currentWidget().fitw.cpeqbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.eqcanvas,apptouse=app))
+    # wnd.tbw.currentWidget().lbleft.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mdyn, apptouse=app))
+    # wnd.tbw.currentWidget().lbright.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().mspec, apptouse=app))
+    # wnd.tbw.currentWidget().fitw.cpfitbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.fitfigcanvas,apptouse=app))
+    # wnd.tbw.currentWidget().fitw.cpeqbtn.clicked.connect(lambda fromcanvas: wnd.tbw.currentWidget().copyfig(fromcanvas=wnd.tbw.currentWidget().fitw.eqcanvas,apptouse=app))
+    
+    
+    # arr = [wnd,app]
+    # wnd.tbw.currentWidget().addTab.triggered.connect(lambda state, arr=arr: copyConnector(arr))
     
     wnd.raise_()
     sys.exit(app.exec())
