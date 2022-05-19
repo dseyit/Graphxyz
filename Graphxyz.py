@@ -511,17 +511,17 @@ class AppWindow(QDialog):
         self.figure2D = self.views.addAction("Top figure")
         self.figure2D.setCheckable(True)
         self.figure2D.setChecked(False)
-        self.figure2D.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.frame2D, mAction = self.figure2D))
+        self.figure2D.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frame2D, mAction = self.figure2D))
         
         self.figureDyn = self.views.addAction("Left figure")
         self.figureDyn.setCheckable(True)
-        self.figureDyn.setChecked(False)
-        self.figureDyn.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
+        self.figureDyn.setChecked(True)
+        self.figureDyn.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
         
         self.figureSpec = self.views.addAction("Right figure")
         self.figureSpec.setCheckable(True)
         self.figureSpec.setChecked(False)
-        self.figureSpec.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
+        self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
         
         return mbar
     def widgetHiderShower(self, widgetFrame, mAction = None):
@@ -537,6 +537,15 @@ class AppWindow(QDialog):
             else:
                 for frames in widgetFrame:
                     frames.setVisible(True)
+    def figHiderShower(self,widgetFrame, mAction = None):
+        if not mAction.isChecked():
+            widgetFrame.setVisible(False)
+            if widgetFrame==self.ui.frame2D or self.ui.frameSpec:
+                self.app.activeWindow().resize(min(int(self.app.activeWindow().geometry().width()/2),int(QApplication.desktop().geometry().width())),self.app.activeWindow().geometry().height())
+        else:
+            widgetFrame.setVisible(True)
+            if widgetFrame==self.ui.frame2D or self.ui.frameSpec:
+                self.app.activeWindow().resize(min(int(self.app.activeWindow().geometry().width()*2),int(QApplication.desktop().geometry().width())),self.app.activeWindow().geometry().height())
     def hideAllViews(self):
         for action in self.views.actions():
             action.setChecked(False)
@@ -1089,6 +1098,7 @@ class AppWindow(QDialog):
         self.legendtext_spec=[]
         self.linespec_all=[]
         self.linedyn_all=[]
+        #print(self.app.activeWindow().geometry().width())
         if self.impw.ui.xyz.isChecked():
             self.ui.sliderx.setEnabled(True)
             self.ui.slidery.setEnabled(True)
@@ -1353,11 +1363,12 @@ class AppWindow(QDialog):
                         self.genLogforException(Argument)
                 #multiple xy and d matched mode
                 elif self.plotModes.checkedAction().text()=="Matched with x and y":
-                    msgBox = QMessageBox()
-                    msgBox.setIcon(QMessageBox.Information)
-                    msgBox.setText("Match mode: Make sure equal number of <FONT COLOR='#800000'> Data List </FONT> with x and y slices are added")
-                    msgBox.setWindowTitle("Warning!")
-                    msgBox.exec()
+                    if self.ui.dataList.count()==0:
+                        msgBox = QMessageBox()
+                        msgBox.setIcon(QMessageBox.Information)
+                        msgBox.setText("Match mode: Make sure equal number of <FONT COLOR='#800000'> Data List </FONT> with x and y slices are added")
+                        msgBox.setWindowTitle("Warning!")
+                        msgBox.exec()
                     try:
                         self.nd=self.getitems(self.ui.dataList)
                         self.w=[float(i) for i in self.getitems(self.ui.yList)]
@@ -1487,6 +1498,12 @@ class AppWindow(QDialog):
                     self.genLogforException(Argument)
             elif not self.impw.ui.xyz.isChecked():
                 if self.plotModes.checkedAction().text()=="Multiple":
+                    if self.ui.dataList.count == 0:
+                        msgBox = QMessageBox()
+                        msgBox.setIcon(QMessageBox.Information)
+                        msgBox.setText("Multiple mode: Add files to <FONT COLOR='#800000'> Data List </FONT>")
+                        msgBox.setWindowTitle("Warning!")
+                        msgBox.exec()
                     self.nd=self.getitems(self.ui.dataList)
                 else:
                     self.nd=[self.ui.dataBox.currentText()]
