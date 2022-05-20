@@ -516,7 +516,7 @@ class AppWindow(QDialog):
         
         self.figureDyn = self.views.addAction("Left figure")
         self.figureDyn.setCheckable(True)
-        self.figureDyn.setChecked(True)
+        self.figureDyn.setChecked(False)
         self.figureDyn.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
         
         self.figureSpec = self.views.addAction("Right figure")
@@ -541,12 +541,16 @@ class AppWindow(QDialog):
     def figHiderShower(self,widgetFrame, mAction = None):
         if not mAction.isChecked():
             widgetFrame.setVisible(False)
-            if widgetFrame==self.ui.frame2D or self.ui.frameSpec:
-                self.app.activeWindow().resize(min(int(self.app.activeWindow().geometry().width()/2),int(QApplication.desktop().geometry().width())),self.app.activeWindow().geometry().height())
+            if widgetFrame==self.ui.frame2D:
+                self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()/2),self.app.focusWidget().geometry().height())
+            if widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
+                self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
         else:
             widgetFrame.setVisible(True)
-            if widgetFrame==self.ui.frame2D or self.ui.frameSpec:
-                self.app.activeWindow().resize(min(int(self.app.activeWindow().geometry().width()*2),int(QApplication.desktop().geometry().width())),self.app.activeWindow().geometry().height())
+            if widgetFrame==self.ui.frame2D:
+                self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()*2),self.app.focusWidget().geometry().height())
+            elif widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
+                self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
     def hideAllViews(self):
         for action in self.views.actions():
             action.setChecked(False)
@@ -798,7 +802,7 @@ class AppWindow(QDialog):
                     #print(font_coef*1*self.k_font)
                     compi.setFont(QFont(fontitype,int(self.orFonts[ci]*1))) #This needs to be refined, right now it kinda does the job
                 else:
-                    compi.setFont(QFont(fontitype,int(self.orFonts[ci]*0.8*self.k_font2)))
+                    compi.setFont(QFont(fontitype,max(int(self.orFonts[ci]*0.9*self.k_font2),10)))
             except Exception as Argument:
                 self.genLogforException(Argument)
         if platform.system().lower()=='windows':
@@ -3858,8 +3862,11 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
         self.axdyn.title.set_fontsize(int(float(self.ui.fontsizeval.text())))
         self.axspec.title.set_fontsize(int(float(self.ui.fontsizeval.text())))
-        self.mdyn.figure.tight_layout()
-        self.mspec.figure.tight_layout()
+        try:
+            self.mdyn.figure.tight_layout()
+            self.mspec.figure.tight_layout()
+        except Exception as Argument:
+            self.genLogforException(Argument)
         self.mspec.draw()
         self.mdyn.draw()
         self.m2D.draw()    
@@ -5276,7 +5283,7 @@ class TabWindow(QTabWidget):
         self.apptemp=[] #Necessary when closing temporary application during copying the figure
         self.wndws=[]        
         self.app = app
-        self.setMinimumSize(QtCore.QSize(600, 720))
+        #self.setMinimumSize(QtCore.QSize(600, 720))
         self.setTabsClosable(True)
         self.setMovable(True)
         self.tablayout = QtWidgets.QGridLayout(self)
