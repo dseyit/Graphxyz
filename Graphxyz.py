@@ -388,6 +388,9 @@ class AppWindow(QDialog):
         cleanAction.triggered.connect(self.cleanBtn)
         clearList = dataMenu.addAction("Clear list")
         clearList.triggered.connect(self.clearLists)
+        dataMenu.addSeparator()
+        self.dataExporterAction = dataMenu.addAction("Export data")
+        self.dataExporterAction.triggered.connect(self.dataExporter)
         
         self.addTab=tabs.addAction("New Tab")
         #self.addTab.triggered.connect(self.newBtn)
@@ -1029,6 +1032,7 @@ class AppWindow(QDialog):
                 self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
         except Exception as Argument:
             self.genLogforException(Argument)
+            self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
     def cleanBtn(self):
         self.ui.dataBox.clear()
         self.ui.filesLoc.clear()
@@ -1170,6 +1174,104 @@ class AppWindow(QDialog):
             self.autogenX()
         except Exception as Argument:
             self.genLogforException(Argument)
+    def dataExporter(self):
+        if self.impw.ui.xyz.isChecked():
+            try:
+                #Dyn
+                noofddyn=(len(self.axdyn.lines)-1)
+                lenofx_lines=[]
+                for i in range(noofddyn):
+                    lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
+                self.lenofx=max([max(lenofx_lines),100])
+                self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
+                self.csvarray[:][:] = np.nan
+                for i in range(noofddyn):
+                   try:
+                       self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                   except Exception as Argument:
+                       self.genLogforException(Argument)
+                       
+                   self.csvarray[0][1+2*(i)]=''
+                   self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                   self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
+                   self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
+                   self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
+                presetsDir = self.makeFolderinDocuments('Data')
+                dataPath = presetsDir / 'dataxz.csv'
+                np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                
+                #Spec
+                noofdspec=(len(self.axspec.lines)-2)
+                lenofx_lines=[]
+                for i in range(noofddyn):
+                    lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
+                #print(lenofx_lines)
+                self.lenofx=max([max(lenofx_lines),100])
+                
+                #For column data:
+                self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
+                self.csvarray[:][:] = np.nan
+                for i in range(noofdspec):
+                   try:
+                       self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                   except Exception as Argument:
+                       self.genLogforException(Argument)
+                   self.csvarray[0][1+2*(i)]=''
+                   self.csvarray[1][0+2*(i)]= self.impw.ui.ylabel.text()
+                   self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
+                   self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
+                   self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
+                presetsDir = self.makeFolderinDocuments('Data')
+                dataPath = presetsDir / 'datayz.csv'
+                self.showPopInfo('Raw data (dataxz.csv and datayz.csv) is succesfully saved in Username/Documents/Graphxyz')
+            except Exception as Argument:
+                self.genLogforException(Argument)
+                self.showPopInfo('Data export failed! Make sure to Submit and Plot first!',durationToShow=3, color = 'red')
+        elif not self.impw.ui.xyz.isChecked():
+            try:
+                if self.ui.graphsel.currentText()=='plot left':
+                    noofddyn=(len(self.axdyn.lines)-0)
+                    lenofx_lines=[]
+                    for i in range(noofddyn):
+                        lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
+                    self.lenofx=max([max(lenofx_lines),100])
+                    
+                    # For column by column data:
+                    self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
+                    self.csvarray[:][:] = np.nan
+                    for i in range(noofddyn):
+                       self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                       self.csvarray[0][1+2*(i)]=''
+                       self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                       self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
+                       self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
+                       self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
+                    presetsDir = self.makeFolderinDocuments('Data')
+                    dataPath = presetsDir / 'dataleft.csv'
+                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                    self.showPopInfo('Raw data (dataleft.csv) is succesfully saved in Username/Documents/Graphxyz')
+                if self.ui.graphsel.currentText()=='plot right':
+                    noofdspec=(len(self.axspec.lines)-0)
+                    lenofx_lines=[]
+                    for i in range(noofdspec):
+                        lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
+                    self.lenofx=max([max(lenofx_lines),100])
+                    self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
+                    self.csvarray[:][:] = np.nan
+                    for i in range(noofdspec):
+                       self.csvarray[0][0+2*(i)]=self.legendtext_spec[i]
+                       self.csvarray[0][1+2*(i)]=''
+                       self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                       self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
+                       self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
+                       self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
+                    presetsDir = self.makeFolderinDocuments('Data')
+                    dataPath = presetsDir / 'dataright.csv'
+                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                    self.showPopInfo('Raw data (dataright.csv) is succesfully saved in Username/Documents/Graphxyz')
+            except Exception as Argument:
+                self.genLogforException(Argument)
+                self.showPopInfo('Data export failed! Make sure to Submit and Plot first!',durationToShow=3, color = 'red')
     def submitButtonPushed(self, noMessage = False):
         self.legendtext_dyn=[]
         self.legendtext_spec=[]
@@ -1273,6 +1375,7 @@ class AppWindow(QDialog):
                         self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
+                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
                 #multiple xy mode
                 elif self.plotModes.checkedAction().text()=="Single at multiple x and y":
                     if self.ui.dataList.count()==0:
@@ -1357,6 +1460,7 @@ class AppWindow(QDialog):
                         self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
+                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
                 #multiple d mode
                 elif self.plotModes.checkedAction().text()=="Multiple at single x and y":
                     if self.ui.dataList.count()==0:
@@ -1438,6 +1542,7 @@ class AppWindow(QDialog):
                         self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
+                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
                 #multiple xy and d matched mode
                 elif self.plotModes.checkedAction().text()=="Matched with x and y":
                     if self.ui.dataList.count()==0:
@@ -1516,63 +1621,65 @@ class AppWindow(QDialog):
                         self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
-                try:
-                    #Dyn
-                    noofddyn=(len(self.axdyn.lines)-1)
-                    lenofx_lines=[]
-                    for i in range(noofddyn):
-                        lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
-                    self.lenofx=max([max(lenofx_lines),100])
-                    self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
-                    self.csvarray[:][:] = np.nan
-                    for i in range(noofddyn):
-                       try:
-                           self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
-                       except Exception as Argument:
-                           self.genLogforException(Argument)
+                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
+                # try:
+                #     #Dyn
+                #     noofddyn=(len(self.axdyn.lines)-1)
+                #     lenofx_lines=[]
+                #     for i in range(noofddyn):
+                #         lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
+                #     self.lenofx=max([max(lenofx_lines),100])
+                #     self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
+                #     self.csvarray[:][:] = np.nan
+                #     for i in range(noofddyn):
+                #        try:
+                #            self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                #        except Exception as Argument:
+                #            self.genLogforException(Argument)
                            
-                       self.csvarray[0][1+2*(i)]=''
-                       self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
-                       self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
-                       self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
-                       self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
-                    presetsDir = self.makeFolderinDocuments('Data')
-                    dataPath = presetsDir / 'dataxz.csv'
-                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                #        self.csvarray[0][1+2*(i)]=''
+                #        self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                #        self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
+                #        self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
+                #        self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
+                #     presetsDir = self.makeFolderinDocuments('Data')
+                #     dataPath = presetsDir / 'dataxz.csv'
+                #     np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
                     
-                    #Spec
-                    noofdspec=(len(self.axspec.lines)-2)
-                    lenofx_lines=[]
-                    for i in range(noofddyn):
-                        lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
-                    #print(lenofx_lines)
-                    self.lenofx=max([max(lenofx_lines),100])
+                #     #Spec
+                #     noofdspec=(len(self.axspec.lines)-2)
+                #     lenofx_lines=[]
+                #     for i in range(noofddyn):
+                #         lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
+                #     #print(lenofx_lines)
+                #     self.lenofx=max([max(lenofx_lines),100])
                     
-                    #For column data:
-                    self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
-                    self.csvarray[:][:] = np.nan
-                    for i in range(noofdspec):
-                       try:
-                           self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
-                       except Exception as Argument:
-                           self.genLogforException(Argument)
-                       self.csvarray[0][1+2*(i)]=''
-                       self.csvarray[1][0+2*(i)]= self.impw.ui.ylabel.text()
-                       self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
-                       self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
-                       self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
-                    presetsDir = self.makeFolderinDocuments('Data')
-                    dataPath = presetsDir / 'datayz.csv'
-                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
-                    # msgBox = QMessageBox()
-                    # msgBox.setIcon(QMessageBox.Information)
-                    # msgBox.setText("Data is succesfully saved in Username/Documents/Graphxyz")
-                    # msgBox.setWindowTitle("Warning!")
-                    # msgBox.exec()
-                    #print(uisize)
-                    self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
-                except Exception as Argument:
-                    self.genLogforException(Argument)
+                #     #For column data:
+                #     self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
+                #     self.csvarray[:][:] = np.nan
+                #     for i in range(noofdspec):
+                #        try:
+                #            self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                #        except Exception as Argument:
+                #            self.genLogforException(Argument)
+                #        self.csvarray[0][1+2*(i)]=''
+                #        self.csvarray[1][0+2*(i)]= self.impw.ui.ylabel.text()
+                #        self.csvarray[1][1+2*(i)]= self.impw.ui.zlabel.text()
+                #        self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
+                #        self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
+                #     presetsDir = self.makeFolderinDocuments('Data')
+                #     dataPath = presetsDir / 'datayz.csv'
+                #     np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                #     # msgBox = QMessageBox()
+                #     # msgBox.setIcon(QMessageBox.Information)
+                #     # msgBox.setText("Data is succesfully saved in Username/Documents/Graphxyz")
+                #     # msgBox.setWindowTitle("Warning!")
+                #     # msgBox.exec()
+                #     #print(uisize)
+                #     self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
+                # except Exception as Argument:
+                #     self.genLogforException(Argument)
+                #     self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
             elif not self.impw.ui.xyz.isChecked():
                 if self.plotModes.checkedAction().text()=="Multiple":
                     if self.ui.dataList.count == 0:
@@ -1606,27 +1713,27 @@ class AppWindow(QDialog):
                         self.plotxymode(self.figdyn,self.axdyn,tsc=self.tsc,absmode=self.optsDynW.absz.isChecked())
                         self.mdyn.draw()
                         
-                        #Below line output line by line data:
-                        noofddyn=(len(self.axdyn.lines)-0)
-                        lenofx_lines=[]
-                        for i in range(noofddyn):
-                            lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
-                        self.lenofx=max([max(lenofx_lines),100])
+                        # #Below line output line by line data:
+                        # noofddyn=(len(self.axdyn.lines)-0)
+                        # lenofx_lines=[]
+                        # for i in range(noofddyn):
+                        #     lenofx_lines.append(len(self.axdyn.lines[i].get_xdata()))
+                        # self.lenofx=max([max(lenofx_lines),100])
                         
-                        # For column by column data:
-                        self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
-                        self.csvarray[:][:] = np.nan
-                        for i in range(noofddyn):
-                           self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
-                           self.csvarray[0][1+2*(i)]=''
-                           self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
-                           self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
-                           self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
-                           self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
-                        presetsDir = self.makeFolderinDocuments('Data')
-                        dataPath = presetsDir / 'dataleft.csv'
-                        np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
-                        self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
+                        # # For column by column data:
+                        # self.csvarray=np.zeros((self.lenofx+2,noofddyn*2),dtype=object)
+                        # self.csvarray[:][:] = np.nan
+                        # for i in range(noofddyn):
+                        #    self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                        #    self.csvarray[0][1+2*(i)]=''
+                        #    self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                        #    self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
+                        #    self.csvarray[2:len(self.axdyn.lines[i].get_xdata())+2,0+2*(i)]=self.axdyn.lines[i].get_xdata()
+                        #    self.csvarray[2:len(self.axdyn.lines[i].get_ydata())+2,1+2*(i)]=self.axdyn.lines[i].get_ydata()
+                        # presetsDir = self.makeFolderinDocuments('Data')
+                        # dataPath = presetsDir / 'dataleft.csv'
+                        # np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                        # self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
                     if self.ui.graphsel.currentText()=='plot right':
                         if not self.optsSpecW.holdcb.isChecked():
                             self.axspec.set_prop_cycle(None)
@@ -1639,29 +1746,30 @@ class AppWindow(QDialog):
                         self.plotxymode(self.figspec,self.axspec,tsc=self.tsc,absmode=self.optsSpecW.absz.isChecked())
                         self.mspec.draw()
                         
-                        #Below code is used to save data afterwards:
-                        noofdspec=(len(self.axspec.lines)-0)
-                        lenofx_lines=[]
-                        for i in range(noofdspec):
-                            lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
-                        self.lenofx=max([max(lenofx_lines),100])
+                        # #Below code is used to save data afterwards:
+                        # noofdspec=(len(self.axspec.lines)-0)
+                        # lenofx_lines=[]
+                        # for i in range(noofdspec):
+                        #     lenofx_lines.append(len(self.axspec.lines[i].get_xdata()))
+                        # self.lenofx=max([max(lenofx_lines),100])
                         
-                        #For column data:
-                        self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
-                        self.csvarray[:][:] = np.nan
-                        for i in range(noofdspec):
-                           self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
-                           self.csvarray[0][1+2*(i)]=''
-                           self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
-                           self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
-                           self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
-                           self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
-                        presetsDir = self.makeFolderinDocuments('Data')
-                        dataPath = presetsDir / 'dataright.csv'
-                        np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
-                        self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
+                        # #For column data:
+                        # self.csvarray=np.zeros((self.lenofx+2,noofdspec*2),dtype=object)
+                        # self.csvarray[:][:] = np.nan
+                        # for i in range(noofdspec):
+                        #    self.csvarray[0][0+2*(i)]=self.legendtext_dyn[i]
+                        #    self.csvarray[0][1+2*(i)]=''
+                        #    self.csvarray[1][0+2*(i)]= self.impw.ui.xlabel.text()
+                        #    self.csvarray[1][1+2*(i)]= self.impw.ui.ylabel.text()
+                        #    self.csvarray[2:len(self.axspec.lines[i].get_xdata())+2,0+2*(i)]=self.axspec.lines[i].get_xdata()
+                        #    self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
+                        # presetsDir = self.makeFolderinDocuments('Data')
+                        # dataPath = presetsDir / 'dataright.csv'
+                        # np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                        # self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
                 except Exception as Argument:
                     self.genLogforException(Argument)
+                    self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
@@ -2272,8 +2380,8 @@ class AppWindow(QDialog):
     def modechanged(self):
         if self.impw.ui.xy.isChecked():
             self.ax2D.clear()
-            self.optsDynW=optsWindow(leftright='Left Figure',xyzmode=self.impw.ui.xy.isChecked())
-            self.optsSpecW=optsWindow(leftright='Right Figure',xyzmode=self.impw.ui.xy.isChecked())
+            self.optsDynW=optsWindow(leftright='Left Figure',xyzmode=self.impw.ui.xyz.isChecked())
+            self.optsSpecW=optsWindow(leftright='Right Figure',xyzmode=self.impw.ui.xyz.isChecked())
             if not self.optsDynW.holdcb.isChecked():
                 self.axdyn.clear()
             if not self.optsSpecW.holdcb.isChecked():
@@ -2685,7 +2793,7 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
             self.loadIntimpBtn()
-            self.showPopInfo('Select preset location')
+            self.showPopInfo('Select preset location',color = 'red')
     def prefimp_main(self):
         ind=self.impw.ui.listprefs.findText(self.ui.listprefs_main.currentText())
         self.impw.ui.listprefs.setCurrentIndex(ind)
@@ -2695,21 +2803,25 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
         
     def dataBoxActivated(self):
-        ind = self.ui.listprefs_main.findText(self.ui.dataBox.currentText().split('     /')[-1])
-        self.ui.listprefs_main.setCurrentIndex(ind)
-        self.prefimp_main()
-        if self.impw.ui.xyz.isChecked():
-            self.ax2D.clear()
-            self.nd=[self.ui.dataBox.currentText()]
-            if not self.ui.darkCheck.isChecked():
-                color3Dtemp='jet'
-            else:
-                color3Dtemp='twilight'
-            if hasattr(self, 't'):
-                self.plotxyz(self.d,0,self.nd,self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
-            self.m2D.draw()
-        elif not self.impw.ui.xyz.isChecked():
-            self.nd=[self.ui.dataBox.currentText()]
+        try:
+            ind = self.ui.listprefs_main.findText(self.ui.dataBox.currentText().split('     /')[-1])
+            self.ui.listprefs_main.setCurrentIndex(ind)
+            self.prefimp_main()
+            if self.impw.ui.xyz.isChecked():
+                self.ax2D.clear()
+                self.nd=[self.ui.dataBox.currentText()]
+                if not self.ui.darkCheck.isChecked():
+                    color3Dtemp='jet'
+                else:
+                    color3Dtemp='twilight'
+                if hasattr(self, 't'):
+                    self.plotxyz(self.d,0,self.nd,self.t,self.twr,self.fig2D,self.ax2D,color3D=color3Dtemp,tscatter=self.tsc)
+                self.m2D.draw()
+            elif not self.impw.ui.xyz.isChecked():
+                self.nd=[self.ui.dataBox.currentText()]
+        except Exception as Argument:
+            self.genLogforException(Argument)
+            #self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=4, color = 'red')
         #self.nd = 
     def prefimp(self):
         if self.impw_list == []:
@@ -4684,7 +4796,7 @@ class AppWindow(QDialog):
         newSize = self.geometry()
         self.screenSizeChanged.emit(newSize)
         return super().resizeEvent(event)
-    def showPopInfo(self,labelToShow,durationToShow = 2):
+    def showPopInfo(self,labelToShow,durationToShow = 2,color = 'green'):
         # labelToShow='this is information'
         # durationToShow = 4
         # locationToShow = [500,500]
@@ -4697,7 +4809,7 @@ class AppWindow(QDialog):
 
         start = time.time()
         testlabel = QLabel()
-        testlabel.setStyleSheet("QLabel { background-color : white; color : green; }")
+        testlabel.setStyleSheet(''.join(["QLabel { background-color : white; color : ",color,"; }"]))
         testlabel.setWindowFlags(Qt.WindowStaysOnTopHint | Qt.FramelessWindowHint)
         testlabel.setText(labelToShow)
 
@@ -4715,7 +4827,7 @@ class AppWindow(QDialog):
         a = QPropertyAnimation(eff,b"opacity")
         a.setDuration(durationToShow*1000*3)
         a.setStartValue(1)
-        a.setEndValue(0)
+        a.setEndValue(0.2)
         a.setEasingCurve(QEasingCurve.OutBack)
         a.start(QPropertyAnimation.DeleteWhenStopped)
 
@@ -5064,8 +5176,9 @@ class optsWindow(QDialog):
             self.auto_xlimcb=QtWidgets.QCheckBox(self)
             
             self.auto_xlimcb.setChecked(True)
-            if leftright=='Left Figure':
-                self.auto_zlimcb.setChecked(True)
+            self.auto_zlimcb.setChecked(True)
+            # if leftright=='Left Figure':
+            #     self.auto_zlimcb.setChecked(True)
             
             self.holdcb.setText("Hold Current Line(s)")
             if xyzmode:
