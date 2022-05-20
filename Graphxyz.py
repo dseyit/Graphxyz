@@ -1040,6 +1040,9 @@ class AppWindow(QDialog):
                 self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
                 self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
                 self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+            self.figHiderShower(self.ui.frame2D, mAction = self.figure2D)
+            self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
+            self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
         except Exception as Argument:
             self.genLogforException(Argument)
             self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
