@@ -64,7 +64,6 @@ class AppWindow(QDialog):
     screenSizeChanged = QtCore.pyqtSignal(QtCore.QRect)
     def __init__(self, app):
         super().__init__()
-        #self.tempapp = QApplication([])
         self.exceptionLogLocation = self.makeFolderinDocuments('.logs')
         DataDir = getResourcePath("uis")
         icnDir = getResourcePath("icns")
