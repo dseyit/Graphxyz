@@ -1015,12 +1015,6 @@ class AppWindow(QDialog):
             data_names=datfoldnames[1]
             fold_names=datfoldnames[2]
             fold_data_names=[]
-            if self.impw.ui.xyz.isChecked():
-                self.figure2D.setChecked(True)
-                self.figureDyn.setChecked(True)
-                self.figureSpec.setChecked(True)
-            else:
-                self.figureDyn.setChecked(True)
             for fi in range(len(data_names)):
                 fold_data_names.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
             fold_data_names.sort()
@@ -1040,9 +1034,15 @@ class AppWindow(QDialog):
                 self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
                 self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
                 self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
-            self.figHiderShower(self.ui.frame2D, mAction = self.figure2D)
-            self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
-            self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
+            #self.figHiderShower(self.ui.frame2D, mAction = self.figure2D)
+            #self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
+            #self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
+            if self.impw.ui.xyz.isChecked():
+                self.figure2D.setChecked(True)
+                self.figureDyn.setChecked(True)
+                self.figureSpec.setChecked(True)
+            else:
+                self.figureDyn.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
             self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
