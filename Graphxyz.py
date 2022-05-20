@@ -619,7 +619,6 @@ class AppWindow(QDialog):
             except Exception as Argument:
                 self.genLogforException(Argument)
             widgetFrame.setVisible(True)
-            self.plotControlsAction.setChecked(True)
     def hideAllViews(self):
         for action in self.views.actions():
             action.setChecked(False)
@@ -1034,15 +1033,16 @@ class AppWindow(QDialog):
                 self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
                 self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
                 self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+            self.plotControlsAction.setChecked(True)
             #self.figHiderShower(self.ui.frame2D, mAction = self.figure2D)
             #self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
             #self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
-            if self.impw.ui.xyz.isChecked():
-                self.figure2D.setChecked(True)
-                self.figureDyn.setChecked(True)
-                self.figureSpec.setChecked(True)
-            else:
-                self.figureDyn.setChecked(True)
+            # if self.impw.ui.xyz.isChecked():
+            #     self.figure2D.setChecked(True)
+            #     self.figureDyn.setChecked(True)
+            #     self.figureSpec.setChecked(True)
+            # else:
+            #     self.figureDyn.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
             self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
@@ -1057,6 +1057,7 @@ class AppWindow(QDialog):
         self.addoneAction.setEnabled(False)
         self.addallAction.setEnabled(False)
         self.loadAction.setEnabled(False)
+        self.plotControlsAction.setChecked(False)
     def cleanGrBtn(self):
         self.xyzmaker.ui.dataGrBox.clear()
         self.xyzmaker.ui.GrLoc.clear()
@@ -1068,12 +1069,12 @@ class AppWindow(QDialog):
     def addBtn(self):
         try:
             self.showPopInfo("Adding folder...", durationToShow = 1.5)
-            if self.impw.ui.xyz.isChecked():
-                self.figure2D.setChecked(True)
-                self.figureDyn.setChecked(True)
-                self.figureSpec.setChecked(True)
-            else:
-                self.figureDyn.setChecked(True)
+            # if self.impw.ui.xyz.isChecked():
+            #     self.figure2D.setChecked(True)
+            #     self.figureDyn.setChecked(True)
+            #     self.figureSpec.setChecked(True)
+            # else:
+            #     self.figureDyn.setChecked(True)
             filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
             filesloc = getResourcePath(filesloc)
             datfoldnames=self.xyzdatagenerator(filesloc)
@@ -1100,17 +1101,18 @@ class AppWindow(QDialog):
             dtemp=datfoldnames[0]
             #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
             self.d={**self.d, **dtemp}
+            self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
     def addallBtn(self):
         self.showPopInfo("Adding all folders...", durationToShow = 1.5)
         try:
-            if self.impw.ui.xyz.isChecked():
-                self.figure2D.setChecked(True)
-                self.figureDyn.setChecked(True)
-                self.figureSpec.setChecked(True)
-            else:
-                self.figureDyn.setChecked(True)
+            # if self.impw.ui.xyz.isChecked():
+            #     self.figure2D.setChecked(True)
+            #     self.figureDyn.setChecked(True)
+            #     self.figureSpec.setChecked(True)
+            # else:
+            #     self.figureDyn.setChecked(True)
             self.d=dict()
             for i in range (self.filesLoc.count()):
                 filesloc=self.ui.filesLoc.itemText(i).split('   -Import preset:')[0]
@@ -1138,6 +1140,7 @@ class AppWindow(QDialog):
                 self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
                 self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
                 self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+            self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
     def addGrBtn(self):
@@ -2450,6 +2453,10 @@ class AppWindow(QDialog):
             self.fxyValue.setText('1240/x')
             self.flzcb.setText('f(y)')
             self.frzcb.setText('f(y)')
+
+            self.figure2D.setChecked(False)
+            self.figureDyn.setChecked(True)
+            self.figureSpec.setChecked(False)
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
@@ -2528,6 +2535,10 @@ class AppWindow(QDialog):
             self.fxyValue.setText('x-0.1')
             self.flzcb.setText('f(z)')
             self.frzcb.setText('f(z)')
+            
+            self.figure2D.setChecked(True)
+            self.figureDyn.setChecked(True)
+            self.figureSpec.setChecked(True)
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
