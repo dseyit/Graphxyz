@@ -543,7 +543,9 @@ class AppWindow(QDialog):
                     frames.setVisible(True)
     def figHiderShower(self,widgetFrame, mAction = None):
         mainWindowToResize = self.app.activeWindow()
+        #mainWindowToResize=self.app.topLevelWidgets()[0]
         #self.currWindowSize
+        time.sleep(3)
         if not mAction.isChecked():
             # if widgetFrame==self.ui.frame2D:
             #     self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()/2),self.app.focusWidget().geometry().height())
