@@ -581,34 +581,34 @@ class AppWindow(QDialog):
             widgetFrame.setVisible(False)
         else:
             if mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(QApplication.desktop().geometry().width()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.app.desktop().geometry().width()*0.8) )
                 mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
             elif mAction==self.figure2D and not self.figureDyn.isChecked() and self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(QApplication.desktop().geometry().width()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.app.desktop().geometry().width()*0.8) )
                 mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
             elif mAction==self.figure2D and not self.figureDyn.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(QApplication.desktop().geometry().width()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.app.desktop().geometry().width()*0.8) )
                 mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
                 
             elif mAction==self.figureDyn and not self.figure2D.isChecked() and self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(QApplication.desktop().geometry().width()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.app.desktop().geometry().width()*0.8) )
                 mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
             elif mAction==self.figureSpec and not self.figure2D.isChecked() and self.figureDyn.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(QApplication.desktop().geometry().width()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.app.desktop().geometry().width()*0.8) )
                 mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
             
             #Height adjustments:
             elif mAction==self.figureDyn and not self.figure2D.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(QApplication.desktop().geometry().height()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.app.desktop().geometry().height()*0.8) )
                 mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
             elif mAction==self.figureDyn and self.figure2D.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(QApplication.desktop().geometry().height()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.app.desktop().geometry().height()*0.8) )
                 mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
             elif mAction==self.figureSpec and not self.figure2D.isChecked() and not self.figureDyn.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(QApplication.desktop().geometry().height()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.app.desktop().geometry().height()*0.8) )
                 mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
             elif mAction==self.figureSpec and self.figure2D.isChecked() and not self.figureDyn.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(QApplication.desktop().geometry().height()*0.8) )
+                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.app.desktop().geometry().height()*0.8) )
                 mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
             widgetFrame.setVisible(True)
             self.plotControlsAction.setChecked(True)
