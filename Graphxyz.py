@@ -70,6 +70,8 @@ class AppWindow(QDialog):
         uiPath = DataDir / 'graphxyz.ui'
         self.ui = uic.loadUi(uiPath,self)
         self.app = app
+        self.currWindowSize = self.app.desktop().geometry()
+        print(self.currWindowSize)
         
         # This will add menubar to each tab of the application
         self.mbar = self.menuAdder()
