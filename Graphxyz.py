@@ -333,7 +333,7 @@ class AppWindow(QDialog):
         #     self.genLogforException(Argument)
         
         self.show()
-    def makeFolderinDocuments(self, foldName):
+    def makeFolderinDocuments(self, foldName): 
         foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'
         os.makedirs(foldDir, exist_ok = True)
         foldDir = foldDir / foldName
@@ -586,6 +586,7 @@ class AppWindow(QDialog):
             widgetFrame.setVisible(False)
         else:
             try:
+                #Width Adjustments
                 if mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
                     resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
                     mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
@@ -619,6 +620,14 @@ class AppWindow(QDialog):
             except Exception as Argument:
                 self.genLogforException(Argument)
             widgetFrame.setVisible(True)
+    def resizewhenTabChanged(self): #Adjust width when tab changed, #To change size when tab changed, experimental
+        mainWindowToResize = self.app.activeWindow()
+        if self.impw.ui.xyz.isChecked() or self.figureSpec.isChecked():
+            resizeTo=min(mainWindowToResize.geometry().width()*2, self.currWindowSize.width()*0.8 )
+            mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+        elif not self.impw.ui.xyz.isChecked():
+            resizeTo=int(mainWindowToResize.geometry().width()/2)
+            mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
     def hideAllViews(self):
         for action in self.views.actions():
             action.setChecked(False)
@@ -2456,7 +2465,7 @@ class AppWindow(QDialog):
 
             self.figure2D.setChecked(False)
             self.figureDyn.setChecked(True)
-            self.figureSpec.setChecked(False)
+            self.figureSpec.setChecked(True)
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
@@ -5509,6 +5518,7 @@ class TabWindow(QTabWidget):
         self.wdg.loadAction.triggered.connect(self.renameTab)
         self.wdg.impw.ui.listprefs.currentTextChanged.connect(self.renameTab_Main)
         self.wdg.fitter.triggered.connect(lambda wdg: self.addfitwdg(wdg=self.wdg.fitw))
+        #self.currentChanged.connect(self.tabChanged) Experimental
         self.lastaddedtab=self.wdg
         self.wndws.append(self.wdg)
         self.show()
@@ -5537,6 +5547,8 @@ class TabWindow(QTabWidget):
             self.wdg.apptemp.quit()
         else:
             QApplication.quit()
+    def tabChanged(self):
+        self.currentWidget().resizewhenTabChanged() #To change size when tab changed, experimental
 class MainWindow(QMainWindow):
     screenChanged = QtCore.pyqtSignal(QScreen, QScreen)
     def __init__(self, app):
