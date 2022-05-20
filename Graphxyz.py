@@ -1018,15 +1018,15 @@ class AppWindow(QDialog):
             elif self.importTypes.checkedAction().text()=='Files':
                 self.d=self.xyzdatagenerator(filesloc,addmode='single')[0]
             if self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
-                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+                self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+                self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+                self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+                self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
             elif not self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
-                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+                self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+                self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+                self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+                self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
         except Exception as Argument:
             self.genLogforException(Argument)
     def cleanBtn(self):
