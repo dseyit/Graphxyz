@@ -864,8 +864,8 @@ class AppWindow(QDialog):
             except Exception as Argument:
                 self.genLogforException(Argument)
         try:
-            minToolbarWidth_win = int(self.app.activeWindow().geometry().width()*0.017)
-            minToolbarWidth_mac = int(self.app.activeWindow().geometry().width()*0.017)
+            minToolbarWidth_win = int(self.app.activeWindow().geometry().height()*0.03)
+            minToolbarWidth_mac = int(self.app.activeWindow().geometry().height()*0.03)
             #print(minToolbarWidth_mac)
             # if platform.system().lower()=='windows':
             #     self.mdynTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_win) ))
@@ -1071,15 +1071,15 @@ class AppWindow(QDialog):
             ind=self.ui.dataBox.findText(fold_data_names_temp[0])
             self.ui.dataBox.setCurrentIndex(ind)
             if self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
-                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+                self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+                self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+                self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+                self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
             elif not self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
-                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+                self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+                self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+                self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+                self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
             dtemp=datfoldnames[0]
             #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
             self.d={**self.d, **dtemp}
@@ -1112,15 +1112,15 @@ class AppWindow(QDialog):
             ind=self.ui.dataBox.findText(fold_data_names_temp[0])
             self.ui.dataBox.setCurrentIndex(ind)
             if self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
-                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+                self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+                self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+                self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+                self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
             elif not self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.xmaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.yminValue.setText("{0:.1f}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
-                self.ui.ymaxValue.setText("{0:.1f}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+                self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+                self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+                self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+                self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
         except Exception as Argument:
             self.genLogforException(Argument)
     def addGrBtn(self):
