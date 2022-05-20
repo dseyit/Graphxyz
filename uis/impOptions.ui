@@ -1292,11 +1292,6 @@
           <string>.dat</string>
          </property>
         </item>
-        <item>
-         <property name="text">
-          <string>.xlsx</string>
-         </property>
-        </item>
        </widget>
       </item>
       <item row="0" column="4">
@@ -1389,8 +1384,8 @@
  <resources/>
  <connections/>
  <buttongroups>
-  <buttongroup name="bgy"/>
   <buttongroup name="bgx"/>
+  <buttongroup name="bgy"/>
   <buttongroup name="bgmode"/>
  </buttongroups>
 </ui>
