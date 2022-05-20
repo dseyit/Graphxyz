@@ -545,75 +545,79 @@ class AppWindow(QDialog):
         mainWindowToResize = self.app.activeWindow()
         #mainWindowToResize=self.app.topLevelWidgets()[0]
         #self.currWindowSize
-        time.sleep(3)
         if not mAction.isChecked():
             # if widgetFrame==self.ui.frame2D:
             #     self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()/2),self.app.focusWidget().geometry().height())
             # if widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
             #     self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
-            
-            #Width adjustments:
-            if mAction==self.figure2D and not self.figureDyn.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().width()/2)
-                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
-            elif mAction==self.figure2D and not self.figureDyn.isChecked() and self.figureSpec.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().width()/2)
-                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
-            elif mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().width()/2)
-                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
-            elif mAction==self.figureDyn and not self.figure2D.isChecked() and self.figureSpec.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().width()/2)
-                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
-            elif mAction==self.figureSpec and not self.figure2D.isChecked() and self.figureDyn.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().width()/2)
-                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
-            
-            #Height adjustments:
-            elif mAction==self.figureDyn and not self.figure2D.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().height()/2)
-                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
-            elif mAction==self.figureDyn and self.figure2D.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().height()/2)
-                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
-            elif mAction==self.figureSpec and not self.figure2D.isChecked() and not self.figureDyn.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().height()/2)
-                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
-            elif mAction==self.figureSpec and self.figure2D.isChecked() and not self.figureDyn.isChecked():
-                resizeTo=int(mainWindowToResize.geometry().height()/2)
-                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            try:
+                #Width adjustments:
+                if mAction==self.figure2D and not self.figureDyn.isChecked() and not self.figureSpec.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().width()/2)
+                    mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+                elif mAction==self.figure2D and not self.figureDyn.isChecked() and self.figureSpec.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().width()/2)
+                    mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+                elif mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().width()/2)
+                    mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+                elif mAction==self.figureDyn and not self.figure2D.isChecked() and self.figureSpec.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().width()/2)
+                    mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+                elif mAction==self.figureSpec and not self.figure2D.isChecked() and self.figureDyn.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().width()/2)
+                    mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+                
+                #Height adjustments:
+                elif mAction==self.figureDyn and not self.figure2D.isChecked() and not self.figureSpec.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().height()/2)
+                    mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+                elif mAction==self.figureDyn and self.figure2D.isChecked() and not self.figureSpec.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().height()/2)
+                    mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+                elif mAction==self.figureSpec and not self.figure2D.isChecked() and not self.figureDyn.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().height()/2)
+                    mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+                elif mAction==self.figureSpec and self.figure2D.isChecked() and not self.figureDyn.isChecked():
+                    resizeTo=int(mainWindowToResize.geometry().height()/2)
+                    mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            except Exception as Argument:
+                self.genLogforException(Argument)
             widgetFrame.setVisible(False)
         else:
-            if mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
-                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
-            elif mAction==self.figure2D and not self.figureDyn.isChecked() and self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
-                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
-            elif mAction==self.figure2D and not self.figureDyn.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
-                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+            try:
+                if mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+                elif mAction==self.figure2D and not self.figureDyn.isChecked() and self.figureSpec.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+                elif mAction==self.figure2D and not self.figureDyn.isChecked() and not self.figureSpec.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+                    
+                elif mAction==self.figureDyn and not self.figure2D.isChecked() and self.figureSpec.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+                elif mAction==self.figureSpec and not self.figure2D.isChecked() and self.figureDyn.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
                 
-            elif mAction==self.figureDyn and not self.figure2D.isChecked() and self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
-                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
-            elif mAction==self.figureSpec and not self.figure2D.isChecked() and self.figureDyn.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
-                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
-            
-            #Height adjustments:
-            elif mAction==self.figureDyn and not self.figure2D.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
-                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
-            elif mAction==self.figureDyn and self.figure2D.isChecked() and not self.figureSpec.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
-                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
-            elif mAction==self.figureSpec and not self.figure2D.isChecked() and not self.figureDyn.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
-                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
-            elif mAction==self.figureSpec and self.figure2D.isChecked() and not self.figureDyn.isChecked():
-                resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
-                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+                #Height adjustments:
+                elif mAction==self.figureDyn and not self.figure2D.isChecked() and not self.figureSpec.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
+                    mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+                elif mAction==self.figureDyn and self.figure2D.isChecked() and not self.figureSpec.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
+                    mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+                elif mAction==self.figureSpec and not self.figure2D.isChecked() and not self.figureDyn.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
+                    mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+                elif mAction==self.figureSpec and self.figure2D.isChecked() and not self.figureDyn.isChecked():
+                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
+                    mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            except Exception as Argument:
+                self.genLogforException(Argument)
             widgetFrame.setVisible(True)
             self.plotControlsAction.setChecked(True)
     def hideAllViews(self):
