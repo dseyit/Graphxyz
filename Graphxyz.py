@@ -541,16 +541,16 @@ class AppWindow(QDialog):
     def figHiderShower(self,widgetFrame, mAction = None):
         if not mAction.isChecked():
             widgetFrame.setVisible(False)
-            if widgetFrame==self.ui.frame2D:
-                self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()/2),self.app.focusWidget().geometry().height())
-            if widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
-                self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
+            # if widgetFrame==self.ui.frame2D:
+            #     self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()/2),self.app.focusWidget().geometry().height())
+            # if widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
+            #     self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
         else:
             widgetFrame.setVisible(True)
-            if widgetFrame==self.ui.frame2D:
-                self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()*2),self.app.focusWidget().geometry().height())
-            elif widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
-                self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
+            # if widgetFrame==self.ui.frame2D:
+            #     self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()*2),self.app.focusWidget().geometry().height())
+            # elif widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
+            #     self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
     def hideAllViews(self):
         for action in self.views.actions():
             action.setChecked(False)
