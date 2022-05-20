@@ -863,14 +863,28 @@ class AppWindow(QDialog):
                     compi.setFont(QFont(fontitype,max(int(self.orFonts[ci]*0.9*self.k_font2),10)))
             except Exception as Argument:
                 self.genLogforException(Argument)
-        if platform.system().lower()=='windows':
-            self.mdynTlb.setMaximumSize(QtCore.QSize(1250, int(25*self.k_vert)))
-            self.mspecTlb.setMaximumSize(QtCore.QSize(1250, int(25*self.k_vert)))
-            self.m2DTlb.setMaximumSize(QtCore.QSize(1250, int(25*self.k_vert)))
-        else:
-            self.mdynTlb.setMaximumSize(QtCore.QSize(1250, int(25*self.k_vert)))
-            self.mspecTlb.setMaximumSize(QtCore.QSize(1250, int(25*self.k_vert)))
-            self.m2DTlb.setMaximumSize(QtCore.QSize(1250, int(25*self.k_vert)))
+        try:
+            minToolbarWidth_win = int(self.app.activeWindow().geometry().width()*0.017)
+            minToolbarWidth_mac = int(self.app.activeWindow().geometry().width()*0.017)
+            #print(minToolbarWidth_mac)
+            # if platform.system().lower()=='windows':
+            #     self.mdynTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_win) ))
+            #     self.mspecTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_win) ))
+            #     self.m2DTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_win) ))
+            # else:
+            #     self.mdynTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_mac) ))
+            #     self.mspecTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_mac) ))
+            #     self.m2DTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_mac) ))
+            if platform.system().lower()=='windows':
+                self.mdynTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.mspecTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+            else:
+                self.mdynTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
+                self.mspecTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
+                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
+        except Exception as Argument:
+            self.genLogforException(Argument)
         self.fontBtn(str(int(9*self.k_font)))
     def getFolderLoc(self):
         try:
