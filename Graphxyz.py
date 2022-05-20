@@ -120,7 +120,7 @@ class AppWindow(QDialog):
         self.ytoplb='Y'
         self.xtoplb='X'
         self.ztoplb='Z'
-        self.defPreset = 'XY-column' #This is the default mode to be initialized, control can be given to a user
+        #self.defPreset = 'XY-column' #This is the default mode to be initialized, control can be given to a user
         self.cb2D='' #colorbar does not exist until I plot, if this is not empty string, colorbar will be added
         self.l2Dxrem=0 #This will track if lines in contour graph is removed or added for X axis
         self.l2Dyrem=0 #This will track if lines in contour graph is removed or added for Y axis
@@ -406,11 +406,12 @@ class AppWindow(QDialog):
         saveas = tabs.addAction("Save as...")
         saveas.triggered.connect(self.saveasBtn)
         
-        impPref=tools.addAction("Preset options...")
-        impPref.triggered.connect(self.impOptBtnClicked)
+        # impPref=tools.addAction("Preset options...")
+        # impPref.triggered.connect(self.impOptBtnClicked)
+        self.fitter = tools.addAction("Fit...")
         maker3D=tools.addAction("3D maker: XY+Z...")
         maker3D.triggered.connect(self.xyzmakerClicked)
-        self.fitter = tools.addAction("Fit...")
+        
         
         #parsMenu = modes.addMenu("Parameters")
         
@@ -2521,21 +2522,28 @@ class AppWindow(QDialog):
             self.prefimp()
             self.prefimp_main()
     def selectPrefSampleBtn(self):
-        filter=''.join([self.impw.ui.dendwith.currentText(),'(*',self.impw.ui.dendwith.currentText(),')'])
-        fileloc = QFileDialog.getOpenFileName(self,None, "Select Data to Preview",filter)
-        self.impw.ui.sfileloc.setText(fileloc[0])
-        self.impw.df=self.xyzdatagenerator(fileloc[0],addmode='single')[3][0]
+        try:
+            filter=''.join([self.impw.ui.dendwith.currentText(),'(*',self.impw.ui.dendwith.currentText(),')'])
+            self.filelocPreview = QFileDialog.getOpenFileName(self,None, "Select Data to Preview",filter)
+            self.impw.ui.sfileloc.setText(self.filelocPreview[0])
+        except Exception as Argument:
+            self.genLogforException(Argument)
     
     def showPreviewDf(self):
-        model = pandasModel(self.impw.df)
-        self.view.setModel(model)
-        self.view.resize(800, 600)
-        self.dfPrevDlg.show()
+        try:
+            self.impw.df=self.xyzdatagenerator(self.filelocPreview[0],addmode='single')[3][0]
+            model = pandasModel(self.impw.df)
+            self.view.setModel(model)
+            self.view.resize(800, 600)
+            self.dfPrevDlg.show()
+        except Exception as Argument:
+            self.genLogforException(Argument)
         
     def loadDefimpBtn(self):
         #DataDir = getResourcePath("prs")
         DataDir = self.makeFolderinDocuments('Instrument Presets')
         prPath = DataDir / 'presets_default.txt'
+        self.impw.ui.presetloc.setText(str(prPath))
         self.impw_list=np.loadtxt(prPath, delimiter = " ",dtype=str).tolist()
         if self.impw_list==[]:
             prnames=[]
@@ -2546,12 +2554,18 @@ class AppWindow(QDialog):
         self.ui.listprefs_main.clear()
         self.impw.ui.listprefs.addItems(prnames)
         self.ui.listprefs_main.addItems(prnames)
+        try:
+            self.defPreset = self.impw_list[-1]
+        except Exception as Argument:
+            self.defPreset = 'XY-column'
+            self.genLogforException(Argument)
         self.prefimp()
         self.prefimp_main()
     def loadIntimpBtn(self):
         DataDir = getResourcePath("prs")
         #DataDir = self.makeFolderinDocuments('Instrument Presets')
-        prPath = DataDir / 'presets.txt'
+        prPath = DataDir / 'presets_default.txt'
+        self.impw.ui.presetloc.setText('presets_default.txt')
         self.impw_list=np.loadtxt(prPath, delimiter = " ",dtype=str).tolist()
         if self.impw_list==[]:
             prnames=[]
@@ -2562,13 +2576,19 @@ class AppWindow(QDialog):
         self.ui.listprefs_main.clear()
         self.impw.ui.listprefs.addItems(prnames)
         self.ui.listprefs_main.addItems(prnames)
+        try:
+            self.defPreset = self.impw_list[-1]
+        except Exception as Argument:
+            self.defPreset = 'XY-column'
+            self.genLogforException(Argument)
         self.prefimp()
         self.prefimp_main()
     def loadimpBtn(self):
         try:
             #DataDir = getResourcePath("prs")
-            DataDir = self.makeFolderinDocuments('Instrument Presets')
-            prPath = DataDir / 'presets_default.txt'
+            #DataDir = self.makeFolderinDocuments('Instrument Presets')
+            #prPath = DataDir / 'presets_default.txt'
+            prPath = self.impw.ui.presetloc.text()
             self.impw_list=np.loadtxt(prPath, delimiter = " ",dtype=str).tolist()
             if self.impw_list==[]:
                 prnames=[]
@@ -2579,10 +2599,17 @@ class AppWindow(QDialog):
             self.ui.listprefs_main.clear()
             self.impw.ui.listprefs.addItems(prnames)
             self.ui.listprefs_main.addItems(prnames)
+            try:
+                self.defPreset = self.impw_list[-1]
+            except Exception as Argument:
+                self.defPreset = 'XY-column'
+                self.genLogforException(Argument)
             self.prefimp()
             self.prefimp_main()
         except Exception as Argument:
             self.genLogforException(Argument)
+            self.loadIntimpBtn()
+            self.showPopInfo('Select preset location')
     def prefimp_main(self):
         ind=self.impw.ui.listprefs.findText(self.ui.listprefs_main.currentText())
         self.impw.ui.listprefs.setCurrentIndex(ind)
@@ -2788,16 +2815,25 @@ class AppWindow(QDialog):
         self.impw.ui.listprefs.removeItem(self.impw.ui.listprefs.currentIndex())
         
     def savePresBtn(self):
-        filter=''.join(['txt','(*','.txt',')'])
-        qfdlg=QFileDialog()
-        qfdlg.setFileMode(QFileDialog.AnyFile)
-        newpresfile = qfdlg.getSaveFileName(self, None, "Create New File",filter)
-        np.savetxt(newpresfile[0],self.impw_list, delimiter = " ",fmt='%s')
+        self.impw_list.append(self.impw.ui.listprefs.currentText()) #This will also add presets file what user preferred default preset is
+        try:
+            filter=''.join(['txt','(*','.txt',')'])
+            qfdlg=QFileDialog()
+            qfdlg.setFileMode(QFileDialog.AnyFile)
+            newpresfile = qfdlg.getSaveFileName(self, None, "Create New File",filter)
+            np.savetxt(newpresfile[0],self.impw_list, delimiter = " ",fmt='%s')
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def saveDefPresetBtn(self):
-        DataDir = getResourcePath("prs")
-        DataDir = self.makeFolderinDocuments('Instrument Presets')
-        presetPath = DataDir/'presets_default.txt'
-        np.savetxt(presetPath,self.impw_list, delimiter = " ",fmt='%s')
+        #DataDir = getResourcePath("prs")
+        self.impw_list.append(self.impw.ui.listprefs.currentText()) 
+        try:
+            DataDir = self.makeFolderinDocuments('Instrument Presets')
+            presetPath = DataDir/'presets_default.txt'
+            np.savetxt(presetPath,self.impw_list, delimiter = " ",fmt='%s')
+            self.impw.ui.presetloc.setText(str(presetPath))
+        except Exception as Argument:
+            self.genLogforException(Argument)
     # def copyInternalPreset(self):
     #     internalDir = getResourcePath('prs')
     #     internalPresetPath = internalDir / 'presets.txt'
@@ -2890,7 +2926,7 @@ class AppWindow(QDialog):
         foldnames=[]
         dflist=[]
         
-        if dends=='.csv' or dends=='.txt' or dends=='.dat' or dends=='.xlsx':
+        if dends=='.csv' or dends=='.txt' or dends=='.dat':
             if addmode=="multiple":
                 for file in os.listdir(filesloc):
                     if file.endswith(dends):
