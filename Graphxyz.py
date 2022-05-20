@@ -539,18 +539,77 @@ class AppWindow(QDialog):
                 for frames in widgetFrame:
                     frames.setVisible(True)
     def figHiderShower(self,widgetFrame, mAction = None):
+        mainWindowToResize = self.app.activeWindow()
         if not mAction.isChecked():
-            widgetFrame.setVisible(False)
             # if widgetFrame==self.ui.frame2D:
             #     self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()/2),self.app.focusWidget().geometry().height())
             # if widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
             #     self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
+            
+            #Width adjustments:
+            if mAction==self.figure2D and not self.figureDyn.isChecked() and not self.figureSpec.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().width()/2)
+                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+            elif mAction==self.figure2D and not self.figureDyn.isChecked() and self.figureSpec.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().width()/2)
+                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+            elif mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().width()/2)
+                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+            elif mAction==self.figureDyn and not self.figure2D.isChecked() and self.figureSpec.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().width()/2)
+                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+            elif mAction==self.figureSpec and not self.figure2D.isChecked() and self.figureDyn.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().width()/2)
+                mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
+            
+            #Height adjustments:
+            elif mAction==self.figureDyn and not self.figure2D.isChecked() and not self.figureSpec.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().height()/2)
+                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            elif mAction==self.figureDyn and self.figure2D.isChecked() and not self.figureSpec.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().height()/2)
+                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            elif mAction==self.figureSpec and not self.figure2D.isChecked() and not self.figureDyn.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().height()/2)
+                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            elif mAction==self.figureSpec and self.figure2D.isChecked() and not self.figureDyn.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().height()/2)
+                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            widgetFrame.setVisible(False)
         else:
+            if mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), QApplication.desktop().geometry().width() )
+                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+            elif mAction==self.figure2D and not self.figureDyn.isChecked() and self.figureSpec.isChecked():
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), QApplication.desktop().geometry().width() )
+                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+            elif mAction==self.figure2D and not self.figureDyn.isChecked() and not self.figureSpec.isChecked():
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), QApplication.desktop().geometry().width() )
+                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+                
+            elif mAction==self.figureDyn and not self.figure2D.isChecked() and self.figureSpec.isChecked():
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), QApplication.desktop().geometry().width() )
+                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+            elif mAction==self.figureSpec and not self.figure2D.isChecked() and self.figureDyn.isChecked():
+                resizeTo=min( int(mainWindowToResize.geometry().width()*2), QApplication.desktop().geometry().width() )
+                mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
+            
+            #Height adjustments:
+            elif mAction==self.figureDyn and not self.figure2D.isChecked() and not self.figureSpec.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().height()*2)
+                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            elif mAction==self.figureDyn and self.figure2D.isChecked() and not self.figureSpec.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().height()*2)
+                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            elif mAction==self.figureSpec and not self.figure2D.isChecked() and not self.figureDyn.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().height()*2)
+                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
+            elif mAction==self.figureSpec and self.figure2D.isChecked() and not self.figureDyn.isChecked():
+                resizeTo=int(mainWindowToResize.geometry().height()*2)
+                mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
             widgetFrame.setVisible(True)
-            # if widgetFrame==self.ui.frame2D:
-            #     self.app.focusWidget().resize(int(self.app.focusWidget().geometry().width()*2),self.app.focusWidget().geometry().height())
-            # elif widgetFrame==self.ui.frameSpec and not self.figureDyn.isChecked():
-            #     self.app.focusWidget().resize(self.app.focusWidget().geometry().height(),min(int(self.app.focusWidget().geometry().height()/2),int(QApplication.desktop().geometry().height())))
+            self.plotControlsAction.setChecked(True)
     def hideAllViews(self):
         for action in self.views.actions():
             action.setChecked(False)
