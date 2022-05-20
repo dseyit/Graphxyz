@@ -1,3 +1,0 @@
-XY-row,XY-column
-row,1,1,1,row,2,1,1,comma,csv,xy,0,0,not-flipped,Wavelength(nm),Intensity(a.u.),Intensity(a.u.),x-Exist,y-Exist
-col,1,1,1,col,1,2,1,comma,csv,xy,0,0,not-flipped,Wavelength(nm),Intensity(a.u.),Intensity(a.u.),x-Exist,y-Exist
