@@ -1042,41 +1042,43 @@ class AppWindow(QDialog):
             filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
             filesloc = getResourcePath(filesloc)
             datfoldnames=self.xyzdatagenerator(filesloc)
+            print(datfoldnames)
             data_names=datfoldnames[1]
             fold_names=datfoldnames[2]
             fold_data_names=[]
-            for fi in range(len(data_names)):
-                fold_data_names.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
-            fold_data_names.sort()
-            self.ui.dataBox.clear()
-            self.ui.dataBox.addItems(fold_data_names)
-            if self.importTypes.checkedAction().text()=='Folder' or self.importTypes.checkedAction().text()=='Folders':
-                self.d=datfoldnames[0]
-            elif self.importTypes.checkedAction().text()=='Files':
-                self.d=self.xyzdatagenerator(filesloc,addmode='single')[0]
-            if self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
-                self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
-            elif not self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
-                self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
-            self.plotControlsAction.setChecked(True)
-            #self.figHiderShower(self.ui.frame2D, mAction = self.figure2D)
-            #self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
-            #self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
-            # if self.impw.ui.xyz.isChecked():
-            #     self.figure2D.setChecked(True)
-            #     self.figureDyn.setChecked(True)
-            #     self.figureSpec.setChecked(True)
-            # else:
-            #     self.figureDyn.setChecked(True)
+            if not data_names == []:
+                for fi in range(len(data_names)):
+                    fold_data_names.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
+                fold_data_names.sort()
+                self.ui.dataBox.clear()
+                self.ui.dataBox.addItems(fold_data_names)
+                if self.importTypes.checkedAction().text()=='Folder' or self.importTypes.checkedAction().text()=='Folders':
+                    self.d=datfoldnames[0]
+                elif self.importTypes.checkedAction().text()=='Files':
+                    self.d=self.xyzdatagenerator(filesloc,addmode='single')[0]
+                if self.impw.ui.xyz.isChecked() and not self.d=={}:
+                    self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+                    self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+                    self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+                    self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+                elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
+                    self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+                    self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+                    self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+                    self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+                self.plotControlsAction.setChecked(True)
+                #self.figHiderShower(self.ui.frame2D, mAction = self.figure2D)
+                #self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
+                #self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
+                # if self.impw.ui.xyz.isChecked():
+                #     self.figure2D.setChecked(True)
+                #     self.figureDyn.setChecked(True)
+                #     self.figureSpec.setChecked(True)
+                # else:
+                #     self.figureDyn.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
-            self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
+            self.showPopInfo('Make sure that the data loaded with correct preset! Folder might be empty!',durationToShow=3, color = 'red')
     def addBtn(self):
         try:
             self.showPopInfo("Adding folder...", durationToShow = 1.5)
@@ -1092,30 +1094,27 @@ class AppWindow(QDialog):
             data_names=datfoldnames[1]
             fold_names=datfoldnames[2]
             fold_data_names_temp=[]
-            for fi in range(len(data_names)):
-                fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
-            fold_data_names_temp.sort()
-            self.ui.dataBox.addItems(fold_data_names_temp)
-            try:
+            if not data_names == []:
+                for fi in range(len(data_names)):
+                    fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
+                fold_data_names_temp.sort()
+                self.ui.dataBox.addItems(fold_data_names_temp)
                 ind=self.ui.dataBox.findText(fold_data_names_temp[0])
-            except Exception as Argument:
-                self.genLogforException(Argument)
-                ind=0
-            self.ui.dataBox.setCurrentIndex(ind)
-            dtemp=datfoldnames[0]
-            self.d={**self.d, **dtemp}
-            if self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
-                self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
-            elif not self.impw.ui.xyz.isChecked():
-                self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
-                self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
-            #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
-            self.plotControlsAction.setChecked(True)
+                self.ui.dataBox.setCurrentIndex(ind)
+                dtemp=datfoldnames[0]
+                self.d={**self.d, **dtemp}
+                if self.impw.ui.xyz.isChecked() and not self.d=={}:
+                    self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+                    self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+                    self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+                    self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+                elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
+                    self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+                    self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+                    self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+                    self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+                #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
+                self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
             self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red')
@@ -1136,25 +1135,26 @@ class AppWindow(QDialog):
                 data_names=datfoldnames[1]
                 fold_names=datfoldnames[2]
                 fold_data_names_temp=[]
-                for fi in range(len(data_names)):
-                    fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
-                fold_data_names_temp.sort()
-                self.ui.dataBox.addItems(fold_data_names_temp)
-                dtemp=datfoldnames[0]
-                #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
-                self.d={**self.d, **dtemp}
-            try:
+                if not data_names == []:
+                    for fi in range(len(data_names)):
+                        fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
+                    fold_data_names_temp.sort()
+                    self.ui.dataBox.addItems(fold_data_names_temp)
+                    dtemp=datfoldnames[0]
+                    #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
+                    self.d={**self.d, **dtemp}
+            if not fold_data_names_temp == []:
                 ind=self.ui.dataBox.findText(fold_data_names_temp[0])
-            except Exception as Argument:
-                self.genLogforException(Argument)
-                ind=0
+            else:
+                ind = 0
             self.ui.dataBox.setCurrentIndex(ind)
-            if self.impw.ui.xyz.isChecked():
+            
+            if self.impw.ui.xyz.isChecked() and not self.d=={}:
                 self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
                 self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
                 self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
                 self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
-            elif not self.impw.ui.xyz.isChecked():
+            elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
                 self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
                 self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
                 self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
@@ -4849,7 +4849,7 @@ class AppWindow(QDialog):
         # durationToShow = arr[1]
         # locationToShow = arr[2]
         uisize = self.mbar.mapToGlobal(QPoint(0, 0))
-        locationToShow = [uisize.x()+self.mbar.geometry().width()/2,uisize.y()+self.mbar.geometry().height()/4]
+        locationToShow = [int(uisize.x()+self.mbar.geometry().width()/2),int(uisize.y()+self.mbar.geometry().height()/4)]
 
         start = time.time()
         testlabel = QLabel()
