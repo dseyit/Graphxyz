@@ -1014,6 +1014,26 @@ class AppWindow(QDialog):
                 self.xyzmaker.ui.addGrButton.setEnabled(False)
         except Exception as Argument:
             self.genLogforException(Argument)
+    def cleanBtn(self):
+        self.ui.dataBox.clear()
+        self.ui.filesLoc.clear()
+        self.d=dict()
+        self.ui.addButton.setEnabled(False)
+        self.ui.addallButton.setEnabled(False)
+        self.ui.refreshButton.setEnabled(False)
+        
+        self.addoneAction.setEnabled(False)
+        self.addallAction.setEnabled(False)
+        self.loadAction.setEnabled(False)
+        self.plotControlsAction.setChecked(False)
+    def cleanGrBtn(self):
+        self.xyzmaker.ui.dataGrBox.clear()
+        self.xyzmaker.ui.GrLoc.clear()
+        self.xyzmaker.ui.xGrList.clear()
+        self.xyzmaker.ui.dataGrList.clear()
+        self.xyzmaker.ui.dataGenList.clear()
+        self.dGr=dict()
+        self.dGrtemp=dict()
     def refreshBtn(self):
         try:
             self.showPopInfo("Loading files...", durationToShow = 1.5)
@@ -1028,7 +1048,7 @@ class AppWindow(QDialog):
             fold_data_names.sort()
             self.ui.dataBox.clear()
             self.ui.dataBox.addItems(fold_data_names)
-            if self.importTypes.checkedAction().text()=='Folder':
+            if self.importTypes.checkedAction().text()=='Folder' or self.importTypes.checkedAction().text()=='Folders':
                 self.d=datfoldnames[0]
             elif self.importTypes.checkedAction().text()=='Files':
                 self.d=self.xyzdatagenerator(filesloc,addmode='single')[0]
@@ -1055,26 +1075,6 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
             self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
-    def cleanBtn(self):
-        self.ui.dataBox.clear()
-        self.ui.filesLoc.clear()
-        self.d=dict()
-        self.ui.addButton.setEnabled(False)
-        self.ui.addallButton.setEnabled(False)
-        self.ui.refreshButton.setEnabled(False)
-        
-        self.addoneAction.setEnabled(False)
-        self.addallAction.setEnabled(False)
-        self.loadAction.setEnabled(False)
-        self.plotControlsAction.setChecked(False)
-    def cleanGrBtn(self):
-        self.xyzmaker.ui.dataGrBox.clear()
-        self.xyzmaker.ui.GrLoc.clear()
-        self.xyzmaker.ui.xGrList.clear()
-        self.xyzmaker.ui.dataGrList.clear()
-        self.xyzmaker.ui.dataGenList.clear()
-        self.dGr=dict()
-        self.dGrtemp=dict()
     def addBtn(self):
         try:
             self.showPopInfo("Adding folder...", durationToShow = 1.5)
@@ -1094,9 +1094,14 @@ class AppWindow(QDialog):
                 fold_data_names_temp.append('     /'.join([data_names[fi],fold_names[fi],self.ui.listprefs_main.currentText()]))
             fold_data_names_temp.sort()
             self.ui.dataBox.addItems(fold_data_names_temp)
-            
-            ind=self.ui.dataBox.findText(fold_data_names_temp[0])
+            try:
+                ind=self.ui.dataBox.findText(fold_data_names_temp[0])
+            except Exception as Argument:
+                self.genLogforException(Argument)
+                ind=0
             self.ui.dataBox.setCurrentIndex(ind)
+            dtemp=datfoldnames[0]
+            self.d={**self.d, **dtemp}
             if self.impw.ui.xyz.isChecked():
                 self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
                 self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
@@ -1107,12 +1112,11 @@ class AppWindow(QDialog):
                 self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
                 self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
                 self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
-            dtemp=datfoldnames[0]
             #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
-            self.d={**self.d, **dtemp}
             self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
+            self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red')
     def addallBtn(self):
         self.showPopInfo("Adding all folders...", durationToShow = 1.5)
         try:
@@ -1137,7 +1141,11 @@ class AppWindow(QDialog):
                 dtemp=datfoldnames[0]
                 #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
                 self.d={**self.d, **dtemp}
-            ind=self.ui.dataBox.findText(fold_data_names_temp[0])
+            try:
+                ind=self.ui.dataBox.findText(fold_data_names_temp[0])
+            except Exception as Argument:
+                self.genLogforException(Argument)
+                ind=0
             self.ui.dataBox.setCurrentIndex(ind)
             if self.impw.ui.xyz.isChecked():
                 self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
@@ -1152,6 +1160,7 @@ class AppWindow(QDialog):
             self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
+            self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red')
     def addGrBtn(self):
         try:
             filesloc=self.xyzmaker.ui.GrLoc.currentText().split('   -Import preset:')[0]
