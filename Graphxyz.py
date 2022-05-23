@@ -54,8 +54,6 @@ import math
 # except Exception as Argument:
 #     self.genLogforException(Argument)
 
-#This is test to see if my commits are counted
-
 appVersion = '0.3.1'
 
 def getResourcePath(relative_path):
