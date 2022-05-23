@@ -325,10 +325,6 @@ class AppWindow(QDialog):
         self.orPosts = self.getOrFontsPosts()[1]
         self.resizeUI(QApplication.screens()[0],QApplication.screens()[0]) #Resize UI to fit to the current window
         
-        npyDir = self.makeFolderinDocuments ('Saved Tabs')
-        npyPath = npyDir / 'reset'
-        self.saveBtn(npyPath, showPopInfo= False)#Renews reset file everytime it launches so reset becomes as intended, otherwise software update will require new reset file everytime
-        
         # self.loadDefBtn()
         # try:
         #     self.submitButtonPushed(noMessage=True)
@@ -338,6 +334,9 @@ class AppWindow(QDialog):
         #print(self.findChild(QMenuBar,"mbar"))
         
         self.show()
+        npyDir = self.makeFolderinDocuments ('Saved Tabs')
+        npyPath = npyDir / 'reset'
+        self.saveBtn(npyPath, showPopInfo= False)#Renews reset file everytime it launches so reset becomes as intended, otherwise software update will require new reset file everytime
     # def addWidgetToLoadList(self, widget, key):
     #     widget.setObjectName(key)
     #     self.listOfWidgetKeys.
@@ -529,12 +528,12 @@ class AppWindow(QDialog):
         self.figureDyn = self.views.addAction("Left figure")
         self.figureDyn.setCheckable(True)
         self.figureDyn.setChecked(False)
-        self.figureDyn.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
+        self.figureDyn.triggered.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
         
         self.figureSpec = self.views.addAction("Right figure")
         self.figureSpec.setCheckable(True)
         self.figureSpec.setChecked(False)
-        self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
+        self.figureSpec.triggered.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
         
         return mbar
     def widgetHiderShower(self, widgetFrame, mAction = None):
@@ -1049,7 +1048,6 @@ class AppWindow(QDialog):
             filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
             filesloc = getResourcePath(filesloc)
             datfoldnames=self.xyzdatagenerator(filesloc)
-            print(datfoldnames)
             data_names=datfoldnames[1]
             fold_names=datfoldnames[2]
             fold_data_names=[]
@@ -1830,6 +1828,14 @@ class AppWindow(QDialog):
                     self.xrightlb='X'
             self.fitter.setEnabled(True)
       
+    def customAxisClear(self, ax):
+        ax.set_prop_cycle(None)
+        if not ax.get_legend()==None:
+            ax.get_legend().remove()
+        if not ax.get_title()=='':
+            ax.set_title('')
+        for artist in ax.lines + ax.collections:
+            artist.remove()
     def getarray(self,fromlines):
         noofddyn=(len(fromlines)-0)
         xlenarr=[]
@@ -2480,10 +2486,20 @@ class AppWindow(QDialog):
             self.fxyValue.setText('1240/x')
             self.flzcb.setText('f(y)')
             self.frzcb.setText('f(y)')
+            self.fxyAction.setText("f(x)")
+            self.fzAction.setText("f(y)")
+            self.ySliceAction.setVisible(False)
+            self.xSliceAction.setVisible(False)
 
             self.figure2D.setChecked(False)
+            self.frame2D.setVisible(False)
+            
             self.figureDyn.setChecked(True)
+            self.frameDyn.setVisible(True)
+            
             self.figureSpec.setChecked(True)
+            self.frameSpec.setVisible(True)
+            
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
@@ -2562,10 +2578,22 @@ class AppWindow(QDialog):
             self.fxyValue.setText('x-0.1')
             self.flzcb.setText('f(z)')
             self.frzcb.setText('f(z)')
+            self.fxyAction.setText("f(x) and f(y)")
+            self.fzAction.setText("f(z)")
+            self.ySliceAction.setVisible(True)
+            self.xSliceAction.setVisible(True)
+            
+            #self.ySliceAction.setEnabled(True)
+            #self.xSliceAction.setEnabled(True)
             
             self.figure2D.setChecked(True)
+            self.frame2D.setVisible(True)
+            
             self.figureDyn.setChecked(True)
+            self.frameDyn.setVisible(True)
+            
             self.figureSpec.setChecked(True)
+            self.frameSpec.setVisible(True)
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
@@ -2640,6 +2668,10 @@ class AppWindow(QDialog):
             self.fxyValue.setText('1240/x')
             self.flzcb.setText('f(y)')
             self.frzcb.setText('f(y)')
+            
+            #self.ySliceAction.setEnabled(False)
+            #self.xSliceAction.setEnable(False)
+            
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
@@ -4525,7 +4557,7 @@ class AppWindow(QDialog):
             for menu in templist:
                 temp=list_toload[k]
                 actsList = menu.actions()
-                for i in range(len(actsList)):
+                for i in range(len(temp)):
                     #print([actsList[i].text(),temp[i]])
                     actsList[i].setChecked(temp[i])
                 k=k+1
@@ -4538,16 +4570,27 @@ class AppWindow(QDialog):
                 self.showPopInfo('Successfully loaded!',durationToShow=1.5, color = 'green')
         except Exception as Argument:
             self.genLogforException(Argument)
-            self.showPopInfo('Loading issue. Partially loaded.',durationToShow=1.5, color = 'orange')
+            if showPopInfo:
+                self.showPopInfo('Loading issue. Partially loaded.',durationToShow=1.5, color = 'orange')
         
     def resetBtn(self):
         #DataDir = getResourcePath("/Users/seyitliyev/Desktop/My Drive/PhD - NCSU/PhD Projects/Python/PyInstaller_pack/Graphxyz_clean/src/data")
         presetsDir = self.makeFolderinDocuments('Saved Tabs')
         #presetsDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'/'Saved Tabs'
         #presetsDir = getResourcePath("npys")
+        # self.ax2D.clear()
+        # self.axdyn.clear()
+        # self.axspec.clear()
+        # self.m2D.draw()
+        # self.mdyn.draw()
+        # self.mspec.draw()
+        #self.customAxisClear(self.axdyn)
+        #self.axdyn.clear()
         npyPath = presetsDir / 'reset.npy'
-        self.loadBtn(npyPath,showPopInfo = False)
-        self.hideAllViews()
+        self.loadBtn(npyPath,showPopInfo=False, needLoaded=False)
+        self.modechanged()
+        self.showPopInfo('Successfully reset!',durationToShow=1.5, color = 'green')
+        #self.hideAllViews()
     def loadDefBtn(self):
         try:
             #presetsDir = getResourcePath("npys")
@@ -4914,7 +4957,7 @@ class AppWindow(QDialog):
         eff = QGraphicsOpacityEffect()
         testlabel.setGraphicsEffect(eff)
         a = QPropertyAnimation(eff,b"opacity")
-        a.setDuration(durationToShow*1000*3)
+        a.setDuration(int(durationToShow*1000*3))
         a.setStartValue(1)
         a.setEndValue(0.2)
         a.setEasingCurve(QEasingCurve.OutBack)
