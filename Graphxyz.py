@@ -52,7 +52,9 @@ import math
 
 # exception shortcut:
 # except Exception as Argument:
-#     self.genLogforException(Argument)    
+#     self.genLogforException(Argument)
+
+appVersion = '0.3.1'
 
 def getResourcePath(relative_path):
     rel_path = pathlib.Path(relative_path)
@@ -5639,7 +5641,7 @@ class MainWindow(QMainWindow):
     def aboutMenuPop (self):
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Information)
-        msgText = ''.join(["<FONT COLOR='#800000'>Graphx-y-z</FONT> <br> A tool for rapid scientific plots and analysis <br><br> Copyright © 2020-",datetime.now(). strftime("%Y"),'<br><br> All rights reserved by Dovletgeldi Seyitliyev','<br> Distributed under <a href="https://opensource.org/licenses/MIT"> MIT licence </a>'])
+        msgText = ''.join(["<FONT COLOR='#800000'>Graphx-y-z</FONT>"," <br> A tool for rapid scientific plots and analysis",'<br><br>Version: ',appVersion,"<br><br> Copyright © 2020-",datetime.now(). strftime("%Y"),'<br><br> All rights reserved by Dovletgeldi Seyitliyev','<br> Distributed under <a href="https://opensource.org/licenses/MIT"> MIT licence </a>'])
         msgBox.setText(msgText)
         msgBox.setWindowTitle("Warning!")
         msgBox.exec()
