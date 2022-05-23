@@ -11,7 +11,7 @@ import platform
 import csv
 import pickle
 import ast
-from PyQt5.QtWidgets import QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
+from PyQt5.QtWidgets import QAction, QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
 from PyQt5 import QtWidgets
 import matplotlib
 import pandas as pd
@@ -76,6 +76,7 @@ class AppWindow(QDialog):
         
         # This will add menubar to each tab of the application
         self.mbar = self.menuAdder()
+        #self.mbar.setObjectName("tabMenuBar")
         self.mbar.setMaximumHeight(50)
         self.mbar.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,QtWidgets.QSizePolicy.Maximum)
         
@@ -326,7 +327,7 @@ class AppWindow(QDialog):
         
         npyDir = self.makeFolderinDocuments ('Saved Tabs')
         npyPath = npyDir / 'reset'
-        self.saveBtn(npyPath) #Renews reset file everytime it launches so reset becomes as intended, otherwise software update will require new reset file everytime
+        self.saveBtn(npyPath, showPopInfo= False)#Renews reset file everytime it launches so reset becomes as intended, otherwise software update will require new reset file everytime
         
         # self.loadDefBtn()
         # try:
@@ -334,7 +335,12 @@ class AppWindow(QDialog):
         # except Exception as Argument:
         #     self.genLogforException(Argument)
         
+        #print(self.findChild(QMenuBar,"mbar"))
+        
         self.show()
+    # def addWidgetToLoadList(self, widget, key):
+    #     widget.setObjectName(key)
+    #     self.listOfWidgetKeys.
     def makeFolderinDocuments(self, foldName): 
         foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'
         os.makedirs(foldDir, exist_ok = True)
@@ -393,6 +399,7 @@ class AppWindow(QDialog):
         clearList.triggered.connect(self.clearLists)
         dataMenu.addSeparator()
         self.dataExporterAction = dataMenu.addAction("Export data")
+        self.dataExporterAction.setChecked(True)
         self.dataExporterAction.triggered.connect(self.dataExporter)
         
         self.addTab=tabs.addAction("New Tab")
@@ -590,34 +597,34 @@ class AppWindow(QDialog):
             try:
                 #Width Adjustments
                 if mAction==self.figure2D and self.figureDyn.isChecked() and not self.figureSpec.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*1) )
                     mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
                 elif mAction==self.figure2D and not self.figureDyn.isChecked() and self.figureSpec.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*1) )
                     mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
                 elif mAction==self.figure2D and not self.figureDyn.isChecked() and not self.figureSpec.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*1) )
                     mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
                     
                 elif mAction==self.figureDyn and not self.figure2D.isChecked() and self.figureSpec.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*1) )
                     mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
                 elif mAction==self.figureSpec and not self.figure2D.isChecked() and self.figureDyn.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().width()*2), int(self.currWindowSize.width()*1) )
                     mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
                 
                 #Height adjustments:
                 elif mAction==self.figureDyn and not self.figure2D.isChecked() and not self.figureSpec.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*1) )
                     mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
                 elif mAction==self.figureDyn and self.figure2D.isChecked() and not self.figureSpec.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*1) )
                     mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
                 elif mAction==self.figureSpec and not self.figure2D.isChecked() and not self.figureDyn.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*1) )
                     mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
                 elif mAction==self.figureSpec and self.figure2D.isChecked() and not self.figureDyn.isChecked():
-                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*0.8) )
+                    resizeTo=min( int(mainWindowToResize.geometry().height()*2), int(self.currWindowSize.height()*1) )
                     mainWindowToResize.resize(mainWindowToResize.geometry().width(),resizeTo)
             except Exception as Argument:
                 self.genLogforException(Argument)
@@ -625,7 +632,7 @@ class AppWindow(QDialog):
     def resizewhenTabChanged(self): #Adjust width when tab changed, #To change size when tab changed, experimental
         mainWindowToResize = self.app.activeWindow()
         if self.impw.ui.xyz.isChecked() or self.figureSpec.isChecked():
-            resizeTo=min(mainWindowToResize.geometry().width()*2, self.currWindowSize.width()*0.8 )
+            resizeTo=min(mainWindowToResize.geometry().width()*2, self.currWindowSize.width()*1 )
             mainWindowToResize.resize(resizeTo,mainWindowToResize.geometry().height())
         elif not self.impw.ui.xyz.isChecked():
             resizeTo=int(mainWindowToResize.geometry().width()/2)
@@ -4409,45 +4416,137 @@ class AppWindow(QDialog):
     def py2tex(self,expr):
         pt = ast.parse(expr)
         return LatexVisitor().visit(pt.body[0].value)
-    def saveBtn(self, nameToSave = '', needSaved = True): #need fix
-        list_tosave=[]
-        
-        templist=self.ui.controlwindowframe.findChildren(QLineEdit)
-        for widgets in templist:
-            list_tosave.append(widgets.text())
-        
-        templist=self.ui.controlwindowframe.findChildren(QCheckBox)
-        for widgets in templist:
-            list_tosave.append(str(widgets.isChecked()))
-        
-        templist=self.ui.controlwindowframe.findChildren(QRadioButton)
-        for widgets in templist:
-            list_tosave.append(str(widgets.isChecked()))
-        
-        templist=self.ui.controlwindowframe.findChildren(QComboBox)
-        for widgets in templist:
-            list_tosave.append(widgets.currentText())
+    def saveBtn(self, nameToSave = '', needSaved = True, showPopInfo = True): #need fix
+        try:
+            list_tosave=[]
             
-        templist=self.ui.controlwindowframe.findChildren(QListWidget)
-        for widgets in templist:
-            temp=[]
-            for i in range(widgets.count()):
-                temp.append(widgets.item(i).text())
-            list_tosave.append(temp)
+            templist=self.ui.controlwindowframe.findChildren(QLineEdit)
+            for widgets in templist:
+                list_tosave.append(widgets.text())
+            
+            templist=self.ui.controlwindowframe.findChildren(QCheckBox)
+            for widgets in templist:
+                list_tosave.append(str(widgets.isChecked()))
+            
+            templist=self.ui.controlwindowframe.findChildren(QRadioButton)
+            for widgets in templist:
+                list_tosave.append(str(widgets.isChecked()))
+            
+            templist=self.ui.controlwindowframe.findChildren(QComboBox)
+            for widgets in templist:
+                list_tosave.append(widgets.currentText())
+                
+            templist=self.ui.controlwindowframe.findChildren(QListWidget)
+            for widgets in templist:
+                temp=[]
+                for i in range(widgets.count()):
+                    temp.append(widgets.item(i).text())
+                list_tosave.append(temp)
+            #self.menuFrame.findChildren(QMenu)[0].actions()[2].text()
+            
+            list_tosave.append(self.getitemsqc(self.ui.filesLoc))
+            list_tosave.append(self.ui.dataBox.currentText())
+            
+            templist=self.menuFrame.findChildren(QMenu)
+            for menu in templist:
+                temp=[]
+                for action in menu.actions():
+                    #print([action.text(),action.isChecked()])
+                    temp.append(action.isChecked())
+                list_tosave.append(temp)
+            
+            if showPopInfo:
+                self.showPopInfo('Successfully saved!',durationToShow=1.5, color = 'green')
+            if needSaved:
+                np.save(nameToSave,list_tosave)
+            else:
+                return list_tosave
+        except Exception as Argument:
+            self.genLogforException(Argument)
+            self.showPopInfo('Issue with saving! Check read-write permissions.',durationToShow=1.5, color = 'red')
+    
+    def loadBtn(self,datatoload, arrayLoadMode = False, needLoaded = True, showPopInfo = True):
+        try:
+            if arrayLoadMode:
+                list_toload = datatoload
+            else:
+                list_toload=np.load(datatoload,allow_pickle=True)
+            
+            k=0;
+            templist=self.ui.controlwindowframe.findChildren(QLineEdit)
+            for widgets in templist:
+                widgets.setText(list_toload[k])
+                k=k+1
+            
+            templist=self.ui.controlwindowframe.findChildren(QCheckBox)
+            for widgets in templist:
+                if list_toload[k]=='True':
+                    s=True
+                else:
+                    s=False
+                widgets.setChecked(s)
+                k=k+1
+            
+            templist=self.ui.controlwindowframe.findChildren(QRadioButton)
+            for widgets in templist:
+                if list_toload[k]=='True':
+                    s=True
+                else:
+                    s=False
+                    
+                widgets.setChecked(s)
+                k=k+1
+            
+            templist=self.ui.controlwindowframe.findChildren(QComboBox)
+            for widgets in templist:
+                widgets.setCurrentText(list_toload[k])
+                k=k+1
+            
+            templist=self.ui.controlwindowframe.findChildren(QListWidget)
+            for widgets in templist:
+                widgets.clear()
+                temp=list_toload[k]
+                for i in range(len(temp)):
+                    widgets.insertItem(i,temp[i])
+                k=k+1
+            self.ui.filesLoc.clear()
+            self.ui.dataBox.clear()
+            self.ui.filesLoc.addItems(list_toload[k])
+            k=k+1
+            self.prefimp_main()
+            if needLoaded:
+                self.addallBtn()
+            if self.ui.dataBox.count()!=0:
+                ind=self.ui.dataBox.findText(list_toload[k])
+                self.ui.dataBox.setCurrentIndex(ind)
+            k=k+1
+            
+            templist=self.menuFrame.findChildren(QMenu)
+            for menu in templist:
+                temp=list_toload[k]
+                actsList = menu.actions()
+                for i in range(len(actsList)):
+                    #print([actsList[i].text(),temp[i]])
+                    actsList[i].setChecked(temp[i])
+                k=k+1
+            
+            if self.ui.filesLoc.count()!=0:
+                self.ui.addButton.setEnabled(True)
+                self.ui.addallButton.setEnabled(True)
+                self.ui.refreshButton.setEnabled(True)
+            if showPopInfo:
+                self.showPopInfo('Successfully loaded!',durationToShow=1.5, color = 'green')
+        except Exception as Argument:
+            self.genLogforException(Argument)
+            self.showPopInfo('Loading issue. Partially loaded.',durationToShow=1.5, color = 'orange')
         
-        list_tosave.append(self.getitemsqc(self.ui.filesLoc))
-        list_tosave.append(self.ui.dataBox.currentText())
-        if needSaved:
-            np.save(nameToSave,list_tosave)
-        else:
-            return list_tosave
     def resetBtn(self):
         #DataDir = getResourcePath("/Users/seyitliyev/Desktop/My Drive/PhD - NCSU/PhD Projects/Python/PyInstaller_pack/Graphxyz_clean/src/data")
         presetsDir = self.makeFolderinDocuments('Saved Tabs')
         #presetsDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'/'Saved Tabs'
         #presetsDir = getResourcePath("npys")
         npyPath = presetsDir / 'reset.npy'
-        self.loadBtn(npyPath)
+        self.loadBtn(npyPath,showPopInfo = False)
         self.hideAllViews()
     def loadDefBtn(self):
         try:
@@ -4456,6 +4555,7 @@ class AppWindow(QDialog):
             npyPath = npyDir / 'default.npy'
             #npyPath = presetsDir / 'default.npy'
             self.loadBtn(npyPath)
+            self.submitButtonPushed()
         except Exception as Argument:
             self.genLogforException(Argument)
     def loadasBtn(self):
@@ -4478,6 +4578,7 @@ class AppWindow(QDialog):
             #presetsDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'/'Saved tabs'
             #npyPath = presetsDir / 'default.npy'
             self.loadBtn(folderLoc[0])
+            self.submitButtonPushed()
         except Exception as Argument:
             self.genLogforException(Argument)
     def saveasBtn(self):
@@ -4487,6 +4588,7 @@ class AppWindow(QDialog):
             #qfdlg.setFileMode(QFileDialog.AnyFile)
             npySave = qfdlg.getSaveFileName(self, None, "Create New File",filter)
             self.saveBtn(npySave[0])
+            self.submitButtonPushed()
         except Exception as Argument:
             self.genLogforException(Argument)
         #np.savetxt(newpresfile[0],self.impw_list, delimiter = " ",fmt='%s')
@@ -4495,63 +4597,6 @@ class AppWindow(QDialog):
         npyDir = self.makeFolderinDocuments ('Saved Tabs')
         npyPath = npyDir / 'default'
         self.saveBtn(npyPath)
-    def loadBtn(self,datatoload, arrayLoadMode = False, needLoaded = True):
-        if arrayLoadMode:
-            list_toload = datatoload
-        else:
-            list_toload=np.load(datatoload,allow_pickle=True)
-        
-        k=0;
-        templist=self.ui.controlwindowframe.findChildren(QLineEdit)
-        for widgets in templist:
-            widgets.setText(list_toload[k])
-            k=k+1
-        
-        templist=self.ui.controlwindowframe.findChildren(QCheckBox)
-        for widgets in templist:
-            if list_toload[k]=='True':
-                s=True
-            else:
-                s=False
-            widgets.setChecked(s)
-            k=k+1
-        
-        templist=self.ui.controlwindowframe.findChildren(QRadioButton)
-        for widgets in templist:
-            if list_toload[k]=='True':
-                s=True
-            else:
-                s=False
-                
-            widgets.setChecked(s)
-            k=k+1
-        
-        templist=self.ui.controlwindowframe.findChildren(QComboBox)
-        for widgets in templist:
-            widgets.setCurrentText(list_toload[k])
-            k=k+1
-        
-        templist=self.ui.controlwindowframe.findChildren(QListWidget)
-        for widgets in templist:
-            widgets.clear()
-            temp=list_toload[k]
-            for i in range(len(temp)):
-                widgets.insertItem(i,temp[i])
-            k=k+1
-        self.ui.filesLoc.clear()
-        self.ui.dataBox.clear()
-        self.ui.filesLoc.addItems(list_toload[k])
-        k=k+1
-        self.prefimp_main()
-        if needLoaded:
-            self.addallBtn()
-        if self.ui.dataBox.count()!=0:
-            ind=self.ui.dataBox.findText(list_toload[k])
-            self.ui.dataBox.setCurrentIndex(ind)
-        if self.ui.filesLoc.count()!=0:
-            self.ui.addButton.setEnabled(True)
-            self.ui.addallButton.setEnabled(True)
-            self.ui.refreshButton.setEnabled(True)
     def loadfitBtn(self): #needs fix, use pathlib
         list_toload=np.load(''.join([self.fitw.ui.dataloadname.text(),'.npy']),allow_pickle=True)
         k=0;
@@ -5529,7 +5574,7 @@ class TabWindow(QTabWidget):
         self.wdg.loadAction.triggered.connect(self.renameTab)
         self.wdg.impw.ui.listprefs.currentTextChanged.connect(self.renameTab_Main)
         self.wdg.fitter.triggered.connect(lambda wdg: self.addfitwdg(wdg=self.wdg.fitw))
-        #self.currentChanged.connect(self.tabChanged) Experimental
+        #self.currentChanged.connect(self.tabChanged) #Experimental
         self.lastaddedtab=self.wdg
         self.wndws.append(self.wdg)
         self.show()
