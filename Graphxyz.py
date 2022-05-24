@@ -3304,9 +3304,11 @@ class AppWindow(QDialog):
                         z=np.transpose(z)
                         x=np.transpose(x)
                         y=np.transpose(y)
-                    tempdata={'a':file_names[fi], 't':x, 'w':y, 'd':z}
+                    #tempdata={'a':file_names[fi], 't':x, 'w':y, 'd':z}
+                    tempdata={'a':'     /'.join([file_names[fi],foldnames[fi],self.ui.listprefs_main.currentText()]), 't':x, 'w':y, 'd':z}
                 else:
-                    tempdata={'a':file_names[fi], 'x':x, 'y':y}
+                    #tempdata={'a':file_names[fi], 'x':x, 'y':y}
+                    tempdata={'a':'     /'.join([file_names[fi],foldnames[fi],self.ui.listprefs_main.currentText()]), 'x':x, 'y':y}
                 
                 data_dict['     /'.join([file_names[fi],foldnames[fi],self.ui.listprefs_main.currentText()])]=tempdata
         return data_dict, file_names, foldnames,dflist
@@ -3415,8 +3417,18 @@ class AppWindow(QDialog):
             xyr[1]=self.fx(self.fxList.item(ind).text(),xyr[1])
         ax.set_xlim(np.nanmin([xyr[0],xyr[1]]),np.nanmax([xyr[0],xyr[1]]))
         if showleg and self.ui.graphsel.currentText()=='plot right':
+            if self.optsSpecW.needShortLeg.isChecked():
+                temp=self.legshorten(self.legendtext_spec)
+                self.legendtext_spec=temp[0]
+                temptitle=temp[1]
+                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
             ax.legend(self.legendtext_spec,framealpha=0.25)
         elif showleg and self.ui.graphsel.currentText()=='plot left':
+            if self.optsDynW.needShortLeg.isChecked():
+                temp=self.legshorten(self.legendtext_dyn)
+                self.legendtext_dyn=temp[0]
+                temptitle=temp[1]
+                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
             ax.legend(self.legendtext_dyn,framealpha=0.25)
         ax.set_ylim(np.nanmin(self.minmax_xy)-0.05*abs(np.nanmin(self.minmax_xy)),np.nanmax(self.minmax_xy)+0.05*abs(np.nanmax(self.minmax_xy)))
         ax.ticklabel_format(axis='y',style='scientific',scilimits=(-2,2))
@@ -3530,11 +3542,12 @@ class AppWindow(QDialog):
             ax.set_xlim(twr[0],twr[1])
             ax.set_ylim(np.nanmin(self.minmaxtd)-0.05*abs(np.nanmin(self.minmaxtd)),np.nanmax(self.minmaxtd)+0.05*abs(np.nanmax(self.minmaxtd)))
             if showleg:
-                temp=self.legshorten(self.legendtext_dyn)
-                self.legendtext_dyn=temp[0]
-                temptitle=' @'.join([temp[1],str(wt[0])])
-                temptitle=''.join([temptitle,'nm'])
-                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                if self.optsDynW.needShortLeg.isChecked():
+                    temp=self.legshorten(self.legendtext_dyn)
+                    self.legendtext_dyn=temp[0]
+                    temptitle=' @'.join([temp[1],str(wt[0])])
+                    temptitle=''.join([temptitle,'nm'])
+                    ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
                 ax.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
         elif plmd==2.2:
@@ -3582,15 +3595,17 @@ class AppWindow(QDialog):
                         line, =ax.plot(t, temp,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=self.ui.markerlsx.currentText())
                     self.linedyn_all.append(line)
                     templeg=' @'.join([d[nd[i]]['a'],str(wi)])
+                    #unit = axislable.split('(')[1].split(')')[0]
                     templeg=''.join([templeg,'nm'])
                     self.legendtext_dyn.append(templeg)
             ax.set_xlim(twr[0],twr[1])
             ax.set_ylim(np.nanmin(self.minmaxtd)-0.05*abs(np.nanmin(self.minmaxtd)),np.nanmax(self.minmaxtd)+0.05*abs(np.nanmax(self.minmaxtd)))
             if showleg:
-                temp=self.legshorten(self.legendtext_dyn)
-                self.legendtext_dyn=temp[0]
-                temptitle=temp[1]
-                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                if self.optsDynW.needShortLeg.isChecked():
+                    temp=self.legshorten(self.legendtext_dyn)
+                    self.legendtext_dyn=temp[0]
+                    temptitle=temp[1]
+                    ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
                 ax.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
     
@@ -3648,10 +3663,11 @@ class AppWindow(QDialog):
             ax.set_xlim(twr[0],twr[1])
             ax.set_ylim(np.nanmin(self.minmaxtd)-0.05*abs(np.nanmin(self.minmaxtd)),np.nanmax(self.minmaxtd)+0.05*abs(np.nanmax(self.minmaxtd)))
             if showleg:
-                temp=self.legshorten(self.legendtext_dyn)
-                self.legendtext_dyn=temp[0]
-                temptitle=temp[1]
-                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                if self.optsDynW.needShortLeg.isChecked():
+                    temp=self.legshorten(self.legendtext_dyn)
+                    self.legendtext_dyn=temp[0]
+                    temptitle=temp[1]
+                    ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
                 ax.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
     
@@ -3749,11 +3765,12 @@ class AppWindow(QDialog):
                 self.genLogforException(Argument)
             plt.show()
             if showleg and 'legendtext_spec' in self.__dict__:
-                temp=self.legshorten(self.legendtext_spec)
-                self.legendtext_spec=temp[0]
-                temptitle=' @'.join([temp[1],str(wt[0])])
-                temptitle=''.join([temptitle,'ps'])
-                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                if self.optsSpecW.needShortLeg.isChecked():
+                    temp=self.legshorten(self.legendtext_spec)
+                    self.legendtext_spec=temp[0]
+                    temptitle=' @'.join([temp[1],str(wt[0])])
+                    temptitle=''.join([temptitle,'ps'])
+                    ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
                 ax.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
         elif plmd==1.2:
@@ -3820,10 +3837,11 @@ class AppWindow(QDialog):
             ax.set_xlim(twr[2],twr[3])
             ax.set_ylim(min(self.minmax),max(self.minmax))
             if showleg:
-                temp=self.legshorten(self.legendtext_spec)
-                self.legendtext_spec=temp[0]
-                temptitle=temp[1]
-                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                if self.optsSpecW.needShortLeg.isChecked():
+                    temp=self.legshorten(self.legendtext_spec)
+                    self.legendtext_spec=temp[0]
+                    temptitle=temp[1]
+                    ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
                 ax.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
         elif plmd==1.5:
@@ -3876,10 +3894,11 @@ class AppWindow(QDialog):
             ax.set_xlim(twr[2],twr[3])
             ax.set_ylim(min(self.minmax),max(self.minmax))
             if showleg:
-                temp=self.legshorten(self.legendtext_spec)
-                self.legendtext_spec=temp[0]
-                temptitle=temp[1]
-                ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
+                if self.optsSpecW.needShortLeg.isChecked():
+                    temp=self.legshorten(self.legendtext_spec)
+                    self.legendtext_spec=temp[0]
+                    temptitle=temp[1]
+                    ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
                 ax.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
         elif plmd==0:
@@ -5306,6 +5325,7 @@ class optsWindow(QDialog):
             self.holdcb=QtWidgets.QCheckBox(self)
             self.auto_zlimcb=QtWidgets.QCheckBox(self)
             self.auto_xlimcb=QtWidgets.QCheckBox(self)
+            self.needShortLeg = QtWidgets.QCheckBox(self)
             
             self.auto_xlimcb.setChecked(True)
             self.auto_zlimcb.setChecked(True)
@@ -5331,6 +5351,7 @@ class optsWindow(QDialog):
                 self.semilogx.setText("semilog(X)")
                 self.auto_zlimcb.setText("Auto Adjust Limits: Y")
                 self.auto_xlimcb.setText("Auto Adjust Limits: X")
+            self.needShortLeg.setText("Short Legends")
             
             self.optlayout.addWidget(self.absz)
             self.optlayout.addWidget(self.flipz)
@@ -5339,6 +5360,7 @@ class optsWindow(QDialog):
             self.optlayout.addWidget(self.holdcb)
             self.optlayout.addWidget(self.auto_xlimcb)
             self.optlayout.addWidget(self.auto_zlimcb)
+            self.optlayout.addWidget(self.needShortLeg)
         else:
             self.mirrorX=QtWidgets.QCheckBox(self)
             self.mirrorX.setText("Mirror in X")
@@ -5697,10 +5719,12 @@ class MainWindow(QMainWindow):
         saveasAction = file.addAction("Save as...")
         saveasAction.triggered.connect(self.saveasProject)
         
-        helps = self.mbar.addMenu("Graphx-y-z")
-        aboutMe = helps.addAction(" About Graphx-y-z")
+        helps = self.mbar.addMenu("Graphxyz")
+        aboutMe = helps.addAction(" About Graphxyz")
         aboutMe.triggered.connect(self.aboutMenuPop)
-        helps.addAction(" Check for Update...")
+        #aboutMe.setMenuRole(QAction.AboutRole)
+        checkUpdate = helps.addAction(" Check for Update...")
+        #checkUpdate.setMenuRole(QAction.AboutRole)
         
         self.screenChanged.connect(lambda oldScreen,newScreen: self.tbw.wdg.resizeUI(oldScreen,newScreen))
         
