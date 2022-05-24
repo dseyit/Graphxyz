@@ -1115,16 +1115,16 @@ class AppWindow(QDialog):
                 self.ui.dataBox.setCurrentIndex(ind)
                 dtemp=datfoldnames[0]
                 self.d={**self.d, **dtemp}
-                if self.impw.ui.xyz.isChecked() and not self.d=={}:
-                    self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
-                    self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
-                    self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
-                    self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
-                elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
-                    self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
-                    self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
-                    self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
-                    self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+                # if self.impw.ui.xyz.isChecked() and not self.d=={}:
+                #     self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+                #     self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+                #     self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+                #     self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+                # elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
+                #     self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+                #     self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+                #     self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+                #     self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
                 #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
                 self.plotControlsAction.setChecked(True)
         except Exception as Argument:
@@ -1165,16 +1165,16 @@ class AppWindow(QDialog):
                 ind = 0
             self.ui.dataBox.setCurrentIndex(ind)
             
-            if self.impw.ui.xyz.isChecked() and not self.d=={}:
-                self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
-                self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
-                self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
-            elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
-                self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
-                self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
-                self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+            # if self.impw.ui.xyz.isChecked() and not self.d=={}:
+            #     self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+            #     self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+            #     self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+            #     self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+            # elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
+            #     self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+            #     self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+            #     self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+            #     self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
             self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
