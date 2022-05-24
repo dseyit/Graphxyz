@@ -3337,9 +3337,17 @@ class AppWindow(QDialog):
             if self.ui.graphsel.currentText()=='plot left':
                 y=y0[self.v2in(x0,xyrl[0]):(self.v2in(x0,xyrl[1])+1)]
                 x=x0[self.v2in(x0,xyrl[0]):(self.v2in(x0,xyrl[1])+1)]
+                if self.ui.fycb.isChecked():
+                    x=self.flx(self.fyList.item(ind).text(),x)
+                if self.ui.flzcb.isChecked():
+                    y=self.fly(self.flzList.item(ind).text(),y)
             elif self.ui.graphsel.currentText()=='plot right':
                 y=y0[self.v2in(x0,xyr[0]):(self.v2in(x0,xyr[1])+1)]
                 x=x0[self.v2in(x0,xyr[0]):(self.v2in(x0,xyr[1])+1)]
+                if self.ui.fxcb.isChecked():
+                    x=self.fx(self.fxList.item(ind).text(),x)
+                if self.ui.frzcb.isChecked():
+                    y=self.fry(self.frzList.item(ind).text(),y)
             
             if self.ui.bgdataCb.isChecked():
                 if self.plotModes.checkedAction().text()=="Matched with x and y" and not self.getitems(self.ui.bgdataList)[ind]=='0':
@@ -3371,15 +3379,6 @@ class AppWindow(QDialog):
                     tempsc=tempsc+y[self.v2in(x,ts)]
                 tempsc=tempsc/len(tscatter)
                 y=y-tempsc
-            
-            if self.ui.fycb.isChecked() and self.ui.graphsel.currentText()=='plot left':
-                x=self.flx(self.fyList.item(ind).text(),x)
-            elif self.ui.fxcb.isChecked() and self.ui.graphsel.currentText()=='plot right':
-                x=self.fx(self.fxList.item(ind).text(),x)
-            if self.ui.flzcb.isChecked() and self.ui.graphsel.currentText()=='plot left':
-                y=self.fly(self.flzList.item(ind).text(),y)
-            elif self.ui.frzcb.isChecked() and self.ui.graphsel.currentText()=='plot right':
-                y=self.fry(self.frzList.item(ind).text(),y)
             
             if normatx:
                 if xnorm==0:
