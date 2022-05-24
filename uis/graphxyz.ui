@@ -637,7 +637,7 @@
                     </property>
                    </widget>
                   </item>
-                  <item row="2" column="2" colspan="2">
+                  <item row="2" column="2">
                    <widget class="QPushButton" name="refreshButton">
                     <property name="sizePolicy">
                      <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
@@ -671,6 +671,46 @@
                     </property>
                     <property name="text">
                      <string>Load</string>
+                    </property>
+                    <property name="autoDefault">
+                     <bool>false</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item row="2" column="3">
+                   <widget class="QPushButton" name="refreshAllButton">
+                    <property name="sizePolicy">
+                     <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                      <horstretch>0</horstretch>
+                      <verstretch>0</verstretch>
+                     </sizepolicy>
+                    </property>
+                    <property name="minimumSize">
+                     <size>
+                      <width>0</width>
+                      <height>0</height>
+                     </size>
+                    </property>
+                    <property name="maximumSize">
+                     <size>
+                      <width>200</width>
+                      <height>32</height>
+                     </size>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Arial</family>
+                      <pointsize>13</pointsize>
+                     </font>
+                    </property>
+                    <property name="toolTip">
+                     <string>Load selected source</string>
+                    </property>
+                    <property name="styleSheet">
+                     <string notr="true">color: Blue;</string>
+                    </property>
+                    <property name="text">
+                     <string>Load all</string>
                     </property>
                     <property name="autoDefault">
                      <bool>false</bool>

@@ -92,6 +92,12 @@ class AppWindow(QDialog):
         # self.refreshButton.setStyleSheet(''.join(["color: Blue;\n","qproperty-icon: url(",loadBtnIcon,");\n","qproperty-iconSize: 18px"]))
         self.refreshButton.setIcon(refIcon)
         
+        loadBtnIcon = icnDir/'refresh.png'
+        loadBtnIcon = str (loadBtnIcon)
+        refIcon =QIcon(QPixmap(loadBtnIcon))
+        # self.refreshButton.setStyleSheet(''.join(["color: Blue;\n","qproperty-icon: url(",loadBtnIcon,");\n","qproperty-iconSize: 18px"]))
+        self.refreshAllButton.setIcon(refIcon)
+        
         self.ui.menuLayout.addWidget(self.mbar)
         #Initializing color panel parameters:
         self.leftcolor='#ffffff'
@@ -196,6 +202,7 @@ class AppWindow(QDialog):
         #Below are all signal connections:
         self.screenSizeChanged.connect(lambda newSize: self.resizeUI2(newSize))
         self.ui.refreshButton.clicked.connect(self.refreshBtn)
+        self.ui.refreshAllButton.clicked.connect(self.loadallBtn)
         self.ui.addButton.clicked.connect(self.addBtn)
         self.ui.addallButton.clicked.connect(self.addallBtn)
         self.ui.submitButton.clicked.connect(self.submitButtonPushed)
@@ -1123,7 +1130,9 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
             self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red')
-    def addallBtn(self):
+    def loadallBtn(self):
+        self.addallBtn(loadMode = True)
+    def addallBtn(self, loadMode=False):
         self.showPopInfo("Adding all folders...", durationToShow = 1.5)
         try:
             # if self.impw.ui.xyz.isChecked():
@@ -1132,7 +1141,9 @@ class AppWindow(QDialog):
             #     self.figureSpec.setChecked(True)
             # else:
             #     self.figureDyn.setChecked(True)
-            self.d=dict()
+            if loadMode:
+                self.ui.dataBox.clear()
+                self.d=dict()
             for i in range (self.filesLoc.count()):
                 filesloc=self.ui.filesLoc.itemText(i).split('   -Import preset:')[0]
                 filesloc = getResourcePath(filesloc)
