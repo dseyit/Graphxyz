@@ -1132,6 +1132,16 @@ class AppWindow(QDialog):
             self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red')
     def loadallBtn(self):
         self.addallBtn(loadMode = True)
+        if self.impw.ui.xyz.isChecked() and not self.d=={}:
+            self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+            self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+            self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+            self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+        elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
+            self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+            self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+            self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+            self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
     def addallBtn(self, loadMode=False):
         self.showPopInfo("Adding all folders...", durationToShow = 1.5)
         try:
