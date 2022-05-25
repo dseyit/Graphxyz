@@ -5726,6 +5726,7 @@ class MainWindow(QMainWindow):
         file=self.mbar.addMenu("File")
         
         self.newWindowAction = file.addAction("New Window (Experimental)")
+        self.newWindowAction.setEnabled(False)
         file.addSeparator()
         openAction = file.addAction("Open...")
         openAction.triggered.connect(self.loadasProject)
@@ -5915,7 +5916,7 @@ class MainWindow(QMainWindow):
 def openNewWindowApp(checked,app):
     #app = QApplication(sys.argv)
     wnd = MainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
-    wnd.newWindowAction.triggered.connect(lambda checked: openNewWindowApp(checked,app))
+    #wnd.newWindowAction.triggered.connect(lambda checked: openNewWindowApp(checked,app))
     wnd.raise_()
     #sys.exit(app.exec())
     
