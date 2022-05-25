@@ -38,6 +38,7 @@ from numpy import mod
 from numpy import linspace
 from scipy.optimize import curve_fit
 import math
+import requests # Used when app version is checked and to check if new version is available
 #import resources for windows this resources function needed to be defined in a file, could not find a way to import local modules
 
 # Run these to build for each platforms (cd to src folder)
@@ -55,6 +56,11 @@ import math
 #     self.genLogforException(Argument)
 
 appVersion = '0.3.4'
+appVersionText = ''.join(['Version ',appVersion])
+
+
+response = requests.get("https://api.github.com/repos/dseyit/Graphxyz/releases/latest")
+latestVersion = response.json()["name"]
 
 def getResourcePath(relative_path):
     rel_path = pathlib.Path(relative_path)
@@ -341,6 +347,10 @@ class AppWindow(QDialog):
         #print(self.findChild(QMenuBar,"mbar"))
         
         self.show()
+        
+        if not appVersionText == latestVersion:
+            self.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue')
+        
         npyDir = self.makeFolderinDocuments ('Saved Tabs')
         npyPath = npyDir / 'reset'
         self.saveBtn(npyPath, showPopInfo= False)#Renews reset file everytime it launches so reset becomes as intended, otherwise software update will require new reset file everytime
@@ -4640,6 +4650,7 @@ class AppWindow(QDialog):
             self.submitButtonPushed()
         except Exception as Argument:
             self.genLogforException(Argument)
+            self.showPopInfo('Data could not be loaded! Check if the location of the data on the hard drive changed.',durationToShow=2, color = 'orange')
     def loadasBtn(self):
         try:
             file_dialog = QFileDialog()
@@ -4663,6 +4674,7 @@ class AppWindow(QDialog):
             self.submitButtonPushed()
         except Exception as Argument:
             self.genLogforException(Argument)
+            self.showPopInfo('Data could not be loaded! Check if the location of the data on the hard drive changed.',durationToShow=2, color = 'orange')
     def saveasBtn(self):
         try:
             filter=''.join(['npy','(*','.npy',')'])
@@ -5727,7 +5739,7 @@ class MainWindow(QMainWindow):
         self.mbar.setNativeMenuBar(True)
         self.file=self.mbar.addMenu("File")
         
-        self.newWindowAction = self.file.addAction("New Window (Experimental)")
+        self.newWindowAction = self.file.addAction("New Window")
         self.file.addSeparator()
         openAction = self.file.addAction("Open...")
         openAction.triggered.connect(self.loadasProject)
@@ -5749,6 +5761,7 @@ class MainWindow(QMainWindow):
         aboutMe.triggered.connect(self.aboutMenuPop)
         #aboutMe.setMenuRole(QAction.AboutRole)
         checkUpdate = helps.addAction(" Check for Update...")
+        checkUpdate.triggered.connect(self.updateChecker)
         #checkUpdate.setMenuRole(QAction.AboutRole)
         
         self.screenChanged.connect(lambda oldScreen,newScreen: self.tbw.wdg.resizeUI(oldScreen,newScreen))
@@ -5883,6 +5896,21 @@ class MainWindow(QMainWindow):
         foldDir = foldDir / foldName
         os.makedirs(foldDir, exist_ok = True)
         return foldDir
+    def updateChecker(self):
+        if not appVersionText == latestVersion:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgText = ''.join(['Current version is ',appVersion,'. <br><br> <FONT COLOR="Green">',latestVersion,'</FONT> is now available.'])
+            msgBox.setText(msgText)
+            msgBox.setWindowTitle("Warning!")
+            msgBox.exec()
+        else:
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgText = "The app is up to date!"
+            msgBox.setText(msgText)
+            msgBox.setWindowTitle("Warning!")
+            msgBox.exec()
 
 # class SplashScreen(QWidget):
 #     def __init__(self):
