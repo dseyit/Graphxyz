@@ -5339,6 +5339,7 @@ class optsWindow(QDialog):
             
             self.auto_xlimcb.setChecked(True)
             self.auto_zlimcb.setChecked(True)
+            self.needShortLeg.setChecked(True)
             # if leftright=='Left Figure':
             #     self.auto_zlimcb.setChecked(True)
             
