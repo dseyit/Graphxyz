@@ -54,7 +54,7 @@ import math
 # except Exception as Argument:
 #     self.genLogforException(Argument)
 
-appVersion = '0.3.2'
+appVersion = '0.3.4'
 
 def getResourcePath(relative_path):
     rel_path = pathlib.Path(relative_path)
@@ -5653,6 +5653,7 @@ class TabWindow(QTabWidget):
         self.addTab(self.wdg,'Home')
         self.setTabText(self.currentIndex(),self.wdg.ui.listprefs_main.currentText())
         self.tabBar().setTabButton(0, self.tabBar().LeftSide,None)
+
         
         #Signals
         self.tabCloseRequested.connect(lambda index: self.removeTab(index))
@@ -5680,17 +5681,18 @@ class TabWindow(QTabWidget):
     def addfitwdg(self,wdg):
         self.insertTab(self.currentIndex()+1,wdg,'fit')
         self.setCurrentIndex(self.currentIndex()+1)
-    def closeEvent(self,event):
-        if self.wdg.apptemp!=[]:
-            self.wdg.apptemp=QApplication([])
-            clipboard = self.wdg.apptemp.clipboard()
-            event = QtCore.QEvent(QtCore.QEvent.Clipboard)
-            QApplication.sendEvent(clipboard, event)
-            self.wdg.apptemp.quit()
-        else:
-            QApplication.quit()
+    # def closeEvent(self,event):
+    #     if self.wdg.apptemp!=[]:
+    #         self.wdg.apptemp=QApplication([])
+    #         clipboard = self.wdg.apptemp.clipboard()
+    #         event = QtCore.QEvent(QtCore.QEvent.Clipboard)
+    #         QApplication.sendEvent(clipboard, event)
+    #         self.wdg.apptemp.quit()
+    #     else:
+    #         QApplication.quit()
     def tabChanged(self):
         self.currentWidget().resizewhenTabChanged() #To change size when tab changed, experimental
+
 class MainWindow(QMainWindow):
     screenChanged = QtCore.pyqtSignal(QScreen, QScreen)
     def __init__(self, app):
@@ -5723,24 +5725,23 @@ class MainWindow(QMainWindow):
         
         self.mbar=self.menuBar()
         self.mbar.setNativeMenuBar(True)
-        file=self.mbar.addMenu("File")
+        self.file=self.mbar.addMenu("File")
         
-        self.newWindowAction = file.addAction("New Window (Experimental)")
-        self.newWindowAction.setEnabled(False)
-        file.addSeparator()
-        openAction = file.addAction("Open...")
+        self.newWindowAction = self.file.addAction("New Window (Experimental)")
+        self.file.addSeparator()
+        openAction = self.file.addAction("Open...")
         openAction.triggered.connect(self.loadasProject)
-        openDefAction = file.addAction("Open Default")
+        openDefAction = self.file.addAction("Open Default")
         openDefAction.triggered.connect(self.loadDefProject)
-        recentFiles=file.addMenu("Recents")
-        file.addSeparator()
-        saveCurAction = file.addAction("Save")
+        recentFiles=self.file.addMenu("Recents")
+        self.file.addSeparator()
+        saveCurAction = self.file.addAction("Save")
         saveCurAction.triggered.connect(self.saveCurProject)
         
-        saveDefAction = file.addAction("Save Default")
+        saveDefAction = self.file.addAction("Save Default")
         saveDefAction.triggered.connect(self.saveDefProject)
         
-        saveasAction = file.addAction("Save as...")
+        saveasAction = self.file.addAction("Save as...")
         saveasAction.triggered.connect(self.saveasProject)
         
         helps = self.mbar.addMenu("Graphxyz")
@@ -5756,14 +5757,14 @@ class MainWindow(QMainWindow):
     def getSettingsValues(self):
         self.settingWindow = QSettings('Graphxyz', 'Window Size')
     def closeEvent(self,event):
-        if self.tbw.apptemp!=[]:
-            self.tbw.apptemp=QApplication([])
-            clipboard = self.tbw.apptemp.clipboard()
-            event = QtCore.QEvent(QtCore.QEvent.Clipboard)
-            QApplication.sendEvent(clipboard, event)
-            self.tbw.apptemp.quit()
-        else:
-            QApplication.quit()
+        # if self.wdg.apptemp!=[]:
+        #     self.wdg.apptemp=QApplication([])
+        #     clipboard = self.wdg.apptemp.clipboard()
+        #     event = QtCore.QEvent(QtCore.QEvent.Clipboard)
+        #     QApplication.sendEvent(clipboard, event)
+        #     self.wdg.apptemp.quit()
+        # else:
+        #     QApplication.quit()
         self.settingWindow.setValue('window_height',self.rect().height())
         self.settingWindow.setValue('window_width',self.rect().width())
     def moveEvent(self, event):
@@ -5913,18 +5914,34 @@ class MainWindow(QMainWindow):
 
 #         self.counter += 1
 
-def openNewWindowApp(checked,app):
-    #app = QApplication(sys.argv)
-    wnd = MainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
-    #wnd.newWindowAction.triggered.connect(lambda checked: openNewWindowApp(checked,app))
-    wnd.raise_()
-    #sys.exit(app.exec())
+# def openNewWindowApp(checked,app):
+#     #app = QApplication(sys.argv)
+#     wnd = MainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
+#     #wnd.newWindowAction.triggered.connect(lambda checked: openNewWindowApp(checked,app))
+#     wnd.raise_()
+#     #sys.exit(app.exec())
     
+class higherMainWindow(QWidget): #This window allows to make multiple instances of the same app
+    def __init__(self,app):
+        super().__init__()
+        self.app = app
+        self.myApps = []
+        self.myApp = MainWindow(app=self.app)
+        self.myApp.newWindowAction.triggered.connect(self.newWindowOpen)
+        self.myApps.append(self.myApp)
+        self.myApp.raise_()
+    def newWindowOpen(self):
+        tempApp = MainWindow(app=self.app)
+        tempApp.newWindowAction.triggered.connect(self.newWindowOpen)
+        self.myApps.append(tempApp)
+        tempApp.raise_()
+    def closeEvent(self,event):
+        QApplication.quit()
 
 if __name__=='__main__':
     app = QApplication(sys.argv)
-    wnd = MainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
-    wnd.newWindowAction.triggered.connect(lambda checked: openNewWindowApp(checked,app))
+    wnd = higherMainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
+    #wnd.newWindowAction.triggered.connect(lambda checked: openNewWindowApp(checked,app))
     wnd.raise_()
     sys.exit(app.exec())
     
