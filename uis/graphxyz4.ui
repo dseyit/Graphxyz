@@ -730,7 +730,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1157</width>
+                    <width>1010</width>
                     <height>380</height>
                    </rect>
                   </property>
@@ -750,598 +750,6 @@
                    <property name="bottomMargin">
                     <number>0</number>
                    </property>
-                   <item>
-                    <widget class="QScrollArea" name="plotLimits">
-                     <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
-                       <horstretch>0</horstretch>
-                       <verstretch>0</verstretch>
-                      </sizepolicy>
-                     </property>
-                     <property name="maximumSize">
-                      <size>
-                       <width>20000</width>
-                       <height>16777215</height>
-                      </size>
-                     </property>
-                     <property name="widgetResizable">
-                      <bool>true</bool>
-                     </property>
-                     <widget class="QWidget" name="scrollAreaWidgetContents_2">
-                      <property name="geometry">
-                       <rect>
-                        <x>0</x>
-                        <y>0</y>
-                        <width>145</width>
-                        <height>378</height>
-                       </rect>
-                      </property>
-                      <layout class="QGridLayout" name="gridLayout_12">
-                       <property name="leftMargin">
-                        <number>5</number>
-                       </property>
-                       <property name="topMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="rightMargin">
-                        <number>0</number>
-                       </property>
-                       <property name="bottomMargin">
-                        <number>0</number>
-                       </property>
-                       <item row="3" column="0">
-                        <widget class="QLabel" name="ynormlb">
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>y&lt;sub&gt;norm&lt;/sub&gt;:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="8" column="1">
-                        <widget class="QLineEdit" name="xnormValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>0</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="1">
-                        <widget class="QLineEdit" name="ymaxValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>750</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="2" column="0">
-                        <widget class="QLabel" name="ymaxlb">
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>y&lt;sub&gt;max&lt;/sub&gt;:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="0">
-                        <widget class="QLabel" name="xbglb_2">
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;y&lt;span style=&quot; vertical-align:sub;&quot;&gt;bg&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="0">
-                        <widget class="QLabel" name="yminlb">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>y&lt;sub&gt;min&lt;/sub&gt;:</string>
-                         </property>
-                         <property name="scaledContents">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="9" column="0">
-                        <widget class="QLabel" name="xbglb">
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>x&lt;sub&gt;bg&lt;/sub&gt;:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="5" column="1">
-                        <widget class="QLineEdit" name="xValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>13</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="1" column="1">
-                        <widget class="QLineEdit" name="yminValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>465</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="1">
-                        <widget class="QLineEdit" name="yValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>550</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="5" column="0">
-                        <widget class="QLabel" name="xlb">
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>x:       </string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="1">
-                        <widget class="QLineEdit" name="ynormValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>0</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="1">
-                        <widget class="QLineEdit" name="ybgValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>35</width>
-                           <height>0</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>0</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="8" column="0">
-                        <widget class="QLabel" name="xnormlb">
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>x&lt;sub&gt;norm&lt;/sub&gt;:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="6" column="0">
-                        <widget class="QLabel" name="xminlb">
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>x&lt;sub&gt;min&lt;/sub&gt;:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="7" column="0">
-                        <widget class="QLabel" name="xmaxlb">
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>x&lt;sub&gt;max&lt;/sub&gt;:</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="7" column="1">
-                        <widget class="QLineEdit" name="xmaxValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>25</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="3" column="2">
-                        <widget class="QCheckBox" name="ynormcb">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="layoutDirection">
-                          <enum>Qt::LeftToRight</enum>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="0" column="0">
-                        <widget class="QLabel" name="ylb">
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="styleSheet">
-                          <string notr="true"/>
-                         </property>
-                         <property name="text">
-                          <string>y:      </string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="6" column="1">
-                        <widget class="QLineEdit" name="xminValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>-1</string>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="4" column="2">
-                        <widget class="QPushButton" name="ybgaddButton">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>40</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>9</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>+</string>
-                         </property>
-                         <property name="autoDefault">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="8" column="2">
-                        <widget class="QCheckBox" name="xnormcb">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="layoutDirection">
-                          <enum>Qt::LeftToRight</enum>
-                         </property>
-                         <property name="text">
-                          <string/>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="9" column="2">
-                        <widget class="QPushButton" name="xbgaddButton">
-                         <property name="enabled">
-                          <bool>true</bool>
-                         </property>
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>40</width>
-                           <height>30</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>9</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>+</string>
-                         </property>
-                         <property name="autoDefault">
-                          <bool>false</bool>
-                         </property>
-                        </widget>
-                       </item>
-                       <item row="9" column="1">
-                        <widget class="QLineEdit" name="xbgValue">
-                         <property name="sizePolicy">
-                          <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
-                           <horstretch>0</horstretch>
-                           <verstretch>0</verstretch>
-                          </sizepolicy>
-                         </property>
-                         <property name="minimumSize">
-                          <size>
-                           <width>35</width>
-                           <height>0</height>
-                          </size>
-                         </property>
-                         <property name="maximumSize">
-                          <size>
-                           <width>50</width>
-                           <height>16777215</height>
-                          </size>
-                         </property>
-                         <property name="font">
-                          <font>
-                           <family>Arial</family>
-                           <pointsize>12</pointsize>
-                          </font>
-                         </property>
-                         <property name="text">
-                          <string>0</string>
-                         </property>
-                        </widget>
-                       </item>
-                      </layout>
-                     </widget>
-                    </widget>
-                   </item>
                    <item>
                     <widget class="QFrame" name="dataListFrame">
                      <property name="maximumSize">
@@ -3322,11 +2730,602 @@
                   <zorder>fzzFrame</zorder>
                   <zorder>xlimFrame</zorder>
                   <zorder>horizontalSpacer</zorder>
-                  <zorder>plotLimits</zorder>
                  </widget>
                 </widget>
                </item>
               </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QScrollArea" name="plotLimits">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>1650</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="widgetResizable">
+               <bool>true</bool>
+              </property>
+              <widget class="QWidget" name="scrollAreaWidgetContents_2">
+               <property name="geometry">
+                <rect>
+                 <x>0</x>
+                 <y>0</y>
+                 <width>145</width>
+                 <height>462</height>
+                </rect>
+               </property>
+               <layout class="QGridLayout" name="gridLayout_12">
+                <property name="leftMargin">
+                 <number>5</number>
+                </property>
+                <property name="topMargin">
+                 <number>0</number>
+                </property>
+                <property name="rightMargin">
+                 <number>0</number>
+                </property>
+                <property name="bottomMargin">
+                 <number>0</number>
+                </property>
+                <item row="3" column="0">
+                 <widget class="QLabel" name="ynormlb">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>y&lt;sub&gt;norm&lt;/sub&gt;:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="1">
+                 <widget class="QLineEdit" name="xnormValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="1">
+                 <widget class="QLineEdit" name="ymaxValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>750</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="2" column="0">
+                 <widget class="QLabel" name="ymaxlb">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>y&lt;sub&gt;max&lt;/sub&gt;:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="0">
+                 <widget class="QLabel" name="xbglb_2">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;y&lt;span style=&quot; vertical-align:sub;&quot;&gt;bg&lt;/span&gt;:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="0">
+                 <widget class="QLabel" name="yminlb">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>y&lt;sub&gt;min&lt;/sub&gt;:</string>
+                  </property>
+                  <property name="scaledContents">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="9" column="0">
+                 <widget class="QLabel" name="xbglb">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>x&lt;sub&gt;bg&lt;/sub&gt;:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="1">
+                 <widget class="QLineEdit" name="xValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>13</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="1" column="1">
+                 <widget class="QLineEdit" name="yminValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>465</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="1">
+                 <widget class="QLineEdit" name="yValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>550</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="5" column="0">
+                 <widget class="QLabel" name="xlb">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>x:       </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="1">
+                 <widget class="QLineEdit" name="ynormValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="1">
+                 <widget class="QLineEdit" name="ybgValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>35</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="0">
+                 <widget class="QLabel" name="xnormlb">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>x&lt;sub&gt;norm&lt;/sub&gt;:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="0">
+                 <widget class="QLabel" name="xminlb">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>x&lt;sub&gt;min&lt;/sub&gt;:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="7" column="0">
+                 <widget class="QLabel" name="xmaxlb">
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>x&lt;sub&gt;max&lt;/sub&gt;:</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="7" column="1">
+                 <widget class="QLineEdit" name="xmaxValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>25</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="3" column="2">
+                 <widget class="QCheckBox" name="ynormcb">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="layoutDirection">
+                   <enum>Qt::LeftToRight</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="0" column="0">
+                 <widget class="QLabel" name="ylb">
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="styleSheet">
+                   <string notr="true"/>
+                  </property>
+                  <property name="text">
+                   <string>y:      </string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="6" column="1">
+                 <widget class="QLineEdit" name="xminValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>-1</string>
+                  </property>
+                 </widget>
+                </item>
+                <item row="4" column="2">
+                 <widget class="QPushButton" name="ybgaddButton">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>40</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>9</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>+</string>
+                  </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="8" column="2">
+                 <widget class="QCheckBox" name="xnormcb">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="layoutDirection">
+                   <enum>Qt::LeftToRight</enum>
+                  </property>
+                  <property name="text">
+                   <string/>
+                  </property>
+                 </widget>
+                </item>
+                <item row="9" column="2">
+                 <widget class="QPushButton" name="xbgaddButton">
+                  <property name="enabled">
+                   <bool>true</bool>
+                  </property>
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>40</width>
+                    <height>30</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>9</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>+</string>
+                  </property>
+                  <property name="autoDefault">
+                   <bool>false</bool>
+                  </property>
+                 </widget>
+                </item>
+                <item row="9" column="1">
+                 <widget class="QLineEdit" name="xbgValue">
+                  <property name="sizePolicy">
+                   <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
+                    <horstretch>0</horstretch>
+                    <verstretch>0</verstretch>
+                   </sizepolicy>
+                  </property>
+                  <property name="minimumSize">
+                   <size>
+                    <width>35</width>
+                    <height>0</height>
+                   </size>
+                  </property>
+                  <property name="maximumSize">
+                   <size>
+                    <width>50</width>
+                    <height>16777215</height>
+                   </size>
+                  </property>
+                  <property name="font">
+                   <font>
+                    <family>Arial</family>
+                    <pointsize>12</pointsize>
+                   </font>
+                  </property>
+                  <property name="text">
+                   <string>0</string>
+                  </property>
+                 </widget>
+                </item>
+               </layout>
+              </widget>
              </widget>
             </item>
             <item row="1" column="0" colspan="2">
