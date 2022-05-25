@@ -1114,6 +1114,7 @@ class AppWindow(QDialog):
                 ind=self.ui.dataBox.findText(fold_data_names_temp[0])
                 self.ui.dataBox.setCurrentIndex(ind)
                 dtemp=datfoldnames[0]
+                #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
                 self.d={**self.d, **dtemp}
                 # if self.impw.ui.xyz.isChecked() and not self.d=={}:
                 #     self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
@@ -1125,7 +1126,6 @@ class AppWindow(QDialog):
                 #     self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
                 #     self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
                 #     self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
-                #self.d=self.d|dtemp this needs newer python version 3.9 or above, use next method instead
                 self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
@@ -5725,6 +5725,8 @@ class MainWindow(QMainWindow):
         self.mbar.setNativeMenuBar(True)
         file=self.mbar.addMenu("File")
         
+        self.newWindowAction = file.addAction("New Window")
+        file.addSeparator()
         openAction = file.addAction("Open...")
         openAction.triggered.connect(self.loadasProject)
         openDefAction = file.addAction("Open Default")
@@ -5910,9 +5912,18 @@ class MainWindow(QMainWindow):
 
 #         self.counter += 1
 
+def openNewWindowApp():
+    app = QApplication(sys.argv)
+    wnd = MainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
+    wnd.newWindowAction.triggered.connect(openNewWindowApp)
+    wnd.raise_()
+    #sys.exit(app.exec())
+    
+
 if __name__=='__main__':
     app = QApplication(sys.argv)
     wnd = MainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
+    wnd.newWindowAction.triggered.connect(openNewWindowApp)
     wnd.raise_()
     sys.exit(app.exec())
     
