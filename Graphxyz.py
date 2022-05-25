@@ -69,7 +69,7 @@ class AppWindow(QDialog):
         self.exceptionLogLocation = self.makeFolderinDocuments('.logs')
         DataDir = getResourcePath("uis")
         icnDir = getResourcePath("icns")
-        uiPath = DataDir / 'graphxyz3.ui'
+        uiPath = DataDir / 'graphxyz.ui'
         self.ui = uic.loadUi(uiPath,self)
         self.app = app
         self.currWindowSize = self.app.desktop().geometry()
@@ -5725,7 +5725,7 @@ class MainWindow(QMainWindow):
         self.mbar.setNativeMenuBar(True)
         file=self.mbar.addMenu("File")
         
-        self.newWindowAction = file.addAction("New Window")
+        self.newWindowAction = file.addAction("New Window (Experimental)")
         file.addSeparator()
         openAction = file.addAction("Open...")
         openAction.triggered.connect(self.loadasProject)
@@ -5923,7 +5923,7 @@ def openNewWindowApp(checked,app):
 if __name__=='__main__':
     app = QApplication(sys.argv)
     wnd = MainWindow(app = app) #app parameter is needed for the copy figure to clipboard to work
-    wnd.newWindowAction.triggered.connect(lambda checked: wnd.openNewWindowApp(checked,app))
+    wnd.newWindowAction.triggered.connect(lambda checked: openNewWindowApp(checked,app))
     wnd.raise_()
     sys.exit(app.exec())
     
