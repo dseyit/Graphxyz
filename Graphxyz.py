@@ -162,6 +162,7 @@ class AppWindow(QDialog):
         self.ui.addallButton.setEnabled(False)
         self.addallAction.setEnabled(False)
         self.ui.refreshButton.setEnabled(False)
+        self.ui.refreshAllButton.setEnabled(False)
         self.loadAction.setEnabled(False)
         
         
@@ -971,6 +972,7 @@ class AppWindow(QDialog):
                 self.ui.addButton.setEnabled(True)
                 self.ui.addallButton.setEnabled(True)
                 self.ui.refreshButton.setEnabled(True)
+                self.ui.refreshAllButton.setEnabled(True)
                 
                 self.addoneAction.setEnabled(True)
                 self.addallAction.setEnabled(True)
@@ -983,6 +985,7 @@ class AppWindow(QDialog):
                 self.ui.addButton.setEnabled(True)
                 self.ui.addallButton.setEnabled(True)
                 self.ui.refreshButton.setEnabled(True)
+                self.ui.refreshAllButton.setEnabled(True)
                 
                 self.addoneAction.setEnabled(True)
                 self.addallAction.setEnabled(True)
@@ -993,6 +996,7 @@ class AppWindow(QDialog):
                 self.ui.addButton.setEnabled(True)
                 self.ui.addallButton.setEnabled(True)
                 self.ui.refreshButton.setEnabled(True)
+                self.ui.refreshAllButton.setEnabled(True)
                 
                 self.addoneAction.setEnabled(True)
                 self.ui.addallButton.setEnabled(True)
@@ -1004,6 +1008,7 @@ class AppWindow(QDialog):
                 self.ui.addallButton.setEnabled(False)
                 self.addallAction.setEnabled(False)
                 self.ui.refreshButton.setEnabled(False)
+                self.ui.refreshAllButton.setEnabled(False)
                 self.loadAction.setEnabled(False)
         except Exception as Argument:
             self.genLogforException(Argument)
@@ -1046,6 +1051,7 @@ class AppWindow(QDialog):
         self.ui.addButton.setEnabled(False)
         self.ui.addallButton.setEnabled(False)
         self.ui.refreshButton.setEnabled(False)
+        self.ui.refreshAllButton.setEnabled(False)
         
         self.addoneAction.setEnabled(False)
         self.addallAction.setEnabled(False)
@@ -4615,6 +4621,7 @@ class AppWindow(QDialog):
                 self.ui.addButton.setEnabled(True)
                 self.ui.addallButton.setEnabled(True)
                 self.ui.refreshButton.setEnabled(True)
+                self.ui.refreshAllButton.setEnabled(True)
             if showPopInfo:
                 self.showPopInfo('Successfully loaded!',durationToShow=1.5, color = 'green')
         except Exception as Argument:

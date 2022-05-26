@@ -71,6 +71,8 @@ testlabel.setText(labelToShow)
 # a.setEasingCurve(QEasingCurve.InBack)
 # a.start(QPropertyAnimation.DeleteWhenStopped)
 
+
+
 eff = QGraphicsOpacityEffect()
 testlabel.setGraphicsEffect(eff)
 a = QPropertyAnimation(eff,b"opacity")
