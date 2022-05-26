@@ -55,7 +55,7 @@ import requests # Used when app version is checked and to check if new version i
 # except Exception as Argument:
 #     self.genLogforException(Argument)
 
-appVersion = '0.3.4'
+appVersion = '0.4'
 appVersionText = ''.join(['Version ',appVersion])
 
 
