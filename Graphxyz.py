@@ -337,8 +337,8 @@ class AppWindow(QDialog):
         self.widgetHiderShower(self.ui.controlsframe, mAction = self.graphAction)
         self.widgetHiderShower(self.ui.plotLimits, mAction = self.plotAction)
         self.widgetHiderShower([self.ui.frame2D, self.mdynTlb, self.mspecTlb, self.m2DTlb, self.controlsFrame2D, self.controlsFrameSpec,self.controlsFrameDyn], mAction = self.plotControlsAction)
-        self.widgetHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
-        self.widgetHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
+        #self.widgetHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
+        #self.widgetHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
         
         
         #Initial run for default mode:
@@ -570,13 +570,13 @@ class AppWindow(QDialog):
         
         self.figureDyn = self.views.addAction("Left figure")
         self.figureDyn.setCheckable(True)
-        self.figureDyn.setChecked(False)
-        self.figureDyn.triggered.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
+        self.figureDyn.setChecked(True)
+        self.figureDyn.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
         
         self.figureSpec = self.views.addAction("Right figure")
         self.figureSpec.setCheckable(True)
-        self.figureSpec.setChecked(False)
-        self.figureSpec.triggered.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
+        self.figureSpec.setChecked(True)
+        self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
         
         return mbar
     def widgetHiderShower(self, widgetFrame, mAction = None):
@@ -2208,6 +2208,7 @@ class AppWindow(QDialog):
                 self.c_map_ax.set(frame_on=True)
                 self.c_map_ax.set_ylabel(self.ztoplb,rotation=0)
             self.fitw=fitWindow()
+        self.submitButtonPushed()
 
     #These are functions for multiple mode:
     def yaddBtn(self):
@@ -2445,6 +2446,8 @@ class AppWindow(QDialog):
         else:
             return items
     def impOptBtnClicked(self):
+        uisize = self.ui.impOptionsBtn.mapToGlobal(QPoint(0, 0))
+        self.impw.move(int(uisize.x()-uisize_main.width()*0.05),int(uisize.y())) 
         self.impw.show()
         #self.impw.raise_()
     def xyzmakerClicked(self):
@@ -6050,7 +6053,7 @@ class MainWindow(QMainWindow):
         else:
             msgBox = QMessageBox()
             msgBox.setIcon(QMessageBox.Information)
-            msgText = "The app is up to date!"
+            msgText = "Graphxyz is up to date!"
             msgBox.setText(msgText)
             msgBox.setWindowTitle("Warning!")
             msgBox.exec()
