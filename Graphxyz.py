@@ -3584,7 +3584,8 @@ class AppWindow(QDialog):
                     temp=self.legshorten(self.legendtext_dyn)
                     self.legendtext_dyn=temp[0]
                     temptitle=' @'.join([temp[1],str(wt[0])])
-                    temptitle=''.join([temptitle,'nm'])
+                    unit = self.impw.ui.ylabel.text().split('(')[1].split(')')[0]
+                    temptitle=''.join([temptitle,unit])
                     ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
                 ax.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
@@ -3634,7 +3635,8 @@ class AppWindow(QDialog):
                     self.linedyn_all.append(line)
                     templeg=' @'.join([d[nd[i]]['a'],str(wi)])
                     #unit = axislable.split('(')[1].split(')')[0]
-                    templeg=''.join([templeg,'nm'])
+                    unit = self.impw.ui.ylabel.text().split('(')[1].split(')')[0]
+                    templeg=''.join([templeg,unit])
                     self.legendtext_dyn.append(templeg)
             ax.set_xlim(twr[0],twr[1])
             ax.set_ylim(np.nanmin(self.minmaxtd)-0.05*abs(np.nanmin(self.minmaxtd)),np.nanmax(self.minmaxtd)+0.05*abs(np.nanmax(self.minmaxtd)))
@@ -3690,7 +3692,8 @@ class AppWindow(QDialog):
                         line, =ax.plot(t, temp,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=self.ui.markerlsx.currentText())
                     self.linedyn_all.append(line)
                     templeg=' @'.join([d[nd[i]]['a'],str(wt[i])])
-                    templeg=''.join([templeg,'nm'])
+                    unit = self.impw.ui.ylabel.text().split('(')[1].split(')')[0]
+                    templeg=''.join([templeg,unit])
                     self.legendtext_dyn.append(templeg)
             except IndexError:
                 msgBox = QMessageBox()
@@ -3807,7 +3810,8 @@ class AppWindow(QDialog):
                     temp=self.legshorten(self.legendtext_spec)
                     self.legendtext_spec=temp[0]
                     temptitle=' @'.join([temp[1],str(wt[0])])
-                    temptitle=''.join([temptitle,'ps'])
+                    unit = self.impw.ui.ylabel.text().split('(')[1].split(')')[0]
+                    temptitle=''.join([temptitle,unit])
                     ax.set_title(temptitle, fontsize = int(float(self.ui.fontsizeval.text()))-1)
                 ax.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
             return line
@@ -3921,7 +3925,8 @@ class AppWindow(QDialog):
                         line, =ax.plot(w, temp,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=self.ui.markerlsy.currentText())
                     self.linespec_all.append(line)
                     templeg=' @'.join([d[nd[i]]['a'],str(wt[i])])
-                    templeg=''.join([templeg,'ps'])
+                    unit = self.impw.ui.ylabel.text().split('(')[1].split(')')[0]
+                    templeg=''.join([templeg,unit])
                     self.legendtext_spec.append(templeg)
             except IndexError:
                 msgBox = QMessageBox()
