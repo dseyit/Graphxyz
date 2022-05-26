@@ -284,8 +284,8 @@ class AppWindow(QDialog):
         self.fitw.ui.parsValue.editingFinished.connect(self.addremparam)
         self.fitw.ui.addSliders.clicked.connect(self.addremparam)
         self.fitw.psliders=[]
-        self.fitw.ui.savefitButton.clicked.connect(self.savefitBtn)
-        self.fitw.ui.loadfitButton.clicked.connect(self.loadfitBtn)
+        #self.fitw.ui.savefitButton.clicked.connect(self.savefitBtn)
+        #self.fitw.ui.loadfitButton.clicked.connect(self.loadfitBtn)
         self.fitw.cpfitbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.fitfigcanvas))
         self.fitw.cpeqbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.eqcanvas))
         self.fitw.ui.quickaddParam.clicked.connect(self.quickparamaddBtn)
@@ -4545,7 +4545,10 @@ class AppWindow(QDialog):
             listf.insertItem(0,self.fitw.ui.fValueEdit.text())
         tempstr=''
         for i in range(self.fitw.ui.fList.count()):
-            tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
+            if i==0:
+                tempstr=''.join([tempstr,self.fitw.ui.fList.item(i).text()])
+            else:
+                tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
         self.fitw.ui.fValue.setText(tempstr)
         funstr=self.fitw.ui.fValue.text()
         funstr=funstr.replace('[','')
@@ -4565,7 +4568,10 @@ class AppWindow(QDialog):
             listf.takeItem(listf.row(listf.item(0)))
         tempstr=''
         for i in range(self.fitw.ui.fList.count()):
-            tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
+            if i==0:
+                tempstr=''.join([tempstr,self.fitw.ui.fList.item(i).text()])
+            else:
+                tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
         self.fitw.ui.fValue.setText(tempstr)
         funstr=self.fitw.ui.fValue.text()
         funstr=funstr.replace('[','')
@@ -5186,6 +5192,12 @@ class fitWindow(QDialog):
         self.axFit.ticklabel_format(axis='y',style='sci',scilimits=(-2,2))
         self.figFit=self.mFit.figure
         
+        self.mbar = self.menuAdder()
+        #self.mbar.setObjectName("tabMenuBar")
+        self.mbar.setMaximumHeight(50)
+        self.mbar.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,QtWidgets.QSizePolicy.Maximum)
+        self.fitMenuLayout.addWidget(self.mbar)
+        
         self.cpfitbtn=QtWidgets.QPushButton(self)
         self.cpfitbtn.setMaximumSize(QtCore.QSize(32, 32))
         self.cpfitbtn.setText('C')
@@ -5213,6 +5225,187 @@ class fitWindow(QDialog):
         
         index=self.ui.layoutFun.count()-1
         self.ui.layoutFun.itemAt(index).widget().setMaximumSize(QtCore.QSize(1500, 20))
+    def menuAdder(self, alreadyExist = False):
+        if alreadyExist:
+            self.mbar.parent(None)
+        mbar=QMenuBar(self)
+        mbar.setNativeMenuBar(False)
+        #file=mbar.addMenu("File")
+        dataMenu = mbar.addMenu("Fit tab")
+        tabs = mbar.addMenu("Mode")
+        self.views = mbar.addMenu("View")
+        
+        # #file.addAction("Open...")
+        # #file.addSeparator()
+        # self.importTypes = QActionGroup(mbar)
+        # self.importTypes.setExclusive(True)
+        # load=dataMenu.addMenu("Find")
+        # findFolder = load.addAction("Folder")
+        # findFolder.setCheckable(True)
+        # findFolders = load.addAction("Folders")
+        # findFolders.setCheckable(True)
+        # findFiles = load.addAction("Files")
+        # findFiles.setCheckable(True)
+        # self.importTypes.addAction(findFolder)
+        # self.importTypes.addAction(findFolders)
+        # self.importTypes.addAction(findFiles)
+        # findFolder.triggered.connect(self.getFolderLoc)
+        # findFolders.triggered.connect(self.getFolderLoc)
+        # findFiles.triggered.connect(self.getFolderLoc)
+        # dataMenu.addSeparator()
+        
+        
+        # self.loadAction = dataMenu.addAction("Load")
+        # self.loadAction.triggered.connect(self.refreshBtn)
+        # self.addoneAction = dataMenu.addAction("Add")
+        # self.addoneAction.triggered.connect(self.addBtn)
+        # self.addallAction = dataMenu.addAction("Add all")
+        # self.addallAction.triggered.connect(self.addallBtn)
+        # dataMenu.addSeparator()
+        # cleanAction = dataMenu.addAction("Clear source")
+        # cleanAction.triggered.connect(self.cleanBtn)
+        # clearList = dataMenu.addAction("Clear list")
+        # clearList.triggered.connect(self.clearLists)
+        # dataMenu.addSeparator()
+        # self.dataExporterAction = dataMenu.addAction("Export data")
+        # self.dataExporterAction.setChecked(True)
+        # self.dataExporterAction.triggered.connect(self.dataExporter)
+        
+        # self.addTab=tabs.addAction("New Tab")
+        # #self.addTab.triggered.connect(self.newBtn)
+        # tabs.addSeparator()
+        # resetTab=tabs.addAction("Reset")
+        # resetTab.triggered.connect(self.resetBtn)
+        
+        # tabs.addSeparator()
+        # loadDef = tabs.addAction("Load default")
+        # loadDef.triggered.connect(self.loadDefBtn)
+        # saveDef = tabs.addAction("Save default")
+        # saveDef.triggered.connect(self.saveDefBtn)
+        # loadas = tabs.addAction("Load...")
+        # loadas.triggered.connect(self.loadasBtn)
+        # saveas = tabs.addAction("Save as...")
+        # saveas.triggered.connect(self.saveasBtn)
+        
+        # # impPref=tools.addAction("Preset options...")
+        # # impPref.triggered.connect(self.impOptBtnClicked)
+        # self.fitter = tools.addAction("Fit...")
+        # maker3D=tools.addAction("3D maker: XY+Z...")
+        # maker3D.triggered.connect(self.xyzmakerClicked)
+        
+        
+        # #parsMenu = modes.addMenu("Parameters")
+        
+        # # self.parModes = QActionGroup(mbar)
+        # # self.parModes.setExclusive(True)
+        # # self.XYaction = modes.addAction ("XY")
+        # # self.XYaction.setCheckable(True)
+        # # self.XYaction.setDisabled(True)
+        # # self.XYaction.setChecked(False)
+        # # self.parModes.addAction(self.XYaction)
+        # # self.XYZaction = modes.addAction ("XYZ")
+        # # self.XYZaction.setCheckable(True)
+        # # self.XYZaction.setDisabled(True)
+        # # self.XYZaction.setChecked(True)
+        # # self.parModes.addAction(self.XYZaction)
+        # # self.XYZaction.toggled.connect(self.modechangedMain)
+        # # modes.addSeparator()
+        
+        # self.plotModes = QActionGroup(mbar)
+        # self.plotModes.setExclusive(True)
+        # self.singleMode = modes.addAction("Selected")
+        # self.singleMode.setCheckable(True)
+        # self.singleMode.setChecked(True)
+        # self.plotModes.addAction(self.singleMode)
+        # self.multD = modes.addAction("Multiple at single x and y")
+        # self.multD.setCheckable(True)
+        # self.plotModes.addAction(self.multD)
+        # self.multXY = modes.addAction("Single at multiple x and y")
+        # self.multXY.setCheckable(True)
+        # self.plotModes.addAction(self.multXY)
+        # self.matchD = modes.addAction("Matched with x and y")
+        # self.matchD.setCheckable(True)
+        # self.plotModes.addAction(self.matchD)
+        
+        # #View Menu action items:
+        # hideAll = self.views.addAction("Hide all")
+        # hideAll.triggered.connect(self.hideAllViews)
+        # showAll = self.views.addAction("Show all")
+        # showAll.triggered.connect(self.showAllViews)
+        # self.views.addSeparator()
+        # self.dataListAction = self.views.addAction("Data list")
+        # self.dataListAction.setCheckable(True)
+        # self.dataListAction.setChecked(False)
+        # self.dataListAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.dataListFrame, mAction = self.dataListAction))
+        
+        # self.dataLinkListAction = self.views.addAction("Data link")
+        # self.dataLinkListAction.setCheckable(True)
+        # self.dataLinkListAction.setChecked(False)
+        # self.dataLinkListAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.dataLinkFrame, mAction = self.dataLinkListAction))
+        
+        # self.ySliceAction = self.views.addAction("y-slices")
+        # self.ySliceAction.setCheckable(True)
+        # self.ySliceAction.setChecked(False)
+        # self.ySliceAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.ysliceFrame, mAction = self.ySliceAction))
+        
+        # self.xSliceAction = self.views.addAction("x-slices")
+        # self.xSliceAction.setCheckable(True)
+        # self.xSliceAction.setChecked(False)
+        # self.xSliceAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.xsliceFrame, mAction = self.xSliceAction))
+        
+        # self.yLimsAction = self.views.addAction("y-limits")
+        # self.yLimsAction.setCheckable(True)
+        # self.yLimsAction.setChecked(False)
+        # self.yLimsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.ylimFrame, mAction = self.yLimsAction))
+        
+        # self.xLimsAction = self.views.addAction("x-limits")
+        # self.xLimsAction.setCheckable(True)
+        # self.xLimsAction.setChecked(False)
+        # self.xLimsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.xlimFrame, mAction = self.xLimsAction))
+        
+        # self.fxyAction = self.views.addAction("f(x) and f(y)")
+        # self.fxyAction.setCheckable(True)
+        # self.fxyAction.setChecked(False)
+        # self.fxyAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.fxyFrame, mAction = self.fxyAction))
+        
+        # self.fzAction = self.views.addAction("f(z)")
+        # self.fzAction.setCheckable(True)
+        # self.fzAction.setChecked(False)
+        # self.fzAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.fzzFrame, mAction = self.fzAction))
+        
+        # self.views.addSeparator()
+        # self.graphAction = self.views.addAction("Refine settings")
+        # self.graphAction.setCheckable(True)
+        # self.graphAction.setChecked(False)
+        # self.graphAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.controlsframe, mAction = self.graphAction))
+        
+        # self.plotControlsAction = self.views.addAction("Plot controls")
+        # self.plotControlsAction.setCheckable(True)
+        # self.plotControlsAction.setChecked(False)
+        # self.plotControlsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower([self.mdynTlb, self.mspecTlb, self.m2DTlb, self.controlsFrame2D, self.controlsFrameSpec,self.controlsFrameDyn], mAction = self.plotControlsAction))
+        
+        # self.plotAction = self.views.addAction("Plot limits")
+        # self.plotAction.setCheckable(True)
+        # self.plotAction.setChecked(False)
+        # self.plotAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.plotLimits, mAction = self.plotAction))
+        # self.views.addSeparator()
+        
+        # self.figure2D = self.views.addAction("Top figure")
+        # self.figure2D.setCheckable(True)
+        # self.figure2D.setChecked(False)
+        # self.figure2D.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frame2D, mAction = self.figure2D))
+        
+        # self.figureDyn = self.views.addAction("Left figure")
+        # self.figureDyn.setCheckable(True)
+        # self.figureDyn.setChecked(True)
+        # self.figureDyn.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
+        
+        # self.figureSpec = self.views.addAction("Right figure")
+        # self.figureSpec.setCheckable(True)
+        # self.figureSpec.setChecked(True)
+        # self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
+        
+        return mbar
     def resizeUI(self):
         desktop = QApplication.desktop()
         newDPI=QApplication.screens()[0].physicalDotsPerInch()
