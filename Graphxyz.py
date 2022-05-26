@@ -870,7 +870,16 @@ class AppWindow(QDialog):
             comp5=self.ui.findChildren(QCheckBox)
             comp6=self.ui.findChildren(QComboBox)
             comp7=self.ui.findChildren(QListWidget)
-            comp=comp1+comp2+comp3+comp4+comp5+comp6+comp7
+            
+            comp8=self.impw.ui.findChildren(QLineEdit)
+            comp9=self.impw.ui.findChildren(QLabel)
+            comp10=self.impw.ui.findChildren(QLineEdit)
+            comp11=self.impw.ui.findChildren(QRadioButton)
+            comp12=self.impw.ui.findChildren(QCheckBox)
+            comp13=self.impw.ui.findChildren(QComboBox)
+            comp14=self.impw.ui.findChildren(QListWidget)
+            
+            comp=comp1+comp2+comp3+comp4+comp5+comp6+comp7+comp8++comp9+comp10+comp11+comp12+comp13+comp14
             for ci in range(len(comp)):
                 compi=comp[ci]
                 try:
@@ -922,6 +931,7 @@ class AppWindow(QDialog):
         comp5=self.ui.findChildren(QCheckBox)
         comp6=self.ui.findChildren(QComboBox)
         comp7=self.ui.findChildren(QListWidget)
+        
         comp=comp1+comp2+comp3+comp4+comp5+comp6+comp7
         for ci in range(len(comp)):
             compi=comp[ci]
@@ -2436,6 +2446,7 @@ class AppWindow(QDialog):
             return items
     def impOptBtnClicked(self):
         self.impw.show()
+        #self.impw.raise_()
     def xyzmakerClicked(self):
         self.xyzmaker.show()
     def fx(self,fxtext,x):
@@ -2911,8 +2922,10 @@ class AppWindow(QDialog):
             filter=''.join([self.impw.ui.dendwith.currentText(),'(*',self.impw.ui.dendwith.currentText(),')'])
             self.filelocPreview = QFileDialog.getOpenFileName(self,None, "Select Data to Preview",filter)
             self.impw.ui.sfileloc.setText(self.filelocPreview[0])
+            self.impw.show()
         except Exception as Argument:
             self.genLogforException(Argument)
+            self.impw.show()
     
     def showPreviewDf(self):
         try:
@@ -6107,9 +6120,6 @@ if __name__=='__main__':
 #Notes on where I left:
     # Code needs lots of clean up
     # Need to add splash screen
-    # Have the option to autolimit button when data is changed. Loading does it, but adding does not
-    # Add an option to choose and add/delete multiple  sources/data from the list
-    # Plotting xy and xyz mode at the same time, multiple presets at the same currently does not work, needs to be refined
     # Handle the exception when app throws when changed from xy mode to xyz and accidentally trying to plot on that mode
     # The app now works, I think exceptions keeps it from running, because I need to use pathlib to generate log to txt
     # Sizing issues needs to be very well refined, very buggy
@@ -6166,6 +6176,9 @@ if __name__=='__main__':
     # I need to understand how scaling work for this app. I am having hard time to hace consistent UI with consistent font size
     
 #Bugs Fixed are below:
+    # Have the option to autolimit button when data is changed. Loading does it, but adding does not
+    # Add an option to choose and add/delete multiple  sources/data from the list
+    # Plotting xy and xyz mode at the same time, multiple presets at the same currently does not work, needs to be refineds
     # Make font adjusting button adjust only the font, not x y z label, adjust those labels with checkbox or additional button
     # I am planning to add functionality to be able to add multiple data files from multiple locations, to be able to save that state and load that state
     # I started converting simple text input for folder locations into combobox, that way I can iterate multiple locations and data in them with their own presets
