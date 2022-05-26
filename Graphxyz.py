@@ -11,7 +11,7 @@ import platform
 import csv
 import pickle
 import ast
-from PyQt5.QtWidgets import QAction, QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
+from PyQt5.QtWidgets import QAction, QAbstractItemView, QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
 from PyQt5 import QtWidgets
 import matplotlib
 import pandas as pd
@@ -80,7 +80,7 @@ class AppWindow(QDialog):
         self.app = app
         self.currWindowSize = self.app.desktop().geometry()
         
-        self.ui.plotLimits.setMaximumWidth(int(self.currWindowSize.width()*0.09)) #this is fix for high res displays for plotlimits
+        self.ui.plotLimits.setMaximumWidth(int(self.currWindowSize.width()*0.10)) #this is fix for high res displays for plotlimits
         
         # This will add menubar to each tab of the application
         self.mbar = self.menuAdder()
@@ -229,6 +229,23 @@ class AppWindow(QDialog):
         self.ui.impOptionsBtn.clicked.connect(self.impOptBtnClicked)
         self.ui.xbgaddButton.clicked.connect(self.xbgaddBtn)
         self.ui.dataBox.activated.connect(self.dataBoxActivated)
+        self.getxminButton.clicked.connect(lambda params: self.adjustlimits([self.ui.xminValue,'t','x','min']))
+        self.getxmaxButton.clicked.connect(lambda params: self.adjustlimits([self.ui.xmaxValue,'t','x','max']))
+        self.getyminButton.clicked.connect(lambda params: self.adjustlimits([self.ui.yminValue,'w','y','min']))
+        self.getymaxButton.clicked.connect(lambda params: self.adjustlimits([self.ui.ymaxValue,'w','y','max']))
+        self.dataButton.clicked.connect(self.multDataBtn)
+        self.sourceButton.clicked.connect(self.multSourceBtn)
+        
+        # if self.impw.ui.xyz.isChecked() and not self.d=={}:
+        #     self.ui.xminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['t'])))
+        #     self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+        #     self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+        #     self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+        # elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
+        #     self.ui.xminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['x'])))
+        #     self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+        #     self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+        #     self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
         
         #Below is for multiple mode connects:
         self.ui.yaddButton.clicked.connect(self.yaddBtn)
@@ -323,6 +340,7 @@ class AppWindow(QDialog):
         self.widgetHiderShower(self.ui.frameSpec, mAction = self.figureSpec)
         self.widgetHiderShower(self.ui.frameDyn, mAction = self.figureDyn)
         
+        
         #Initial run for default mode:
         self.modechangedMain()
         self.modechanged()
@@ -330,6 +348,11 @@ class AppWindow(QDialog):
         self.optsDynW=optsWindow(leftright='Left Figure',xyzmode=self.impw.ui.xyz.isChecked())
         self.optsSpecW=optsWindow(leftright='Right Figure',xyzmode=self.impw.ui.xyz.isChecked())
         self.opts2DW=optsWindow(leftright='Top Figure',xyzmode=self.impw.ui.xyz.isChecked())
+        
+        self.multDataChooser = multWindow(sourceLabels=[' data','Add'])
+        self.multSourceChooser = multWindow(sourceLabels=[' sources','Remove'])
+        self.multDataChooser.button.clicked.connect(self.multDataAddBtn)
+        self.multSourceChooser.button.clicked.connect(self.multSourceRemBtn)
         #self.fontBtn()
         
         #Enable sliders:
@@ -1067,6 +1090,26 @@ class AppWindow(QDialog):
         self.xyzmaker.ui.dataGenList.clear()
         self.dGr=dict()
         self.dGrtemp=dict()
+    def adjustlimits(self,params):
+        try:
+            if self.impw.ui.xyz.isChecked() and not self.d=={}:
+                if params[3]=='min':
+                    params[0].setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()][params[1]])))
+                elif params[3]=='max':
+                    params[0].setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()][params[1]])))
+                #self.ui.xmaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['t'])))
+                #self.ui.yminValue.setText("{0:.1e}".format(np.nanmin(self.d[self.dataBox.currentText()]['w'])))
+                #self.ui.ymaxValue.setText("{0:.1e}".format(np.nanmax(self.d[self.dataBox.currentText()]['w'])))
+            elif not self.impw.ui.xyz.isChecked() and not self.d=={}:
+                if params[3]=='min':
+                    params[0].setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()][params[2]])))
+                elif params[3]=='max':
+                    params[0].setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()][params[2]])))
+                #self.ui.xmaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['x'])))
+                #self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
+                #self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def refreshBtn(self):
         try:
             self.showPopInfo("Loading files...", durationToShow = 1.5)
@@ -2452,6 +2495,42 @@ class AppWindow(QDialog):
         self.opts2DW.resize(int(self.geometry().width()/12),int(self.geometry().height()/3.5))
         self.opts2DW.move(int(uisize.x()-uisize_main.width()*0.075),int(uisize.y())) #Because this is close to the edge of the monitor, I deviated its position by 5%
         self.opts2DW.show()
+    def multDataBtn(self):
+        uisize = self.ui.dataBox.mapToGlobal(QPoint(0, 0))
+        self.multDataChooser.resize(int(self.geometry().width()/3),int(self.geometry().height()/3))
+        self.multDataChooser.move(int(uisize.x()-uisize_main.width()*0.05),int(uisize.y())) #Because this is close to the edge of the monitor, I deviated its position by 5%
+        self.multDataChooser.list.clear()
+        
+        for i in range(self.ui.dataBox.count()):
+            self.multDataChooser.list.addItem(self.ui.dataBox.itemText(i))
+        
+        self.multDataChooser.show()
+    def multDataAddBtn(self):
+        listToAdd = self.multDataChooser.list.selectedItems()
+        if not listToAdd==[]:
+            for item in listToAdd:
+                if not self.ui.dataList.findItems(item.text(), Qt.MatchFixedString | Qt.MatchCaseSensitive):
+                    self.ui.dataList.addItem(item.text())
+    def multSourceBtn(self):
+        uisize = self.ui.filesLoc.mapToGlobal(QPoint(0, 0))
+        self.multSourceChooser.resize(int(self.geometry().width()/3),int(self.geometry().height()/3))
+        self.multSourceChooser.move(int(uisize.x()-uisize_main.width()*0.05),int(uisize.y())) #Because this is close to the edge of the monitor, I deviated its position by 5%
+        self.multSourceChooser.list.clear()
+        
+        for i in range(self.ui.filesLoc.count()):
+            self.multSourceChooser.list.addItem(self.ui.filesLoc.itemText(i))
+        
+        self.multSourceChooser.show()
+    def multSourceRemBtn(self):
+        listToRem = self.multSourceChooser.list.selectedItems()
+        if not listToRem==[]:
+            for item in listToRem:
+                self.ui.filesLoc.removeItem(self.ui.filesLoc.findText(item.text()))
+            self.multSourceChooser.list.clear()
+            
+            for i in range(self.ui.filesLoc.count()):
+                self.multSourceChooser.list.addItem(self.ui.filesLoc.itemText(i))
+        
     def fitBtnClicked(self):
         if self.fitw.ui.ydatabox.currentText()=='yright':
             self.fitw.xdata=self.axspec.lines[0].get_xdata()
@@ -5440,7 +5519,19 @@ class optsWindow(QDialog):
             self.mirrorY.setText("Mirror in Y")
             self.optlayout.addWidget(self.mirrorX)
             self.optlayout.addWidget(self.mirrorY)
-        #self.exec()
+class multWindow(QDialog):
+    def __init__(self,sourceLabels):
+        super().__init__()
+        self.setWindowTitle(''.join(['Choose multiple',sourceLabels[0],' to ',sourceLabels[1].lower()]))
+        self.optlayout=QtWidgets.QVBoxLayout(self)
+        self.list = QListWidget(self)
+        self.list.setSelectionMode(QAbstractItemView.ExtendedSelection)
+        self.button = QPushButton(self)
+        self.button.setText(sourceLabels[1])
+        self.button.setMaximumWidth(100)
+        self.button.setMaximumHeight(32)
+        self.optlayout.addWidget(self.list)
+        self.optlayout.addWidget(self.button)
 class LatexVisitor(ast.NodeVisitor):
 
     def prec(self, n):
@@ -6016,6 +6107,8 @@ if __name__=='__main__':
 #Notes on where I left:
     # Code needs lots of clean up
     # Need to add splash screen
+    # Have the option to autolimit button when data is changed. Loading does it, but adding does not
+    # Add an option to choose and add/delete multiple  sources/data from the list
     # Plotting xy and xyz mode at the same time, multiple presets at the same currently does not work, needs to be refined
     # Handle the exception when app throws when changed from xy mode to xyz and accidentally trying to plot on that mode
     # The app now works, I think exceptions keeps it from running, because I need to use pathlib to generate log to txt
