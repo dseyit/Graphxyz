@@ -730,7 +730,7 @@
                    <rect>
                     <x>0</x>
                     <y>0</y>
-                    <width>1157</width>
+                    <width>1215</width>
                     <height>380</height>
                    </rect>
                   </property>
@@ -753,7 +753,7 @@
                    <item>
                     <widget class="QScrollArea" name="plotLimits">
                      <property name="sizePolicy">
-                      <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                      <sizepolicy hsizetype="MinimumExpanding" vsizetype="Expanding">
                        <horstretch>0</horstretch>
                        <verstretch>0</verstretch>
                       </sizepolicy>
@@ -772,7 +772,7 @@
                        <rect>
                         <x>0</x>
                         <y>0</y>
-                        <width>145</width>
+                        <width>203</width>
                         <height>378</height>
                        </rect>
                       </property>
@@ -815,7 +815,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -840,7 +840,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -944,7 +944,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -969,7 +969,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -994,7 +994,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -1035,7 +1035,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -1066,7 +1066,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -1139,7 +1139,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -1208,7 +1208,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -1323,7 +1323,7 @@
                          </property>
                          <property name="maximumSize">
                           <size>
-                           <width>50</width>
+                           <width>150</width>
                            <height>16777215</height>
                           </size>
                          </property>
@@ -1620,40 +1620,6 @@
                       <property name="spacing">
                        <number>0</number>
                       </property>
-                      <item row="2" column="0" colspan="3">
-                       <widget class="QListWidget" name="bgdataList">
-                        <property name="enabled">
-                         <bool>true</bool>
-                        </property>
-                        <property name="sizePolicy">
-                         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
-                          <horstretch>0</horstretch>
-                          <verstretch>0</verstretch>
-                         </sizepolicy>
-                        </property>
-                        <property name="minimumSize">
-                         <size>
-                          <width>150</width>
-                          <height>0</height>
-                         </size>
-                        </property>
-                        <property name="maximumSize">
-                         <size>
-                          <width>1650</width>
-                          <height>16777215</height>
-                         </size>
-                        </property>
-                        <property name="font">
-                         <font>
-                          <family>Arial</family>
-                          <pointsize>10</pointsize>
-                         </font>
-                        </property>
-                        <property name="selectionMode">
-                         <enum>QAbstractItemView::ExtendedSelection</enum>
-                        </property>
-                       </widget>
-                      </item>
                       <item row="1" column="0" colspan="3">
                        <widget class="QFrame" name="frame_3">
                         <property name="sizePolicy">
@@ -1885,6 +1851,40 @@
                           </widget>
                          </item>
                         </layout>
+                       </widget>
+                      </item>
+                      <item row="2" column="0" colspan="3">
+                       <widget class="QListWidget" name="bgdataList">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="minimumSize">
+                         <size>
+                          <width>150</width>
+                          <height>0</height>
+                         </size>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>1650</width>
+                          <height>16777215</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <family>Arial</family>
+                          <pointsize>10</pointsize>
+                         </font>
+                        </property>
+                        <property name="selectionMode">
+                         <enum>QAbstractItemView::ExtendedSelection</enum>
+                        </property>
                        </widget>
                       </item>
                      </layout>
