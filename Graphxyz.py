@@ -80,6 +80,8 @@ class AppWindow(QDialog):
         self.app = app
         self.currWindowSize = self.app.desktop().geometry()
         
+        self.ui.plotLimits.setMaximumWidth(int(self.currWindowSize.width()*0.09)) #this is fix for high res displays for plotlimits
+        
         # This will add menubar to each tab of the application
         self.mbar = self.menuAdder()
         #self.mbar.setObjectName("tabMenuBar")
