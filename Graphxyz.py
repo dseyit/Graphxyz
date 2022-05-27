@@ -39,6 +39,7 @@ from numpy import linspace
 from scipy.optimize import curve_fit
 import math
 import requests # Used when app version is checked and to check if new version is available
+from inspect import getmembers, isfunction #This is used to get the list of the functions inside python module
 #import resources for windows this resources function needed to be defined in a file, could not find a way to import local modules
 
 # Run these to build for each platforms (cd to src folder)
@@ -55,7 +56,17 @@ import requests # Used when app version is checked and to check if new version i
 # except Exception as Argument:
 #     self.genLogforException(Argument)
 
-appVersion = '0.4'
+#This is the way to import external python functions to fit:
+# import importlib.util
+# import sys
+# spec = importlib.util.spec_from_file_location("customPyFuns", "/Users/seyitliyev/Documents/Graphxyz/Python functions/funs_fit.py")
+# pyFuns = importlib.util.module_from_spec(spec)
+# sys.modules["customPyFuns"] = pyFuns
+# spec.loader.exec_module(pyFuns)
+# print(''.join([getmembers(pyFuns, isfunction)[0][0],'(x,p)']))
+# pyFuns.testfun()
+
+appVersion = '0.5'
 appVersionText = ''.join(['Version ',appVersion])
 
 
@@ -91,7 +102,7 @@ class AppWindow(QDialog):
         #Initializing external ui windows that will be bound to main UI:
         self.impw=impOptionsWindow()
         self.xyzmaker=xyzMakerWindow()
-        self.fitw=fitWindow()
+        self.fitw=fitWindow(app = self.app)
         
         #Add icons to buttons:
         loadBtnIcon = icnDir/'refresh.png'
@@ -2519,6 +2530,16 @@ class AppWindow(QDialog):
             self.multDataChooser.list.addItem(self.ui.dataBox.itemText(i))
         
         self.multDataChooser.show()
+        
+        import importlib.util
+        import sys
+        spec = importlib.util.spec_from_file_location("customPyFuns", "/Users/seyitliyev/Documents/Graphxyz/Python functions/funs_fit.py")
+        pyFuns = importlib.util.module_from_spec(spec)
+        sys.modules["customPyFuns"] = pyFuns
+        spec.loader.exec_module(pyFuns)
+        print(''.join([getmembers(pyFuns, isfunction)[0][0],'(x,p)']))
+        pyFuns.testfun()
+        
     def multDataAddBtn(self):
         listToAdd = self.multDataChooser.list.selectedItems()
         if not listToAdd==[]:
@@ -5178,10 +5199,10 @@ class impOptionsWindow(QDialog):
         self.ui = uic.loadUi(uiPath,self)
         self.ui.setWindowTitle('Preset options')
 class fitWindow(QDialog):
-    def __init__(self):
+    def __init__(self, app):
         super().__init__()
         DataDir = getResourcePath("uis")
-        uiPath = DataDir / 'Fit2.ui'
+        uiPath = DataDir / 'Fit.ui'
         self.ui = uic.loadUi(uiPath,self)
         self.ui.setWindowTitle('Fit the Data')
         self.fitfigcanvas=PlotCanvas(self, width=7.41, height=4.61, bottom=0.1, dpi=100)
@@ -5191,6 +5212,8 @@ class fitWindow(QDialog):
         self.axFit=self.mFit.axes
         self.axFit.ticklabel_format(axis='y',style='sci',scilimits=(-2,2))
         self.figFit=self.mFit.figure
+        self.app = app
+        self.currWindowSize = self.app.desktop().geometry()
         
         # self.mbar = self.menuAdder()
         # #self.mbar.setObjectName("tabMenuBar")
@@ -5204,11 +5227,12 @@ class fitWindow(QDialog):
         self.cpfitbtn.setToolTip('Press to Copy to Clipboard')
         self.ui.layoutFit.addWidget(self.cpfitbtn,0, 1, 1, 1)
         
-        self.ui.layoutFit.addWidget(NavigationToolbar_new(self.mFit, self.axFit,self),0, 0, 1, 1)
+        self.ui.layoutFit.addWidget(NavigationToolbar_new(self.mFit, self.axFit,self,isGraph = False),0, 0, 1, 1)
         index=self.ui.layoutFit.count()-1
-        self.ui.layoutFit.itemAt(index).widget().setMaximumSize(QtCore.QSize(2250, 17))
+        self.ui.layoutFit.itemAt(index).widget().setMaximumSize(QtCore.QSize(2250, int(self.currWindowSize.height()*0.02)))
         
-        self.eqcanvas=PlotCanvas(self, width=17.41, height=4.61,dpi=100)
+        self.eqcanvas=PlotCanvas(self, width=17.41, height=2,dpi=100)
+        self.eqcanvas.setMaximumSize(QtCore.QSize(3000, int(self.currWindowSize.height()*0.05)))
         self.ui.layoutFun.addWidget(self.eqcanvas,1, 0, 1, 2)
         indexFun=self.ui.layoutFun.count()-1
         self.mFun=self.ui.layoutFun.itemAt(indexFun).widget()
@@ -5221,10 +5245,10 @@ class fitWindow(QDialog):
         self.cpeqbtn.setToolTip('Press to Copy to Clipboard')
         self.ui.layoutFun.addWidget(self.cpeqbtn,0, 1, 1, 1)
         
-        self.ui.layoutFun.addWidget(NavigationToolbar_new(self.mFun,self.axFun, self),0, 0, 1, 1)
+        self.ui.layoutFun.addWidget(NavigationToolbar_new(self.mFun,self.axFun, self, isGraph = False,isEquation = True),0, 0, 1, 1)
         
         index=self.ui.layoutFun.count()-1
-        self.ui.layoutFun.itemAt(index).widget().setMaximumSize(QtCore.QSize(1500, 20))
+        self.ui.layoutFun.itemAt(index).widget().setMaximumSize(QtCore.QSize(1500, int(self.currWindowSize.height()*0.02)))
     def menuAdder(self, alreadyExist = False):
         if alreadyExist:
             self.mbar.parent(None)
@@ -5926,68 +5950,66 @@ class pandasModel(QAbstractTableModel):
                 return str(self._data.iloc[index.row(), index.column()])
         return None
 class NavigationToolbar_new(NavigationToolbar):
-    def __init__(self, figure_canvas, ax, mainDialog, parent=None):
-      # self.toolitems = (('Home', 'Lorem ipsum dolor sit amet', 'home', 'home'),
-        #     ('Back', 'consectetuer adipiscing elit', 'back', 'back'),
-        #     ('Forward', 'sed diam nonummy nibh euismod', 'forward', 'forward'),
-        #     (None, None, None, None),
-        #     ('Pan', 'tincidunt ut laoreet', 'move', 'pan'),
-        #     ('Zoom', 'dolore magna aliquam', 'zoom_to_rect', 'zoom'),
-        #     (None, None, None, None),
-        #     ('Subplots', 'putamus parum claram', 'subplots', 'configure_subplots'),
-        #     ('Save', 'sollemnes in futurum', 'filesave', 'save_figure'),
-        #     ('Port', 'Selects', "select", 'select_tool'),
-        #     )
+    def __init__(self, figure_canvas, ax, mainDialog, parent=None, isGraph = True, isEquation = False):
+        if isEquation:
+            self.toolitems = (('Home', 'Lorem ipsum dolor sit amet', 'home', 'home'),
+                ('Pan', 'tincidunt ut laoreet', 'move', 'pan'),
+                ('Save', 'sollemnes in futurum', 'filesave', 'save_figure')
+                )
         self.ax = ax
         self.mainDialog = mainDialog
+        self.isGraph = isGraph
       
         NavigationToolbar.__init__(self, figure_canvas, parent= None)
     #I need to add checkbox to check whether it is xy mode or xyz mode or plot left or plot right?
     def zoom(self):
         super().zoom()
-        xlims = self.ax.get_xlim()
-        ylims = self.ax.get_ylim()
-        if not self.mainDialog.impw.ui.xyz.isChecked():
-            self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
-            self.mainDialog.ui.yminValue.setText("{0:.1f}".format(ylims[0]))
-            self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(ylims[1]))
-        elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axdyn:
-            self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
-        elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axspec:
-            self.mainDialog.ui.yminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(xlims[1]))
+        if self.isGraph:
+            xlims = self.ax.get_xlim()
+            ylims = self.ax.get_ylim()
+            if not self.mainDialog.impw.ui.xyz.isChecked():
+                self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
+                self.mainDialog.ui.yminValue.setText("{0:.1f}".format(ylims[0]))
+                self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(ylims[1]))
+            elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axdyn:
+                self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
+            elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axspec:
+                self.mainDialog.ui.yminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(xlims[1]))
     def home(self):
         super().home()
-        xlims = self.ax.get_xlim()
-        ylims = self.ax.get_ylim()
-        if not self.mainDialog.impw.ui.xyz.isChecked():
-            self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
-            self.mainDialog.ui.yminValue.setText("{0:.1f}".format(ylims[0]))
-            self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(ylims[1]))
-        elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axdyn:
-            self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
-        elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axspec:
-            self.mainDialog.ui.yminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(xlims[1]))
+        if self.isGraph:
+            xlims = self.ax.get_xlim()
+            ylims = self.ax.get_ylim()
+            if not self.mainDialog.impw.ui.xyz.isChecked():
+                self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
+                self.mainDialog.ui.yminValue.setText("{0:.1f}".format(ylims[0]))
+                self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(ylims[1]))
+            elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axdyn:
+                self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
+            elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axspec:
+                self.mainDialog.ui.yminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(xlims[1]))
     def pan(self):
         super().pan()
-        xlims = self.ax.get_xlim()
-        ylims = self.ax.get_ylim()
-        if not self.mainDialog.impw.ui.xyz.isChecked():
-            self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
-            self.mainDialog.ui.yminValue.setText("{0:.1f}".format(ylims[0]))
-            self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(ylims[1]))
-        elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axdyn:
-            self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
-        elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axspec:
-            self.mainDialog.ui.yminValue.setText("{0:.1f}".format(xlims[0]))
-            self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(xlims[1]))
+        if self.isGraph:
+            xlims = self.ax.get_xlim()
+            ylims = self.ax.get_ylim()
+            if not self.mainDialog.impw.ui.xyz.isChecked():
+                self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
+                self.mainDialog.ui.yminValue.setText("{0:.1f}".format(ylims[0]))
+                self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(ylims[1]))
+            elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axdyn:
+                self.mainDialog.ui.xminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.xmaxValue.setText("{0:.1f}".format(xlims[1]))
+            elif self.mainDialog.impw.ui.xyz.isChecked() and self.ax == self.mainDialog.axspec:
+                self.mainDialog.ui.yminValue.setText("{0:.1f}".format(xlims[0]))
+                self.mainDialog.ui.ymaxValue.setText("{0:.1f}".format(xlims[1]))
 class TabWindow(QTabWidget):
     def __init__(self, app):
         super().__init__()
