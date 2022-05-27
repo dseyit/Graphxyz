@@ -101,6 +101,7 @@ class AppWindow(QDialog):
         
         #Initializing external ui windows that will be bound to main UI:
         self.impw=impOptionsWindow()
+        self.funw = funOptionsWindow()
         self.xyzmaker=xyzMakerWindow()
         self.fitw=fitWindow(app = self.app)
         
@@ -2458,6 +2459,10 @@ class AppWindow(QDialog):
             return items
     def impOptBtnClicked(self):
         uisize = self.ui.impOptionsBtn.mapToGlobal(QPoint(0, 0))
+        self.impw.move(int(uisize.x()-uisize_main.width()*0.05),int(uisize.y())) 
+        self.impw.show()
+    def funOptBtnClicked(self):
+        uisize = self.fitw.ui.funOptionsBtn.mapToGlobal(QPoint(0, 0))
         self.impw.move(int(uisize.x()-uisize_main.width()*0.05),int(uisize.y())) 
         self.impw.show()
         #self.impw.raise_()
@@ -5198,6 +5203,13 @@ class impOptionsWindow(QDialog):
         uiPath = DataDir / 'impOptions.ui'
         self.ui = uic.loadUi(uiPath,self)
         self.ui.setWindowTitle('Preset options')
+class funOptionsWindow(QDialog):
+    def __init__(self):
+        super().__init__()
+        DataDir = getResourcePath("uis")
+        uiPath = DataDir / 'funOptions.ui'
+        self.ui = uic.loadUi(uiPath,self)
+        self.ui.setWindowTitle('Function options')
 class fitWindow(QDialog):
     def __init__(self, app):
         super().__init__()
