@@ -4551,7 +4551,7 @@ class AppWindow(QDialog):
                 tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
         self.fitw.ui.fValue.setText(tempstr)
         funstr=self.fitw.ui.fValue.text()
-        funstr=funstr.replace('[','')
+        funstr=funstr.replace('[','_')
         funstr=funstr.replace(']','')
         lat=self.py2tex(funstr)
         self.fitw.axFun.clear()
@@ -5181,7 +5181,7 @@ class fitWindow(QDialog):
     def __init__(self):
         super().__init__()
         DataDir = getResourcePath("uis")
-        uiPath = DataDir / 'Fit.ui'
+        uiPath = DataDir / 'Fit2.ui'
         self.ui = uic.loadUi(uiPath,self)
         self.ui.setWindowTitle('Fit the Data')
         self.fitfigcanvas=PlotCanvas(self, width=7.41, height=4.61, bottom=0.1, dpi=100)
@@ -5192,11 +5192,11 @@ class fitWindow(QDialog):
         self.axFit.ticklabel_format(axis='y',style='sci',scilimits=(-2,2))
         self.figFit=self.mFit.figure
         
-        self.mbar = self.menuAdder()
-        #self.mbar.setObjectName("tabMenuBar")
-        self.mbar.setMaximumHeight(50)
-        self.mbar.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,QtWidgets.QSizePolicy.Maximum)
-        self.fitMenuLayout.addWidget(self.mbar)
+        # self.mbar = self.menuAdder()
+        # #self.mbar.setObjectName("tabMenuBar")
+        # self.mbar.setMaximumHeight(50)
+        # self.mbar.setSizePolicy(QtWidgets.QSizePolicy.MinimumExpanding,QtWidgets.QSizePolicy.Maximum)
+        # self.fitMenuLayout.addWidget(self.mbar)
         
         self.cpfitbtn=QtWidgets.QPushButton(self)
         self.cpfitbtn.setMaximumSize(QtCore.QSize(32, 32))
@@ -6315,6 +6315,7 @@ if __name__=='__main__':
     
 #Notes on where I left:
     # Code needs lots of clean up
+    # I am omitting multiple fit option for now. I will work on it later
     # Need to add splash screen
     # Handle the exception when app throws when changed from xy mode to xyz and accidentally trying to plot on that mode
     # The app now works, I think exceptions keeps it from running, because I need to use pathlib to generate log to txt

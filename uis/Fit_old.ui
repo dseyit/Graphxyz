@@ -26,10 +26,7 @@
    <property name="bottomMargin">
     <number>3</number>
    </property>
-   <property name="verticalSpacing">
-    <number>0</number>
-   </property>
-   <item row="1" column="0">
+   <item row="0" column="0">
     <widget class="QFrame" name="frame_4">
      <property name="font">
       <font>
@@ -297,7 +294,7 @@
               <x>0</x>
               <y>0</y>
               <width>1714</width>
-              <height>319</height>
+              <height>320</height>
              </rect>
             </property>
             <layout class="QHBoxLayout" name="horizontalLayout">
@@ -495,7 +492,7 @@
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QGridLayout" name="layoutControls" rowstretch="0,0,0,0" columnstretch="0,0,0">
+        <layout class="QGridLayout" name="layoutControls" rowstretch="0,0,0" columnstretch="0,0,0">
          <property name="leftMargin">
           <number>1</number>
          </property>
@@ -511,7 +508,7 @@
          <property name="spacing">
           <number>0</number>
          </property>
-         <item row="2" column="0" rowspan="2" colspan="3">
+         <item row="1" column="0" rowspan="2" colspan="3">
           <widget class="QFrame" name="frame_10">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -702,7 +699,7 @@
            </layout>
           </widget>
          </item>
-         <item row="1" column="2">
+         <item row="0" column="2">
           <widget class="QFrame" name="frame">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Expanding" vsizetype="Preferred">
@@ -1007,7 +1004,7 @@
               </layout>
              </widget>
             </item>
-            <item row="0" column="2" rowspan="2">
+            <item row="0" column="4" rowspan="2">
              <widget class="QFrame" name="frame_12">
               <property name="sizePolicy">
                <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
@@ -1276,6 +1273,525 @@
                  </property>
                  <property name="text">
                   <string>0,1</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="3">
+             <widget class="QFrame" name="frame_11">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>110</width>
+                <height>250</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_11">
+               <property name="leftMargin">
+                <number>5</number>
+               </property>
+               <property name="topMargin">
+                <number>5</number>
+               </property>
+               <property name="rightMargin">
+                <number>5</number>
+               </property>
+               <property name="bottomMargin">
+                <number>5</number>
+               </property>
+               <property name="spacing">
+                <number>5</number>
+               </property>
+               <item row="0" column="0">
+                <widget class="QPushButton" name="savefitButton">
+                 <property name="maximumSize">
+                  <size>
+                   <width>100</width>
+                   <height>32</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Save to:</string>
+                 </property>
+                 <property name="autoDefault">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QLineEdit" name="fitsavename">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>100</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>default_fit</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QPushButton" name="loadfitButton">
+                 <property name="maximumSize">
+                  <size>
+                   <width>100</width>
+                   <height>32</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Load from:</string>
+                 </property>
+                 <property name="autoDefault">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QLineEdit" name="dataloadname">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>100</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>default_fit</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="2">
+             <widget class="QFrame" name="frame_9">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>50</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>125</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <item row="2" column="0">
+                <widget class="QRadioButton" name="simulatecb">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Simulate</string>
+                 </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup</string>
+                 </attribute>
+                </widget>
+               </item>
+               <item row="1" column="0">
+                <widget class="QRadioButton" name="nonecb">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>None</string>
+                 </property>
+                 <property name="checked">
+                  <bool>true</bool>
+                 </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup</string>
+                 </attribute>
+                </widget>
+               </item>
+               <item row="4" column="0">
+                <widget class="QRadioButton" name="fitcb">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Fit</string>
+                 </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup</string>
+                 </attribute>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QRadioButton" name="trycb">
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Try</string>
+                 </property>
+                 <attribute name="buttonGroup">
+                  <string notr="true">buttonGroup</string>
+                 </attribute>
+                </widget>
+               </item>
+               <item row="0" column="0">
+                <widget class="QLabel" name="label_16">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>200</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Choose mode:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="6" rowspan="2">
+             <widget class="QFrame" name="frame_13">
+              <property name="sizePolicy">
+               <sizepolicy hsizetype="Minimum" vsizetype="Expanding">
+                <horstretch>0</horstretch>
+                <verstretch>0</verstretch>
+               </sizepolicy>
+              </property>
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>4553</width>
+                <height>16777215</height>
+               </size>
+              </property>
+              <property name="font">
+               <font>
+                <pointsize>12</pointsize>
+               </font>
+              </property>
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_16">
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <property name="spacing">
+                <number>5</number>
+               </property>
+               <item row="1" column="0">
+                <widget class="QLabel" name="label_5">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>453643</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Confidence:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="0">
+                <widget class="QPushButton" name="resetButton_9">
+                 <property name="maximumSize">
+                  <size>
+                   <width>345634</width>
+                   <height>32</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Compare:</string>
+                 </property>
+                 <property name="autoDefault">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="0">
+                <widget class="QPushButton" name="resetButton_10">
+                 <property name="maximumSize">
+                  <size>
+                   <width>150456</width>
+                   <height>32</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Add as:</string>
+                 </property>
+                 <property name="autoDefault">
+                  <bool>false</bool>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="0" colspan="4">
+                <widget class="QLabel" name="label_8">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Expanding" vsizetype="Minimum">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>4356435</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Model Comparison:</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="1" column="1" colspan="3">
+                <widget class="QLineEdit" name="lineEdit_8">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="minimumSize">
+                  <size>
+                   <width>27</width>
+                   <height>0</height>
+                  </size>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>20</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>0.1</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="2" column="1" colspan="3">
+                <widget class="QLineEdit" name="lineEdit_9">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>16777215</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>1,2</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignCenter</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="3" column="1" colspan="3">
+                <widget class="QLineEdit" name="lineEdit_10">
+                 <property name="sizePolicy">
+                  <sizepolicy hsizetype="Ignored" vsizetype="Fixed">
+                   <horstretch>0</horstretch>
+                   <verstretch>0</verstretch>
+                  </sizepolicy>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>546365</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>1</string>
                  </property>
                  <property name="alignment">
                   <set>Qt::AlignCenter</set>
@@ -1635,39 +2151,6 @@
         </layout>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="0">
-    <widget class="QFrame" name="fitMenuFrame">
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>0</height>
-      </size>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <layout class="QGridLayout" name="fitMenuLayout">
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <property name="spacing">
-       <number>0</number>
-      </property>
      </layout>
     </widget>
    </item>
