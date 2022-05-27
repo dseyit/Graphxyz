@@ -191,6 +191,14 @@ class AppWindow(QDialog):
             self.loadIntimpBtn()
             ind=self.ui.listprefs_main.findText(self.defPreset); self.ui.listprefs_main.setCurrentIndex(ind)
             self.prefimp_main() #Loads default presets file to main menu
+        try:
+            self.loadDeffunBtn()
+            ind=self.fitw.ui.listfuns_main.findText(self.defFunction); self.fitw.ui.listfuns_main.setCurrentIndex(ind)
+            self.funimp_main() #Loads default presets file to main menu
+        except:
+            self.loadIntfunBtn()
+            ind=self.fitw.ui.listfuns_main.findText(self.defFunction); self.fitw.ui.listfuns_main.setCurrentIndex(ind)
+            self.funimp_main() #Loads default presets file to main menu
         
         # #Time check for auto dark mode, I think this can be implemented, but I prefer to give control over to the user, Problematic, needs fix
         # # self.timestamp = float(time.strftime('%H:%M:%S')[0:2])
@@ -239,6 +247,7 @@ class AppWindow(QDialog):
         #self.ui.dataBox.activated.connect(self.plot2D)
         self.ui.darkCheck.stateChanged.connect(self.darkChanged) #Problematic needs to be fixed
         self.ui.impOptionsBtn.clicked.connect(self.impOptBtnClicked)
+        self.fitw.ui.funOptionsBtn.clicked.connect(self.funOptBtnClicked)
         self.ui.xbgaddButton.clicked.connect(self.xbgaddBtn)
         self.ui.dataBox.activated.connect(self.dataBoxActivated)
         self.getxminButton.clicked.connect(lambda params: self.adjustlimits([self.ui.xminValue,'t','x','min']))
@@ -302,18 +311,26 @@ class AppWindow(QDialog):
         self.fitw.cpeqbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.eqcanvas))
         self.fitw.ui.quickaddParam.clicked.connect(self.quickparamaddBtn)
         
-        #Imp window button connects
+        #Imp and functions window button connects
         self.impw.ui.xyz.toggled.connect(self.modechanged)
         self.impw.ui.selectimpButton.clicked.connect(self.selectimpBtn)
+        self.funw.ui.selectfunButton.clicked.connect(self.selectfunBtn)
         self.impw.ui.loadimpButton.clicked.connect(self.loadimpBtn)
+        self.funw.ui.loadfunButton.clicked.connect(self.loadfunBtn)
         self.impw.ui.listprefs.activated.connect(self.prefimp)
         self.ui.listprefs_main.activated.connect(self.prefimp_main)
+        self.funw.ui.listfuns.activated.connect(self.funimp)
+        self.fitw.ui.listfuns_main.activated.connect(self.funimp_main)
         self.impw.ui.addpresetButton.clicked.connect(self.addpresetBtn)
+        self.funw.ui.addfunButton.clicked.connect(self.addfunBtn)
         self.impw.ui.rempresetButton.clicked.connect(self.rempresetBtn)
+        self.funw.ui.remfunButton.clicked.connect(self.remfunBtn)
         self.impw.ui.selectPrefSample.clicked.connect(self.selectPrefSampleBtn)
         self.impw.ui.previewButton.clicked.connect(self.showPreviewDf)
         self.impw.ui.savepresetsButton.clicked.connect(self.savePresBtn)
+        self.funw.ui.savefunsButton.clicked.connect(self.saveFunBtn)
         self.impw.ui.defpresetButton.clicked.connect(self.saveDefPresetBtn)
+        self.funw.ui.deffunButton.clicked.connect(self.saveDefFunBtn)
         
         #Graph options, copy button connects
         self.lbleft.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.mdyn))
@@ -385,9 +402,6 @@ class AppWindow(QDialog):
         #print(self.findChild(QMenuBar,"mbar"))
         
         self.show()
-        
-        if not appVersionText == latestVersion:
-            self.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue')
         
         npyDir = self.makeFolderinDocuments ('Saved Tabs')
         npyPath = npyDir / 'reset'
@@ -2462,9 +2476,9 @@ class AppWindow(QDialog):
         self.impw.move(int(uisize.x()-uisize_main.width()*0.05),int(uisize.y())) 
         self.impw.show()
     def funOptBtnClicked(self):
-        uisize = self.fitw.ui.funOptionsBtn.mapToGlobal(QPoint(0, 0))
-        self.impw.move(int(uisize.x()-uisize_main.width()*0.05),int(uisize.y())) 
-        self.impw.show()
+        uisize = self.fitw.ui.fitgraph_fr.mapToGlobal(QPoint(0, 0))
+        self.funw.move(int(uisize.x()+self.fitw.ui.fitgraph_fr.geometry().width()/6),int(uisize.y()+self.fitw.ui.fitgraph_fr.geometry().height()/6))
+        self.funw.show()
         #self.impw.raise_()
     def xyzmakerClicked(self):
         self.xyzmaker.show()
@@ -2946,6 +2960,23 @@ class AppWindow(QDialog):
             self.ui.listprefs_main.addItems(prnames)
             self.prefimp()
             self.prefimp_main()
+    def selectfunBtn(self):
+        filter="txt(*.txt)"
+        funfilename = QFileDialog.getOpenFileName(self,None, "Select Functions File",filter)
+        self.funw.ui.funloc.setText(funfilename[0])
+        if not funfilename[0]=='':
+            self.funw_list=np.loadtxt(funfilename[0], delimiter = " ",dtype=str).tolist()
+            if self.funw_list==[]:
+                funnames=[]
+            else:
+                funnames=self.funw_list[0].split(',')
+                funnames.sort()
+            self.funw.ui.listfuns.clear()
+            self.fitw.ui.listfuns_main.clear()
+            self.funw.ui.listfuns.addItems(funnames)
+            self.ui.listfuns_main.addItems(funnames)
+            self.funimp()
+            self.funimp_main()
     def selectPrefSampleBtn(self):
         try:
             filter=''.join([self.impw.ui.dendwith.currentText(),'(*',self.impw.ui.dendwith.currentText(),')'])
@@ -2988,6 +3019,28 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
         self.prefimp()
         self.prefimp_main()
+    def loadDeffunBtn(self):
+        #DataDir = getResourcePath("prs")
+        DataDir = self.makeFolderinDocuments('Functions')
+        funPath = DataDir / 'functions_default.txt'
+        self.funw.ui.funloc.setText(str(funPath))
+        self.funw_list=np.loadtxt(funPath, delimiter = " ",dtype=str).tolist()
+        if self.funw_list==[]:
+            funnames=[]
+        else:
+            funnames=self.funw_list[0].split(',')
+            funnames.sort()
+        self.funw.ui.listfuns.clear()
+        self.fitw.ui.listfuns_main.clear()
+        self.funw.ui.listfuns.addItems(funnames)
+        self.fitw.ui.listfuns_main.addItems(funnames)
+        try:
+            self.defFunction = self.funw_list[-1]
+        except Exception as Argument:
+            self.defFunction = 'Linear'
+            self.genLogforException(Argument)
+        self.funimp()
+        self.funimp_main()
     def loadIntimpBtn(self):
         DataDir = getResourcePath("prs")
         #DataDir = self.makeFolderinDocuments('Instrument Presets')
@@ -3010,6 +3063,29 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
         self.prefimp()
         self.prefimp_main()
+    def loadIntfunBtn(self):
+        DataDir = getResourcePath("funs")
+        #DataDir = self.makeFolderinDocuments('Instrument Presets')
+        funPath = DataDir / 'functions_default.txt'
+        self.funw.ui.funloc.setText('functions_default.txt')
+        self.funw_list=np.loadtxt(funPath, delimiter = " ",dtype=str).tolist()
+        print(self.funw_list)
+        if self.funw_list==[]:
+            funnames=[]
+        else:
+            funnames=self.funw_list[0].split(',')
+            funnames.sort()
+        self.funw.ui.listfuns.clear()
+        self.fitw.ui.listfuns_main.clear()
+        self.funw.ui.listfuns.addItems(funnames)
+        self.fitw.ui.listfuns_main.addItems(funnames)
+        try:
+            self.defFunction = self.funw_list[-1]
+        except Exception as Argument:
+            self.defFunction = 'Linear'
+            self.genLogforException(Argument)
+        self.funimp()
+        self.funimp_main()
     def loadimpBtn(self):
         try:
             #DataDir = getResourcePath("prs")
@@ -3037,11 +3113,46 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
             self.loadIntimpBtn()
             self.showPopInfo('Select preset location',color = 'red')
+    def loadfunBtn(self):
+        try:
+            #DataDir = getResourcePath("prs")
+            #DataDir = self.makeFolderinDocuments('Instrument Presets')
+            #prPath = DataDir / 'presets_default.txt'
+            funPath = self.funw.ui.funloc.text()
+            self.funw_list=np.loadtxt(funPath, delimiter = " ",dtype=str).tolist()
+            if self.funw_list==[]:
+                funnames=[]
+            else:
+                funnames=self.funw_list[0].split(',')
+                funnames.sort()
+            self.funw.ui.listfuns.clear()
+            self.fitw.ui.listfuns_main.clear()
+            self.funw.ui.listfuns.addItems(funnames)
+            self.fitw.ui.listfuns_main.addItems(funnames)
+            try:
+                self.defFunction = self.funw_list[-1]
+            except Exception as Argument:
+                self.defFunction = 'Linear'
+                self.genLogforException(Argument)
+            self.funimp()
+            self.funimp_main()
+        except Exception as Argument:
+            self.genLogforException(Argument)
+            self.loadIntfunBtn()
+            self.showPopInfo('Select functions location',color = 'red')
     def prefimp_main(self):
         ind=self.impw.ui.listprefs.findText(self.ui.listprefs_main.currentText())
         self.impw.ui.listprefs.setCurrentIndex(ind)
         try:
             self.prefimp()
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def funimp_main(self):
+        ind=self.funw.ui.listfuns.findText(self.fitw.ui.listfuns_main.currentText())
+        self.funw.ui.listfuns.setCurrentIndex(ind)
+        self.fitw.ui.fValueEdit.setText(self.funw.ui.funText.text())
+        try:
+            self.funimp()
         except Exception as Argument:
             self.genLogforException(Argument)
         
@@ -3162,9 +3273,27 @@ class AppWindow(QDialog):
         temptext=' - '.join([self.impw.ui.dendwith.currentText()[1:],self.impw.ui.listprefs.currentText()])
         temptext=' - '.join([self.impw.ui.dendwith.currentText()[1:]])
         temptext=''.join(['Imports: ',temptext])
+    def funimp(self):
+        if self.funw_list == []:
+            temparr=[]
+        else:
+            funnames=self.funw_list[0].split(',')
+            indt=funnames.index(self.funw.listfuns.currentText())
+            ind=self.fitw.ui.listfuns_main.findText(self.funw.ui.listfuns.currentText())
+            self.fitw.ui.listfuns_main.setCurrentIndex(ind)
+            temparr=self.funw_list[indt+1].split(',')
+        for i in range(len(temparr)):
+            if i==0:
+                self.funw.ui.funText.setText(temparr[i])
+            elif i==1:
+                self.funw.ui.noOfPars.setText(temparr[i])
+            else:
+                pass
+        self.fitw.ui.fValueEdit.setText(self.funw.ui.funText.text())
     def addpresetBtn(self):
         self.impw.ui.listprefs.addItem(self.impw.ui.newPreset.text())
         self.ui.listprefs_main.addItem(self.impw.ui.newPreset.text())
+        del self.impw_list[-1]
         newpres=''
         if self.impw.ui.xrowcb.isChecked():
             newpres='row'
@@ -3232,20 +3361,53 @@ class AppWindow(QDialog):
         
         self.impw_list.append(newpres)
         self.impw_list[0]=','.join([self.impw_list[0],self.impw.ui.newPreset.text()])
-    def rempresetBtn(self):
-        ttorem = self.impw.ui.listprefs.currentText()
-        test = self.impw_list
-        ttitles = test[0].split(',')
-        indtorem = ttitles.index(ttorem)
-        del ttitles[indtorem]
-        ttitles=','.join(ttitles)
-        del test[indtorem+1]
-        test[0] = ttitles
+        self.impw_list.append(self.impw.ui.listprefs.currentText())
+        #print(self.impw_list)
+    def addfunBtn(self):
+        del self.funw_list[-1]
+        self.funw.ui.listfuns.addItem(self.funw.ui.newFun.text())
+        self.fitw.ui.listfuns_main.addItem(self.funw.ui.newFun.text())
         
-        self.impw_list = test
-        self.impw.ui.listprefs.removeItem(self.impw.ui.listprefs.currentIndex())
+        newfun=self.funw.ui.funText.text()
+        newfun=','.join([newfun,self.funw.ui.noOfPars.text()])
+        
+        self.funw_list.append(newfun)
+        self.funw_list[0]=','.join([self.funw_list[0],self.funw.ui.newFun.text()])
+        self.funw_list.append(self.funw.ui.listfuns.currentText())
+        #print(self.funw_list)
+    def rempresetBtn(self):
+        try:
+            ttorem = self.impw.ui.listprefs.currentText()
+            test = self.impw_list
+            ttitles = test[0].split(',')
+            indtorem = ttitles.index(ttorem)
+            del ttitles[indtorem]
+            ttitles=','.join(ttitles)
+            del test[indtorem+1]
+            test[0] = ttitles
+            
+            self.impw_list = test
+            self.impw.ui.listprefs.removeItem(self.impw.ui.listprefs.currentIndex())
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def remfunBtn(self):
+        try:
+            ttorem = self.funw.ui.listfuns.currentText()
+            test = self.funw_list
+            ttitles = test[0].split(',')
+            indtorem = ttitles.index(ttorem)
+            del ttitles[indtorem]
+            ttitles=','.join(ttitles)
+            del test[indtorem+1]
+            test[0] = ttitles
+            
+            self.funw_list = test
+            self.funw.ui.listfuns.removeItem(self.funw.ui.listfuns.currentIndex())
+        except Exception as Argument:
+            self.genLogforException(Argument)
         
     def savePresBtn(self):
+        del self.impw_list[-1]
         self.impw_list.append(self.impw.ui.listprefs.currentText()) #This will also add presets file what user preferred default preset is
         try:
             filter=''.join(['txt','(*','.txt',')'])
@@ -3255,14 +3417,37 @@ class AppWindow(QDialog):
             np.savetxt(newpresfile[0],self.impw_list, delimiter = " ",fmt='%s')
         except Exception as Argument:
             self.genLogforException(Argument)
+    def saveFunBtn(self):
+        del self.funw_list[-1]
+        self.funw_list.append(self.funw.ui.listfuns.currentText()) #This will also add functions file what user preferred default function is
+        try:
+            filter=''.join(['txt','(*','.txt',')'])
+            qfdlg=QFileDialog()
+            qfdlg.setFileMode(QFileDialog.AnyFile)
+            newpresfile = qfdlg.getSaveFileName(self, None, "Create New File",filter)
+            np.savetxt(newpresfile[0],self.funw_list, delimiter = " ",fmt='%s')
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def saveDefPresetBtn(self):
         #DataDir = getResourcePath("prs")
+        del self.impw_list[-1]
         self.impw_list.append(self.impw.ui.listprefs.currentText()) 
         try:
             DataDir = self.makeFolderinDocuments('Instrument Presets')
             presetPath = DataDir/'presets_default.txt'
             np.savetxt(presetPath,self.impw_list, delimiter = " ",fmt='%s')
             self.impw.ui.presetloc.setText(str(presetPath))
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def saveDefFunBtn(self):
+        #DataDir = getResourcePath("prs")
+        del self.funw_list[-1]
+        self.funw_list.append(self.funw.ui.listfuns.currentText()) 
+        try:
+            DataDir = self.makeFolderinDocuments('Functions')
+            functionPath = DataDir/'functions_default.txt'
+            np.savetxt(functionPath,self.funw_list, delimiter = " ",fmt='%s')
+            self.funw.ui.funloc.setText(str(functionPath))
         except Exception as Argument:
             self.genLogforException(Argument)
     # def copyInternalPreset(self):
@@ -4562,6 +4747,8 @@ class AppWindow(QDialog):
     def faddBtn(self):
         items = [0]*self.fitw.ui.fList.count()
         listf=self.fitw.ui.fList
+        self.fitw.parcounter = self.fitw.parcounter+int(float(self.funw.ui.noOfPars.text()))
+        self.fitw.parcounterList.insert(0,int(float(self.funw.ui.noOfPars.text())))
         if not items:
             listf.addItem(self.fitw.ui.fValueEdit.text())
         elif listf.selectedItems():
@@ -4585,12 +4772,21 @@ class AppWindow(QDialog):
         self.fitw.axFun.text(0.5,0.4, r"$%s$" % lat, fontsize = 12,horizontalalignment='center',
         verticalalignment='center')
         self.fitw.mFun.draw()
+        self.fitw.parsValue.setText(str(self.fitw.parcounter))
+        self.addremparam()
     def fremBtn(self):
         listf=self.fitw.ui.fList
+        #self.fitw.parcounter = self.fitw.parcounter-int(float(self.funw.ui.noOfPars.text()))
         if listf.selectedItems():
             for listitems in listf.selectedItems():
+                ind = listf.row(listitems)
+                self.fitw.parcounter=self.fitw.parcounter-self.fitw.parcounterList[ind]
+                del self.fitw.parcounterList[ind]
                 listf.takeItem(listf.row(listitems))
         else:
+            if not self.fitw.parcounterList==[]:
+                self.fitw.parcounter=self.fitw.parcounter-self.fitw.parcounterList[0]
+                del self.fitw.parcounterList[0]
             listf.takeItem(listf.row(listf.item(0)))
         tempstr=''
         for i in range(self.fitw.ui.fList.count()):
@@ -4611,6 +4807,8 @@ class AppWindow(QDialog):
         self.fitw.axFun.text(0.5,0.4, r"$%s$" % lat, fontsize = 12,horizontalalignment='center',
         verticalalignment='center')
         self.fitw.mFun.draw()
+        self.fitw.parsValue.setText(str(self.fitw.parcounter))
+        self.addremparam()
     def addremparam(self):
         no_ofpar=int(float(self.fitw.ui.parsValue.text()))
         if no_ofpar>(self.fitw.ui.sliderlayout.count()):
@@ -5226,6 +5424,8 @@ class fitWindow(QDialog):
         self.figFit=self.mFit.figure
         self.app = app
         self.currWindowSize = self.app.desktop().geometry()
+        self.parcounter = 0 #Counts the # parameters need to be added
+        self.parcounterList = [] #Needs to be tracked when function is removed
         
         # self.mbar = self.menuAdder()
         # #self.mbar.setObjectName("tabMenuBar")
@@ -6140,6 +6340,9 @@ class MainWindow(QMainWindow):
         self.screenChanged.connect(lambda oldScreen,newScreen: self.tbw.wdg.resizeUI(oldScreen,newScreen))
         
         self.show()
+        
+        if not appVersionText == latestVersion:
+            self.tbw.wdg.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue')
     def getSettingsValues(self):
         self.settingWindow = QSettings('Graphxyz', 'Window Size')
     def closeEvent(self,event):
