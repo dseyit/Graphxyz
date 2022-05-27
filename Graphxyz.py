@@ -2531,14 +2531,14 @@ class AppWindow(QDialog):
         
         self.multDataChooser.show()
         
-        import importlib.util
-        import sys
-        spec = importlib.util.spec_from_file_location("customPyFuns", "/Users/seyitliyev/Documents/Graphxyz/Python functions/funs_fit.py")
-        pyFuns = importlib.util.module_from_spec(spec)
-        sys.modules["customPyFuns"] = pyFuns
-        spec.loader.exec_module(pyFuns)
-        print(''.join([getmembers(pyFuns, isfunction)[0][0],'(x,p)']))
-        pyFuns.testfun()
+        # import importlib.util
+        # import sys
+        # spec = importlib.util.spec_from_file_location("customPyFuns", "/Users/seyitliyev/Documents/Graphxyz/Python functions/funs_fit.py")
+        # pyFuns = importlib.util.module_from_spec(spec)
+        # sys.modules["customPyFuns"] = pyFuns
+        # spec.loader.exec_module(pyFuns)
+        # print(''.join([getmembers(pyFuns, isfunction)[0][0],'(x,p)']))
+        # pyFuns.testfun(self.multDataChooser.list)
         
     def multDataAddBtn(self):
         listToAdd = self.multDataChooser.list.selectedItems()
