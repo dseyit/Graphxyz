@@ -63,7 +63,7 @@
       <item>
        <widget class="QLabel" name="label_2">
         <property name="text">
-         <string>Parameters:</string>
+         <string># of parameters:</string>
         </property>
         <property name="alignment">
          <set>Qt::AlignCenter</set>

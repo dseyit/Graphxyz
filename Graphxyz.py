@@ -106,6 +106,7 @@ class AppWindow(QDialog):
         self.funw = funOptionsWindow()
         self.xyzmaker=xyzMakerWindow()
         self.fitw=fitWindow(app = self.app)
+        self.pyFunsDlg = pyFunWindow()
         
         #Add icons to buttons:
         loadBtnIcon = icnDir/'refresh.png'
@@ -2974,14 +2975,15 @@ class AppWindow(QDialog):
             if self.funw_list==[]:
                 funnames=[]
             else:
-                funnames=self.funw_list[0].split(',')
+                funnames=self.funw_list[0].split(',/')
                 funnames.sort()
             self.funw.ui.listfuns.clear()
             self.fitw.ui.listfuns_main.clear()
             self.funw.ui.listfuns.addItems(funnames)
-            self.ui.listfuns_main.addItems(funnames)
+            self.fitw.ui.listfuns_main.addItems(funnames)
             self.funimp()
             self.funimp_main()
+            self.funw_list[-2]=self.funw.ui.pyfileloc.text()
     def selectPrefSampleBtn(self):
         try:
             filter=''.join([self.impw.ui.dendwith.currentText(),'(*',self.impw.ui.dendwith.currentText(),')'])
@@ -3000,7 +3002,6 @@ class AppWindow(QDialog):
         sys.modules["customPyFuns"] = pyF
         spec.loader.exec_module(pyF)
         
-        self.pyFunsDlg = pyFunWindow()
         allmembers = getmembers(pyF, isfunction)
         
         for i in range(len(allmembers)):
@@ -3015,16 +3016,19 @@ class AppWindow(QDialog):
         
         self.pyFunsDlg.show()
     def addPyFuns(self):
-        del self.funw_list[-1]
-        self.funw.ui.listfuns.addItem(self.funw.ui.newFun.text())
-        self.fitw.ui.listfuns_main.addItem(self.funw.ui.newFun.text())
-        
-        newfun=self.funw.ui.funText.text()
-        newfun=','.join([newfun,self.funw.ui.noOfPars.text()])
-        
-        self.funw_list.append(newfun)
-        self.funw_list[0]=','.join([self.funw_list[0],self.funw.ui.newFun.text()])
-        self.funw_list.append(self.funw.ui.listfuns.currentText())
+        pass
+        for i in range(self.pyFunsDlg.funsList.count()):
+            del self.funw_list[-1]
+            del self.funw_list[-1]
+            self.funw.ui.listfuns.addItem(self.pyFunsDlg.funsList.item(i).text()[4:])
+            self.fitw.ui.listfuns_main.addItem(self.pyFunsDlg.funsList.item(i).text()[4:])
+            newfun=self.pyFunsDlg.funsList.item(i).text()
+            newfun=','.join([newfun,self.pyFunsDlg.parsList.item(i).text()])
+            
+            self.funw_list.append(newfun)
+            self.funw_list[0]=',/'.join([self.funw_list[0],self.pyFunsDlg.funsList.item(i).text()[4:]])
+            self.funw_list.append(self.funw.ui.pyfileloc.text())
+            self.funw_list.append(self.funw.ui.listfuns.currentText())
     
     def selectPyBtn(self):
         try:
@@ -3077,7 +3081,7 @@ class AppWindow(QDialog):
         if self.funw_list==[]:
             funnames=[]
         else:
-            funnames=self.funw_list[0].split(',')
+            funnames=self.funw_list[0].split(',/')
             funnames.sort()
         self.funw.ui.listfuns.clear()
         self.fitw.ui.listfuns_main.clear()
@@ -3090,6 +3094,7 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
         self.funimp()
         self.funimp_main()
+        self.funw.ui.pyfileloc.setText(self.funw_list[-2])
     def loadIntimpBtn(self):
         DataDir = getResourcePath("prs")
         #DataDir = self.makeFolderinDocuments('Instrument Presets')
@@ -3118,11 +3123,11 @@ class AppWindow(QDialog):
         funPath = DataDir / 'functions_default.txt'
         self.funw.ui.funloc.setText('functions_default.txt')
         self.funw_list=np.loadtxt(funPath, delimiter = " ",dtype=str).tolist()
-        print(self.funw_list)
+        #print(self.funw_list)
         if self.funw_list==[]:
             funnames=[]
         else:
-            funnames=self.funw_list[0].split(',')
+            funnames=self.funw_list[0].split(',/')
             funnames.sort()
         self.funw.ui.listfuns.clear()
         self.fitw.ui.listfuns_main.clear()
@@ -3135,6 +3140,7 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
         self.funimp()
         self.funimp_main()
+        self.funw.ui.pyfileloc.setText(self.funw_list[-2])
     def loadimpBtn(self):
         try:
             #DataDir = getResourcePath("prs")
@@ -3172,7 +3178,7 @@ class AppWindow(QDialog):
             if self.funw_list==[]:
                 funnames=[]
             else:
-                funnames=self.funw_list[0].split(',')
+                funnames=self.funw_list[0].split(',/')
                 funnames.sort()
             self.funw.ui.listfuns.clear()
             self.fitw.ui.listfuns_main.clear()
@@ -3185,6 +3191,7 @@ class AppWindow(QDialog):
                 self.genLogforException(Argument)
             self.funimp()
             self.funimp_main()
+            self.funw.ui.pyfileloc.setText(self.funw_list[-2])
         except Exception as Argument:
             self.genLogforException(Argument)
             self.loadIntfunBtn()
@@ -3326,7 +3333,8 @@ class AppWindow(QDialog):
         if self.funw_list == []:
             temparr=[]
         else:
-            funnames=self.funw_list[0].split(',')
+            funnames=self.funw_list[0].split(',/')
+            #print(funnames)
             indt=funnames.index(self.funw.listfuns.currentText())
             ind=self.fitw.ui.listfuns_main.findText(self.funw.ui.listfuns.currentText())
             self.fitw.ui.listfuns_main.setCurrentIndex(ind)
@@ -3414,6 +3422,7 @@ class AppWindow(QDialog):
         #print(self.impw_list)
     def addfunBtn(self):
         del self.funw_list[-1]
+        del self.funw_list[-1]
         self.funw.ui.listfuns.addItem(self.funw.ui.newFun.text())
         self.fitw.ui.listfuns_main.addItem(self.funw.ui.newFun.text())
         
@@ -3421,7 +3430,8 @@ class AppWindow(QDialog):
         newfun=','.join([newfun,self.funw.ui.noOfPars.text()])
         
         self.funw_list.append(newfun)
-        self.funw_list[0]=','.join([self.funw_list[0],self.funw.ui.newFun.text()])
+        self.funw_list[0]=',/'.join([self.funw_list[0],self.funw.ui.newFun.text()])
+        self.funw_list.append(self.funw.ui.pyfileloc.text())
         self.funw_list.append(self.funw.ui.listfuns.currentText())
         #print(self.funw_list)
     def rempresetBtn(self):
@@ -3443,7 +3453,7 @@ class AppWindow(QDialog):
         try:
             ttorem = self.funw.ui.listfuns.currentText()
             test = self.funw_list
-            ttitles = test[0].split(',')
+            ttitles = test[0].split(',/')
             indtorem = ttitles.index(ttorem)
             del ttitles[indtorem]
             ttitles=','.join(ttitles)
@@ -3452,6 +3462,7 @@ class AppWindow(QDialog):
             
             self.funw_list = test
             self.funw.ui.listfuns.removeItem(self.funw.ui.listfuns.currentIndex())
+            #print(self.funw_list)
         except Exception as Argument:
             self.genLogforException(Argument)
         
@@ -3467,6 +3478,7 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
     def saveFunBtn(self):
+        self.funw_list[-2]=self.funw.ui.pyfileloc.text()
         del self.funw_list[-1]
         self.funw_list.append(self.funw.ui.listfuns.currentText()) #This will also add functions file what user preferred default function is
         try:
@@ -3490,6 +3502,7 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
     def saveDefFunBtn(self):
         #DataDir = getResourcePath("prs")
+        self.funw_list[-2]=self.funw.ui.pyfileloc.text()
         del self.funw_list[-1]
         self.funw_list.append(self.funw.ui.listfuns.currentText()) 
         try:
