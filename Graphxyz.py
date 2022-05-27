@@ -40,6 +40,8 @@ from scipy.optimize import curve_fit
 import math
 import requests # Used when app version is checked and to check if new version is available
 from inspect import getmembers, isfunction #This is used to get the list of the functions inside python module
+import importlib.util #This helps to import external python files
+import sys
 #import resources for windows this resources function needed to be defined in a file, could not find a way to import local modules
 
 # Run these to build for each platforms (cd to src folder)
@@ -326,11 +328,14 @@ class AppWindow(QDialog):
         self.impw.ui.rempresetButton.clicked.connect(self.rempresetBtn)
         self.funw.ui.remfunButton.clicked.connect(self.remfunBtn)
         self.impw.ui.selectPrefSample.clicked.connect(self.selectPrefSampleBtn)
+        self.funw.ui.selectFunSample.clicked.connect(self.selectPyBtn)
         self.impw.ui.previewButton.clicked.connect(self.showPreviewDf)
+        self.funw.ui.viewPyButton.clicked.connect(self.viewPyFuns)
         self.impw.ui.savepresetsButton.clicked.connect(self.savePresBtn)
         self.funw.ui.savefunsButton.clicked.connect(self.saveFunBtn)
         self.impw.ui.defpresetButton.clicked.connect(self.saveDefPresetBtn)
         self.funw.ui.deffunButton.clicked.connect(self.saveDefFunBtn)
+        self.pyFunsDlg.addFuns.clicked.connect(self.addPyFuns)
         
         #Graph options, copy button connects
         self.lbleft.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.mdyn))
@@ -2987,6 +2992,50 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
             self.impw.show()
     
+    def viewPyFuns(self):
+        #This is the way to import external python functions to fit:
+        pyPath = self.funw.ui.pyfileloc.text()
+        spec = importlib.util.spec_from_file_location("customPyFuns", pyPath)
+        pyF = importlib.util.module_from_spec(spec)
+        sys.modules["customPyFuns"] = pyF
+        spec.loader.exec_module(pyF)
+        
+        self.pyFunsDlg = pyFunWindow()
+        allmembers = getmembers(pyF, isfunction)
+        
+        for i in range(len(allmembers)):
+            lbtext = ''.join(['pyF.',allmembers[i][0],'(x,p)'])
+            self.pyFunsDlg.funsList.addItem(lbtext)
+            self.pyFunsDlg.parsList.addItem('?')
+        
+        #Make parameters ediatable:
+        for index in range(self.pyFunsDlg.parsList.count()):
+            item = self.pyFunsDlg.parsList.item(index)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+        
+        self.pyFunsDlg.show()
+    def addPyFuns(self):
+        del self.funw_list[-1]
+        self.funw.ui.listfuns.addItem(self.funw.ui.newFun.text())
+        self.fitw.ui.listfuns_main.addItem(self.funw.ui.newFun.text())
+        
+        newfun=self.funw.ui.funText.text()
+        newfun=','.join([newfun,self.funw.ui.noOfPars.text()])
+        
+        self.funw_list.append(newfun)
+        self.funw_list[0]=','.join([self.funw_list[0],self.funw.ui.newFun.text()])
+        self.funw_list.append(self.funw.ui.listfuns.currentText())
+    
+    def selectPyBtn(self):
+        try:
+            filter="py(*.py)"
+            filelocPreview = QFileDialog.getOpenFileName(self,None, "Select python file",filter)
+            self.funw.ui.pyfileloc.setText(filelocPreview[0])
+            self.funw.show()
+        except Exception as Argument:
+            self.genLogforException(Argument)
+            self.funw.show()
+    
     def showPreviewDf(self):
         try:
             self.impw.df=self.xyzdatagenerator(self.filelocPreview[0],addmode='single')[3][0]
@@ -5408,6 +5457,13 @@ class funOptionsWindow(QDialog):
         uiPath = DataDir / 'funOptions.ui'
         self.ui = uic.loadUi(uiPath,self)
         self.ui.setWindowTitle('Function options')
+class pyFunWindow(QDialog):
+    def __init__(self):
+        super().__init__()
+        DataDir = getResourcePath("uis")
+        uiPath = DataDir / 'pyFuns.ui'
+        self.ui = uic.loadUi(uiPath,self)
+        self.ui.setWindowTitle('Import Python functions')
 class fitWindow(QDialog):
     def __init__(self, app):
         super().__init__()

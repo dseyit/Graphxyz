@@ -316,7 +316,7 @@
        </widget>
       </item>
       <item row="0" column="3">
-       <widget class="QPushButton" name="addPyButton">
+       <widget class="QPushButton" name="viewPyButton">
         <property name="sizePolicy">
          <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
           <horstretch>0</horstretch>
@@ -338,7 +338,7 @@
          <string notr="true">color: Orange</string>
         </property>
         <property name="text">
-         <string>Add</string>
+         <string>View</string>
         </property>
        </widget>
       </item>

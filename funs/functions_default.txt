@@ -2,4 +2,5 @@ Linear,Gaussian,Exponential
 p[0]*x+p[1],2
 p[0]*exp(-((x-p[1])/p[2])**2),3
 p[0]*exp(-p[1]*x),2
+''
 Linear
