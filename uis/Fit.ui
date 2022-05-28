@@ -336,7 +336,7 @@
                 </widget>
                 <widget class="QLabel" name="fValue">
                  <property name="sizePolicy">
-                  <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                  <sizepolicy hsizetype="Ignored" vsizetype="Preferred">
                    <horstretch>0</horstretch>
                    <verstretch>0</verstretch>
                   </sizepolicy>
@@ -685,12 +685,12 @@
                    </property>
                    <item>
                     <property name="text">
-                     <string>xright</string>
+                     <string>xleft</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>xleft</string>
+                     <string>xright</string>
                     </property>
                    </item>
                   </widget>
@@ -758,12 +758,12 @@
                    </property>
                    <item>
                     <property name="text">
-                     <string>yright</string>
+                     <string>yleft</string>
                     </property>
                    </item>
                    <item>
                     <property name="text">
-                     <string>yleft</string>
+                     <string>yright</string>
                     </property>
                    </item>
                   </widget>
@@ -1333,6 +1333,9 @@
        </item>
        <item row="2" column="1">
         <widget class="QLineEdit" name="optparams">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -1360,6 +1363,9 @@
        </item>
        <item row="3" column="1">
         <widget class="QLineEdit" name="optErrPars">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="sizePolicy">
           <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
            <horstretch>0</horstretch>
