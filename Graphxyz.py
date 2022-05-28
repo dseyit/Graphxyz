@@ -2993,17 +2993,19 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
             self.impw.show()
-    
-    def viewPyFuns(self):
+    def execPyFuns(self):
         #This is the way to import external python functions to fit:
         pyPath = self.funw.ui.pyfileloc.text()
         spec = importlib.util.spec_from_file_location("customPyFuns", pyPath)
         pyF = importlib.util.module_from_spec(spec)
         sys.modules["customPyFuns"] = pyF
         spec.loader.exec_module(pyF)
-        
+        return pyF
+    def viewPyFuns(self):
+        pyF = self.execPyFuns()
         allmembers = getmembers(pyF, isfunction)
-        
+        self.pyFunsDlg.funsList.clear()
+        self.pyFunsDlg.parsList.clear()
         for i in range(len(allmembers)):
             lbtext = ''.join(['pyF.',allmembers[i][0],'(x,p)'])
             self.pyFunsDlg.funsList.addItem(lbtext)
@@ -3013,20 +3015,20 @@ class AppWindow(QDialog):
         for index in range(self.pyFunsDlg.parsList.count()):
             item = self.pyFunsDlg.parsList.item(index)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-        
+            
         self.pyFunsDlg.show()
     def addPyFuns(self):
-        pass
         for i in range(self.pyFunsDlg.funsList.count()):
             del self.funw_list[-1]
             del self.funw_list[-1]
-            self.funw.ui.listfuns.addItem(self.pyFunsDlg.funsList.item(i).text()[4:])
-            self.fitw.ui.listfuns_main.addItem(self.pyFunsDlg.funsList.item(i).text()[4:])
-            newfun=self.pyFunsDlg.funsList.item(i).text()
-            newfun=','.join([newfun,self.pyFunsDlg.parsList.item(i).text()])
-            
-            self.funw_list.append(newfun)
-            self.funw_list[0]=',/'.join([self.funw_list[0],self.pyFunsDlg.funsList.item(i).text()[4:]])
+            #print(self.funw.ui.listfuns.findText('test')==-1)
+            if self.funw.ui.listfuns.findText(self.pyFunsDlg.funsList.item(i).text()[4:])==-1:
+                self.funw.ui.listfuns.addItem(self.pyFunsDlg.funsList.item(i).text()[4:])
+                self.fitw.ui.listfuns_main.addItem(self.pyFunsDlg.funsList.item(i).text()[4:])
+                newfun=self.pyFunsDlg.funsList.item(i).text()
+                newfun=',/'.join([newfun,self.pyFunsDlg.parsList.item(i).text()])
+                self.funw_list.append(newfun)
+                self.funw_list[0]=',/'.join([self.funw_list[0],self.pyFunsDlg.funsList.item(i).text()[4:]])
             self.funw_list.append(self.funw.ui.pyfileloc.text())
             self.funw_list.append(self.funw.ui.listfuns.currentText())
     
@@ -3338,7 +3340,7 @@ class AppWindow(QDialog):
             indt=funnames.index(self.funw.listfuns.currentText())
             ind=self.fitw.ui.listfuns_main.findText(self.funw.ui.listfuns.currentText())
             self.fitw.ui.listfuns_main.setCurrentIndex(ind)
-            temparr=self.funw_list[indt+1].split(',')
+            temparr=self.funw_list[indt+1].split(',/')
         for i in range(len(temparr)):
             if i==0:
                 self.funw.ui.funText.setText(temparr[i])
@@ -3427,7 +3429,7 @@ class AppWindow(QDialog):
         self.fitw.ui.listfuns_main.addItem(self.funw.ui.newFun.text())
         
         newfun=self.funw.ui.funText.text()
-        newfun=','.join([newfun,self.funw.ui.noOfPars.text()])
+        newfun=',/'.join([newfun,self.funw.ui.noOfPars.text()])
         
         self.funw_list.append(newfun)
         self.funw_list[0]=',/'.join([self.funw_list[0],self.funw.ui.newFun.text()])
@@ -3456,7 +3458,7 @@ class AppWindow(QDialog):
             ttitles = test[0].split(',/')
             indtorem = ttitles.index(ttorem)
             del ttitles[indtorem]
-            ttitles=','.join(ttitles)
+            ttitles=',/'.join(ttitles)
             del test[indtorem+1]
             test[0] = ttitles
             
@@ -4643,7 +4645,9 @@ class AppWindow(QDialog):
             for i in range(int(float(self.fitw.ui.parsValue.text()))):
                 self.psim[i]=float(self.fitw.psliders[i].slval.text())
             funstr=self.fitw.ui.fValue.text()
+            #pyPath = self.funw.ui.pyfileloc.text()
             def simfun(x,p):
+                pyF = self.execPyFuns()
                 return eval(funstr)
             self.simfun=simfun
             y_sim=simfun(self.x_sim,self.psim)
@@ -4661,6 +4665,7 @@ class AppWindow(QDialog):
                 self.ptry[i]=float(self.fitw.psliders[i].slval.text())
             funstr=self.fitw.ui.fValue.text()
             def tryfun(x,p):
+                pyF = self.execPyFuns()
                 return eval(funstr)
             y_try=tryfun(self.x_try,self.ptry)
             self.fitw.axFit.clear()
@@ -4670,6 +4675,7 @@ class AppWindow(QDialog):
             for i in range(self.fitw.ui.fList.count()):
                    funstr=self.fitw.ui.fList.item(i).text()
                    def tempfitfun(x,p):
+                       pyF = self.execPyFuns()
                        return eval(funstr)
                    y_fit_temp=tempfitfun(self.x_try,self.ptry)
                    self.linetries[i],=self.fitw.axFit.plot(self.x_try, y_fit_temp,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
@@ -4678,6 +4684,7 @@ class AppWindow(QDialog):
             x_fit=self.fitw.xdata
             funstr=self.fitw.ui.fValue.text()
             def fitfun(x,*p): 
+                pyF = self.execPyFuns()
                 return eval(funstr)
             self.p0=[0]*int(float(self.fitw.ui.parsValue.text()))
             self.lb=[0]*int(float(self.fitw.ui.parsValue.text()))
@@ -4720,6 +4727,7 @@ class AppWindow(QDialog):
                         for i in range(self.fitw.ui.fList.count()):
                             funstr=self.fitw.ui.fList.item(i).text()
                             def tempfitfun(x,p):
+                                pyF = self.execPyFuns()
                                 return eval(funstr)
                             y_fit_temp=tempfitfun(x_fit,popt)
                             plt.plot(x_fit, y_fit_temp,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
@@ -4828,7 +4836,10 @@ class AppWindow(QDialog):
         funstr=self.fitw.ui.fValue.text()
         funstr=funstr.replace('[','_')
         funstr=funstr.replace(']','')
-        lat=self.py2tex(funstr)
+        try:
+            lat=self.py2tex(funstr)
+        except:
+            lat=funstr
         self.fitw.axFun.clear()
         self.fitw.axFun.axis('off')
         self.fitw.axFun.text(0.5,0.4, r"$%s$" % lat, fontsize = 12,horizontalalignment='center',
