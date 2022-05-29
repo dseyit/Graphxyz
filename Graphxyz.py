@@ -993,14 +993,14 @@ class AppWindow(QDialog):
                 self.mdynTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
                 self.mspecTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
                 self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
-                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
-                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.fitw.fitTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.fitw.eqTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
             else:
                 self.mdynTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
                 self.mspecTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
                 self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
-                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
-                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.fitw.fitTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.fitw.eqTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
         except Exception as Argument:
             self.genLogforException(Argument)
         self.fontBtn(str(int(9*self.k_font)))
@@ -5611,6 +5611,7 @@ class pyFunWindow(QDialog):
         self.ui = uic.loadUi(uiPath,self)
         self.ui.setWindowTitle('Import Python functions')
 class fitWindow(QDialog):
+    screenSizeChanged = QtCore.pyqtSignal(QtCore.QRect)
     def __init__(self, app):
         super().__init__()
         DataDir = getResourcePath("uis")
@@ -5646,7 +5647,8 @@ class fitWindow(QDialog):
         
         self.ui.layoutFit.addWidget(NavigationToolbar_new(self.mFit, self.axFit,self,isGraph = False),0, 0, 1, 1)
         index=self.ui.layoutFit.count()-1
-        self.ui.layoutFit.itemAt(index).widget().setMaximumSize(QtCore.QSize(2250, int(self.currWindowSize.height()*0.01)))
+        self.fitTlb = self.ui.layoutFit.itemAt(index).widget()
+        self.fitTlb.setMaximumSize(QtCore.QSize(2250, int(self.currWindowSize.height()*0.015)))
         
         self.eqcanvas=PlotCanvas(self, width=17.41, height=2,dpi=100)
         self.eqcanvas.setMaximumSize(QtCore.QSize(3000, int(self.currWindowSize.height()*0.05)))
@@ -5665,206 +5667,39 @@ class fitWindow(QDialog):
         self.ui.layoutFun.addWidget(NavigationToolbar_new(self.mFun,self.axFun, self, isGraph = False,isEquation = True),0, 0, 1, 1)
         
         index=self.ui.layoutFun.count()-1
-        self.ui.layoutFun.itemAt(index).widget().setMaximumSize(QtCore.QSize(1500, int(self.currWindowSize.height()*0.01)))
-    # def menuAdder(self, alreadyExist = False):
-    #     if alreadyExist:
-    #         self.mbar.parent(None)
-    #     mbar=QMenuBar(self)
-    #     mbar.setNativeMenuBar(False)
-    #     #file=mbar.addMenu("File")
-    #     dataMenu = mbar.addMenu("Fit tab")
-    #     tabs = mbar.addMenu("Mode")
-    #     self.views = mbar.addMenu("View")
-    #     return mbar
-        
-        # #file.addAction("Open...")
-        # #file.addSeparator()
-        # self.importTypes = QActionGroup(mbar)
-        # self.importTypes.setExclusive(True)
-        # load=dataMenu.addMenu("Find")
-        # findFolder = load.addAction("Folder")
-        # findFolder.setCheckable(True)
-        # findFolders = load.addAction("Folders")
-        # findFolders.setCheckable(True)
-        # findFiles = load.addAction("Files")
-        # findFiles.setCheckable(True)
-        # self.importTypes.addAction(findFolder)
-        # self.importTypes.addAction(findFolders)
-        # self.importTypes.addAction(findFiles)
-        # findFolder.triggered.connect(self.getFolderLoc)
-        # findFolders.triggered.connect(self.getFolderLoc)
-        # findFiles.triggered.connect(self.getFolderLoc)
-        # dataMenu.addSeparator()
-        
-        
-        # self.loadAction = dataMenu.addAction("Load")
-        # self.loadAction.triggered.connect(self.refreshBtn)
-        # self.addoneAction = dataMenu.addAction("Add")
-        # self.addoneAction.triggered.connect(self.addBtn)
-        # self.addallAction = dataMenu.addAction("Add all")
-        # self.addallAction.triggered.connect(self.addallBtn)
-        # dataMenu.addSeparator()
-        # cleanAction = dataMenu.addAction("Clear source")
-        # cleanAction.triggered.connect(self.cleanBtn)
-        # clearList = dataMenu.addAction("Clear list")
-        # clearList.triggered.connect(self.clearLists)
-        # dataMenu.addSeparator()
-        # self.dataExporterAction = dataMenu.addAction("Export data")
-        # self.dataExporterAction.setChecked(True)
-        # self.dataExporterAction.triggered.connect(self.dataExporter)
-        
-        # self.addTab=tabs.addAction("New Tab")
-        # #self.addTab.triggered.connect(self.newBtn)
-        # tabs.addSeparator()
-        # resetTab=tabs.addAction("Reset")
-        # resetTab.triggered.connect(self.resetBtn)
-        
-        # tabs.addSeparator()
-        # loadDef = tabs.addAction("Load default")
-        # loadDef.triggered.connect(self.loadDefBtn)
-        # saveDef = tabs.addAction("Save default")
-        # saveDef.triggered.connect(self.saveDefBtn)
-        # loadas = tabs.addAction("Load...")
-        # loadas.triggered.connect(self.loadasBtn)
-        # saveas = tabs.addAction("Save as...")
-        # saveas.triggered.connect(self.saveasBtn)
-        
-        # # impPref=tools.addAction("Preset options...")
-        # # impPref.triggered.connect(self.impOptBtnClicked)
-        # self.fitter = tools.addAction("Fit...")
-        # maker3D=tools.addAction("3D maker: XY+Z...")
-        # maker3D.triggered.connect(self.xyzmakerClicked)
-        
-        
-        # #parsMenu = modes.addMenu("Parameters")
-        
-        # # self.parModes = QActionGroup(mbar)
-        # # self.parModes.setExclusive(True)
-        # # self.XYaction = modes.addAction ("XY")
-        # # self.XYaction.setCheckable(True)
-        # # self.XYaction.setDisabled(True)
-        # # self.XYaction.setChecked(False)
-        # # self.parModes.addAction(self.XYaction)
-        # # self.XYZaction = modes.addAction ("XYZ")
-        # # self.XYZaction.setCheckable(True)
-        # # self.XYZaction.setDisabled(True)
-        # # self.XYZaction.setChecked(True)
-        # # self.parModes.addAction(self.XYZaction)
-        # # self.XYZaction.toggled.connect(self.modechangedMain)
-        # # modes.addSeparator()
-        
-        # self.plotModes = QActionGroup(mbar)
-        # self.plotModes.setExclusive(True)
-        # self.singleMode = modes.addAction("Selected")
-        # self.singleMode.setCheckable(True)
-        # self.singleMode.setChecked(True)
-        # self.plotModes.addAction(self.singleMode)
-        # self.multD = modes.addAction("Multiple at single x and y")
-        # self.multD.setCheckable(True)
-        # self.plotModes.addAction(self.multD)
-        # self.multXY = modes.addAction("Single at multiple x and y")
-        # self.multXY.setCheckable(True)
-        # self.plotModes.addAction(self.multXY)
-        # self.matchD = modes.addAction("Matched with x and y")
-        # self.matchD.setCheckable(True)
-        # self.plotModes.addAction(self.matchD)
-        
-        # #View Menu action items:
-        # hideAll = self.views.addAction("Hide all")
-        # hideAll.triggered.connect(self.hideAllViews)
-        # showAll = self.views.addAction("Show all")
-        # showAll.triggered.connect(self.showAllViews)
-        # self.views.addSeparator()
-        # self.dataListAction = self.views.addAction("Data list")
-        # self.dataListAction.setCheckable(True)
-        # self.dataListAction.setChecked(False)
-        # self.dataListAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.dataListFrame, mAction = self.dataListAction))
-        
-        # self.dataLinkListAction = self.views.addAction("Data link")
-        # self.dataLinkListAction.setCheckable(True)
-        # self.dataLinkListAction.setChecked(False)
-        # self.dataLinkListAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.dataLinkFrame, mAction = self.dataLinkListAction))
-        
-        # self.ySliceAction = self.views.addAction("y-slices")
-        # self.ySliceAction.setCheckable(True)
-        # self.ySliceAction.setChecked(False)
-        # self.ySliceAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.ysliceFrame, mAction = self.ySliceAction))
-        
-        # self.xSliceAction = self.views.addAction("x-slices")
-        # self.xSliceAction.setCheckable(True)
-        # self.xSliceAction.setChecked(False)
-        # self.xSliceAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.xsliceFrame, mAction = self.xSliceAction))
-        
-        # self.yLimsAction = self.views.addAction("y-limits")
-        # self.yLimsAction.setCheckable(True)
-        # self.yLimsAction.setChecked(False)
-        # self.yLimsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.ylimFrame, mAction = self.yLimsAction))
-        
-        # self.xLimsAction = self.views.addAction("x-limits")
-        # self.xLimsAction.setCheckable(True)
-        # self.xLimsAction.setChecked(False)
-        # self.xLimsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.xlimFrame, mAction = self.xLimsAction))
-        
-        # self.fxyAction = self.views.addAction("f(x) and f(y)")
-        # self.fxyAction.setCheckable(True)
-        # self.fxyAction.setChecked(False)
-        # self.fxyAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.fxyFrame, mAction = self.fxyAction))
-        
-        # self.fzAction = self.views.addAction("f(z)")
-        # self.fzAction.setCheckable(True)
-        # self.fzAction.setChecked(False)
-        # self.fzAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.fzzFrame, mAction = self.fzAction))
-        
-        # self.views.addSeparator()
-        # self.graphAction = self.views.addAction("Refine settings")
-        # self.graphAction.setCheckable(True)
-        # self.graphAction.setChecked(False)
-        # self.graphAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.controlsframe, mAction = self.graphAction))
-        
-        # self.plotControlsAction = self.views.addAction("Plot controls")
-        # self.plotControlsAction.setCheckable(True)
-        # self.plotControlsAction.setChecked(False)
-        # self.plotControlsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower([self.mdynTlb, self.mspecTlb, self.m2DTlb, self.controlsFrame2D, self.controlsFrameSpec,self.controlsFrameDyn], mAction = self.plotControlsAction))
-        
-        # self.plotAction = self.views.addAction("Plot limits")
-        # self.plotAction.setCheckable(True)
-        # self.plotAction.setChecked(False)
-        # self.plotAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.plotLimits, mAction = self.plotAction))
-        # self.views.addSeparator()
-        
-        # self.figure2D = self.views.addAction("Top figure")
-        # self.figure2D.setCheckable(True)
-        # self.figure2D.setChecked(False)
-        # self.figure2D.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frame2D, mAction = self.figure2D))
-        
-        # self.figureDyn = self.views.addAction("Left figure")
-        # self.figureDyn.setCheckable(True)
-        # self.figureDyn.setChecked(True)
-        # self.figureDyn.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
-        
-        # self.figureSpec = self.views.addAction("Right figure")
-        # self.figureSpec.setCheckable(True)
-        # self.figureSpec.setChecked(True)
-        # self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
-    def resizeUI(self):
-        desktop = QApplication.desktop()
+        self.eqTlb=self.ui.layoutFun.itemAt(index).widget()
+        self.eqTlb.setMaximumSize(QtCore.QSize(1500, int(self.currWindowSize.height()*0.015)))
+        self.screenSizeChanged.connect(lambda newSize: self.resizeUI2(newSize))
+        self.exceptionLogLocation = self.makeFolderinDocuments('.logs')
+    def makeFolderinDocuments(self, foldName): 
+        foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'
+        os.makedirs(foldDir, exist_ok = True)
+        foldDir = foldDir / foldName
+        os.makedirs(foldDir, exist_ok = True)
+        return foldDir
+    def genLogforException(self, Argument):
+        logLoc = self.exceptionLogLocation
+        logLoc = logLoc / 'Exception logs.txt'
+        f = open(logLoc, "a")
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        f.write(''.join(['\n',str([exc_tb.tb_lineno,Argument]),datetime.now(). strftime("%m/%d/%Y, %H:%M:%S")]))
+        f.close()
+    def resizeUI2(self,newSize):
+        refDPI = 120
         newDPI=QApplication.screens()[0].physicalDotsPerInch()
-        refDPI=92
-        screenRect = desktop.screenGeometry()
-        height = screenRect.height()
-        width = screenRect.width()
-        k_vert=height/1440
-        k_hor=width/2560
-        uisize=self.geometry()
+        #print(newDPI)
+        self.height = newSize.height()
+        self.width = newSize.width()
+        self.heightold = 900
+        self.widthold = 1440
+        font_coef = (np.sqrt(self.heightold**2+self.widthold**2) / np.sqrt(self.height**2+self.width**2))
+        self.k_vert=self.height/self.heightold
+        self.k_hor=self.width/self.widthold
+        self.k_font = (self.k_vert + self.k_hor)/2
+        #self.k_font = max(self.k_vert*newDPI/refDPI,self.k_hor*newDPI/refDPI)
+        self.k_font2=max(self.k_vert,self.k_hor)*newDPI/refDPI
         
-        screenWidth = uisize.width();
-        screenHeight = uisize.height();
-        left = uisize.left();
-        bottom = uisize.bottom();
-        width = screenWidth*k_hor;
-        screenHeight = screenHeight*k_vert;
-        self.k_font=max(k_vert*newDPI/refDPI,k_hor*newDPI/refDPI)
-        self.setGeometry(int(round(left,0)),int(round(bottom,0)),int(round(width,0)),int(round(screenHeight,0)));
+        #self.ui.controlwindowframe.resize(self.ui.frameDyn.width(),self.ui.controlwindowframe.height())
         
         comp1=self.ui.findChildren(QPushButton)
         comp2=self.ui.findChildren(QLabel)
@@ -5873,23 +5708,45 @@ class fitWindow(QDialog):
         comp5=self.ui.findChildren(QCheckBox)
         comp6=self.ui.findChildren(QComboBox)
         comp7=self.ui.findChildren(QListWidget)
+        
         comp=comp1+comp2+comp3+comp4+comp5+comp6+comp7
-        for compi in comp:
-            try:
-                pos=compi.geometry()
-                compi.setGeometry(QtCore.QRect(int(round(pos.left()*k_hor,0)),int(round(pos.top()*k_vert,0)),int(round(pos.width()*k_hor,0)),int(round(pos.height()*k_hor,0))))
-            except Exception as Argument:
-                self.genLogforException(Argument)
+        for ci in range(len(comp)):
+            compi=comp[ci]
             try:
                 fonttemp=compi.font()
-                fonti=fonttemp.pointSize()
                 fontitype=fonttemp.family()
                 if platform.system().lower()=='windows':
-                    compi.setFont(QFont(fontitype,int(fonti*0.8*self.k_font)))
+                    #print(font_coef*1*self.k_font)
+                    compi.setFont(QFont(fontitype,int(self.orFonts[ci]*1))) #This needs to be refined, right now it kinda does the job
                 else:
-                    compi.setFont(QFont(fontitype,int(fonti*1.1*self.k_font)))
+                    compi.setFont(QFont(fontitype,max(int(self.orFonts[ci]*0.9*self.k_font2),10)))
             except Exception as Argument:
                 self.genLogforException(Argument)
+        try:
+            minToolbarWidth_win = int(self.app.activeWindow().geometry().height()*0.03)
+            minToolbarWidth_mac = int(self.app.activeWindow().geometry().height()*0.03)
+            #print(minToolbarWidth_mac)
+            # if platform.system().lower()=='windows':
+            #     self.mdynTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_win) ))
+            #     self.mspecTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_win) ))
+            #     self.m2DTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_win) ))
+            # else:
+            #     self.mdynTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_mac) ))
+            #     self.mspecTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_mac) ))
+            #     self.m2DTlb.setMaximumSize(QtCore.QSize(1250, max(int(25*self.k_vert),minToolbarWidth_mac) ))
+            if platform.system().lower()=='windows':
+                self.fitTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.eqTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+            else:
+                self.fitTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.eqTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+        except Exception as Argument:
+            self.genLogforException(Argument)
+        #self.fontBtn(str(int(9*self.k_font)))
+    def resizeEvent(self, event):
+        newSize = self.geometry()
+        self.screenSizeChanged.emit(newSize)
+        return super().resizeEvent(event)
 class xyzMakerWindow(QDialog):
     def __init__(self):
         super().__init__()
@@ -5902,7 +5759,6 @@ class xyzMakerWindow(QDialog):
 class sliderObj(QFrame):
     def __init__(self,sliderno):
         super().__init__()
-        self.exceptionLogLocation = self.makeFolderinDocuments('.logs')
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.setObjectName(''.join(['slider',str(sliderno)]))
         self.setMinimumSize(QtCore.QSize(48, 150))
@@ -5939,7 +5795,7 @@ class sliderObj(QFrame):
         self.slval.editingFinished.connect(self.slidernumchanged)
         self.pslider.setValue(int(float(self.slval.text())*self.slacc))
         #self.compNo = float(1/self.slacc*100) #To check whether limit needs to be changed
-        
+        self.exceptionLogLocation = self.makeFolderinDocuments('.logs')
     def makeFolderinDocuments(self, foldName): 
         foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'
         os.makedirs(foldDir, exist_ok = True)
