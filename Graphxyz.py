@@ -993,10 +993,14 @@ class AppWindow(QDialog):
                 self.mdynTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
                 self.mspecTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
                 self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
             else:
                 self.mdynTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
                 self.mspecTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
                 self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_mac ))
+                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
+                self.m2DTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
         except Exception as Argument:
             self.genLogforException(Argument)
         self.fontBtn(str(int(9*self.k_font)))
@@ -2994,29 +2998,35 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
             self.impw.show()
     def execPyFuns(self):
-        #This is the way to import external python functions to fit:
-        pyPath = self.funw.ui.pyfileloc.text()
-        spec = importlib.util.spec_from_file_location("customPyFuns", pyPath)
-        pyF = importlib.util.module_from_spec(spec)
-        sys.modules["customPyFuns"] = pyF
-        spec.loader.exec_module(pyF)
-        return pyF
+        try:
+            #This is the way to import external python functions to fit:
+            pyPath = self.funw.ui.pyfileloc.text()
+            spec = importlib.util.spec_from_file_location("customPyFuns", pyPath)
+            pyF = importlib.util.module_from_spec(spec)
+            sys.modules["customPyFuns"] = pyF
+            spec.loader.exec_module(pyF)
+            return pyF
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def viewPyFuns(self):
-        pyF = self.execPyFuns()
-        allmembers = getmembers(pyF, isfunction)
-        self.pyFunsDlg.funsList.clear()
-        self.pyFunsDlg.parsList.clear()
-        for i in range(len(allmembers)):
-            lbtext = ''.join(['pyF.',allmembers[i][0],'(x,p)'])
-            self.pyFunsDlg.funsList.addItem(lbtext)
-            self.pyFunsDlg.parsList.addItem('?')
-        
-        #Make parameters ediatable:
-        for index in range(self.pyFunsDlg.parsList.count()):
-            item = self.pyFunsDlg.parsList.item(index)
-            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+        try:
+            pyF = self.execPyFuns()
+            allmembers = getmembers(pyF, isfunction)
+            self.pyFunsDlg.funsList.clear()
+            self.pyFunsDlg.parsList.clear()
+            for i in range(len(allmembers)):
+                lbtext = ''.join(['pyF.',allmembers[i][0],'(x,p)'])
+                self.pyFunsDlg.funsList.addItem(lbtext)
+                self.pyFunsDlg.parsList.addItem('?')
             
-        self.pyFunsDlg.show()
+            #Make parameters ediatable:
+            for index in range(self.pyFunsDlg.parsList.count()):
+                item = self.pyFunsDlg.parsList.item(index)
+                item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                
+            self.pyFunsDlg.show()
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def addPyFuns(self):
         for i in range(self.pyFunsDlg.funsList.count()):
             del self.funw_list[-1]
@@ -3469,9 +3479,9 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
         
     def savePresBtn(self):
-        del self.impw_list[-1]
-        self.impw_list.append(self.impw.ui.listprefs.currentText()) #This will also add presets file what user preferred default preset is
         try:
+            del self.impw_list[-1]
+            self.impw_list.append(self.impw.ui.listprefs.currentText()) #This will also add presets file what user preferred default preset is
             filter=''.join(['txt','(*','.txt',')'])
             qfdlg=QFileDialog()
             qfdlg.setFileMode(QFileDialog.AnyFile)
@@ -3480,10 +3490,10 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
     def saveFunBtn(self):
-        self.funw_list[-2]=self.funw.ui.pyfileloc.text()
-        del self.funw_list[-1]
-        self.funw_list.append(self.funw.ui.listfuns.currentText()) #This will also add functions file what user preferred default function is
         try:
+            self.funw_list[-2]=self.funw.ui.pyfileloc.text()
+            del self.funw_list[-1]
+            self.funw_list.append(self.funw.ui.listfuns.currentText()) #This will also add functions file what user preferred default function is
             filter=''.join(['txt','(*','.txt',')'])
             qfdlg=QFileDialog()
             qfdlg.setFileMode(QFileDialog.AnyFile)
@@ -3493,9 +3503,9 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
     def saveDefPresetBtn(self):
         #DataDir = getResourcePath("prs")
-        del self.impw_list[-1]
-        self.impw_list.append(self.impw.ui.listprefs.currentText()) 
         try:
+            del self.impw_list[-1]
+            self.impw_list.append(self.impw.ui.listprefs.currentText()) 
             DataDir = self.makeFolderinDocuments('Instrument Presets')
             presetPath = DataDir/'presets_default.txt'
             np.savetxt(presetPath,self.impw_list, delimiter = " ",fmt='%s')
@@ -3504,10 +3514,10 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
     def saveDefFunBtn(self):
         #DataDir = getResourcePath("prs")
-        self.funw_list[-2]=self.funw.ui.pyfileloc.text()
-        del self.funw_list[-1]
-        self.funw_list.append(self.funw.ui.listfuns.currentText()) 
         try:
+            self.funw_list[-2]=self.funw.ui.pyfileloc.text()
+            del self.funw_list[-1]
+            self.funw_list.append(self.funw.ui.listfuns.currentText()) 
             DataDir = self.makeFolderinDocuments('Functions')
             functionPath = DataDir/'functions_default.txt'
             np.savetxt(functionPath,self.funw_list, delimiter = " ",fmt='%s')
@@ -4879,118 +4889,130 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
     def faddBtn(self):
-        items = [0]*self.fitw.ui.fList.count()
-        listf=self.fitw.ui.fList
-        self.fitw.parcounter = self.fitw.parcounter+int(float(self.funw.ui.noOfPars.text()))
-        self.fitw.parcounterList.insert(0,int(float(self.funw.ui.noOfPars.text())))
-        if not items:
-            listf.addItem(self.fitw.ui.fValueEdit.text())
-        elif listf.selectedItems():
-            for listitems in listf.selectedItems():
-                listf.insertItem(listf.row(listitems)+1,self.fitw.ui.fValueEdit.text())
-        else:
-            listf.insertItem(0,self.fitw.ui.fValueEdit.text())
-        tempstr=''
-        for i in range(self.fitw.ui.fList.count()):
-            if i==0:
-                tempstr=''.join([tempstr,self.fitw.ui.fList.item(i).text()])
-            else:
-                tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
-        self.fitw.ui.fValue.setText(tempstr)
-        funstr=self.fitw.ui.fValue.text()
-        funstr=funstr.replace('[','_')
-        funstr=funstr.replace(']','')
         try:
-            lat=self.py2tex(funstr)
-        except:
-            lat=funstr
-        self.fitw.axFun.clear()
-        self.fitw.axFun.axis('off')
-        self.fitw.axFun.text(0.5,0.4, r"$%s$" % lat, fontsize = 12,horizontalalignment='center',
-        verticalalignment='center')
-        self.fitw.mFun.draw()
-        self.fitw.parsValue.setText(str(self.fitw.parcounter))
-        self.addremparam()
-    def fremBtn(self):
-        listf=self.fitw.ui.fList
-        #self.fitw.parcounter = self.fitw.parcounter-int(float(self.funw.ui.noOfPars.text()))
-        if listf.selectedItems():
-            for listitems in listf.selectedItems():
-                ind = listf.row(listitems)
-                self.fitw.parcounter=self.fitw.parcounter-self.fitw.parcounterList[ind]
-                del self.fitw.parcounterList[ind]
-                listf.takeItem(listf.row(listitems))
-        else:
-            if not self.fitw.parcounterList==[]:
-                self.fitw.parcounter=self.fitw.parcounter-self.fitw.parcounterList[0]
-                del self.fitw.parcounterList[0]
-            listf.takeItem(listf.row(listf.item(0)))
-        tempstr=''
-        for i in range(self.fitw.ui.fList.count()):
-            if i==0:
-                tempstr=''.join([tempstr,self.fitw.ui.fList.item(i).text()])
+            items = [0]*self.fitw.ui.fList.count()
+            listf=self.fitw.ui.fList
+            self.fitw.parcounter = self.fitw.parcounter+int(float(self.funw.ui.noOfPars.text()))
+            self.fitw.parcounterList.insert(0,int(float(self.funw.ui.noOfPars.text())))
+            if not items:
+                listf.addItem(self.fitw.ui.fValueEdit.text())
+            elif listf.selectedItems():
+                for listitems in listf.selectedItems():
+                    listf.insertItem(listf.row(listitems)+1,self.fitw.ui.fValueEdit.text())
             else:
-                tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
-        self.fitw.ui.fValue.setText(tempstr)
-        funstr=self.fitw.ui.fValue.text()
-        funstr=funstr.replace('[','')
-        funstr=funstr.replace(']','')
-        try:
-            if funstr!='':
-                lat=self.py2tex(funstr)
-            else:
-                lat=self.py2tex('NaN')
-        except:
-            lat = funstr
-        self.fitw.axFun.clear()
-        self.fitw.axFun.axis('off')
-        self.fitw.axFun.text(0.5,0.4, r"$%s$" % lat, fontsize = 12,horizontalalignment='center',
-        verticalalignment='center')
-        self.fitw.mFun.draw()
-        self.fitw.parsValue.setText(str(self.fitw.parcounter))
-        self.addremparam()
-    def addremparam(self):
-        no_ofpar=int(float(self.fitw.ui.parsValue.text()))
-        if no_ofpar>(self.fitw.ui.sliderlayout.count()):
-            no_ofpars_toadd=no_ofpar-self.fitw.ui.sliderlayout.count()
-            #indcs=[]
-            for i in range(no_ofpars_toadd):
-                self.fitw.ui.sliderlayout.addWidget(sliderObj(sliderno=self.fitw.ui.sliderlayout.count()))
-                lastind=self.fitw.ui.sliderlayout.count()-1
-                #indcs
-                self.fitw.psliders.append(self.fitw.ui.sliderlayout.itemAt(lastind).widget())
-                self.fitw.psliders[lastind].slval.textChanged.connect(lambda val, indc=lastind: self.paramchanged(val,indc)) #Need to understand this part, confused, but works
-        elif no_ofpar<(self.fitw.ui.sliderlayout.count()):
-            no_ofpars_torem=self.fitw.ui.sliderlayout.count()-no_ofpar
-            for i in range(no_ofpars_torem):
-                lastind=self.fitw.ui.sliderlayout.count()-1
-                self.fitw.ui.sliderlayout.itemAt(lastind).widget().deleteLater()
-                self.fitw.ui.sliderlayout.removeWidget(self.fitw.ui.sliderlayout.itemAt(lastind).widget())
-                del self.fitw.psliders[lastind]
-        self.ptry=[0]*int(float(self.fitw.ui.parsValue.text()))
-        self.psim=[0]*int(float(self.fitw.ui.parsValue.text()))
-    def paramchanged(self, n,ind):
-        if self.fitw.ui.simulatecb.isChecked():
-            self.psim[ind]=float(self.fitw.psliders[ind].slval.text())
-            y_sim_new=self.simfun(self.x_sim,self.psim)
-            self.linesim.set_ydata(y_sim_new)
-            self.fitw.mFit.draw()
-        elif self.fitw.ui.trycb.isChecked():
-            self.ptry[ind]=float(self.fitw.psliders[ind].slval.text())
-            funstr=self.fitw.ui.fValue.text()
-            def tryfun(x,p):
-                pyF = self.execPyFuns()
-                return eval(funstr)
-            y_try_new=tryfun(self.x_try,self.ptry)
-            self.linetry.set_ydata(y_try_new)
+                listf.insertItem(0,self.fitw.ui.fValueEdit.text())
+            tempstr=''
             for i in range(self.fitw.ui.fList.count()):
-                funstr=self.fitw.ui.fList.item(i).text()
-                def tempfitfun(x,p):
+                if i==0:
+                    tempstr=''.join([tempstr,self.fitw.ui.fList.item(i).text()])
+                else:
+                    tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
+            self.fitw.ui.fValue.setText(tempstr)
+            funstr=self.fitw.ui.fValue.text()
+            funstr=funstr.replace('[','_')
+            funstr=funstr.replace(']','')
+            try:
+                lat=self.py2tex(funstr)
+            except:
+                lat=funstr
+            self.fitw.axFun.clear()
+            self.fitw.axFun.axis('off')
+            self.fitw.axFun.text(0.5,0.4, r"$%s$" % lat, fontsize = 12,horizontalalignment='center',
+            verticalalignment='center')
+            self.fitw.mFun.draw()
+            self.fitw.parsValue.setText(str(self.fitw.parcounter))
+            self.addremparam()
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def fremBtn(self):
+        try:
+            listf=self.fitw.ui.fList
+            #self.fitw.parcounter = self.fitw.parcounter-int(float(self.funw.ui.noOfPars.text()))
+            if listf.selectedItems():
+                for listitems in listf.selectedItems():
+                    ind = listf.row(listitems)
+                    self.fitw.parcounter=self.fitw.parcounter-self.fitw.parcounterList[ind]
+                    del self.fitw.parcounterList[ind]
+                    listf.takeItem(listf.row(listitems))
+            else:
+                if not self.fitw.parcounterList==[]:
+                    self.fitw.parcounter=self.fitw.parcounter-self.fitw.parcounterList[0]
+                    del self.fitw.parcounterList[0]
+                listf.takeItem(listf.row(listf.item(0)))
+            tempstr=''
+            for i in range(self.fitw.ui.fList.count()):
+                if i==0:
+                    tempstr=''.join([tempstr,self.fitw.ui.fList.item(i).text()])
+                else:
+                    tempstr='+'.join([tempstr,self.fitw.ui.fList.item(i).text()])
+            self.fitw.ui.fValue.setText(tempstr)
+            funstr=self.fitw.ui.fValue.text()
+            funstr=funstr.replace('[','')
+            funstr=funstr.replace(']','')
+            try:
+                if funstr!='':
+                    lat=self.py2tex(funstr)
+                else:
+                    lat=self.py2tex('NaN')
+            except:
+                lat = funstr
+            self.fitw.axFun.clear()
+            self.fitw.axFun.axis('off')
+            self.fitw.axFun.text(0.5,0.4, r"$%s$" % lat, fontsize = 12,horizontalalignment='center',
+            verticalalignment='center')
+            self.fitw.mFun.draw()
+            self.fitw.parsValue.setText(str(self.fitw.parcounter))
+            self.addremparam()
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def addremparam(self):
+        try:
+            no_ofpar=int(float(self.fitw.ui.parsValue.text()))
+            if no_ofpar>(self.fitw.ui.sliderlayout.count()):
+                no_ofpars_toadd=no_ofpar-self.fitw.ui.sliderlayout.count()
+                #indcs=[]
+                for i in range(no_ofpars_toadd):
+                    self.fitw.ui.sliderlayout.addWidget(sliderObj(sliderno=self.fitw.ui.sliderlayout.count()))
+                    lastind=self.fitw.ui.sliderlayout.count()-1
+                    #indcs
+                    self.fitw.psliders.append(self.fitw.ui.sliderlayout.itemAt(lastind).widget())
+                    self.fitw.psliders[lastind].slval.textChanged.connect(lambda val, indc=lastind: self.paramchanged(val,indc)) #Need to understand this part, confused, but works
+            elif no_ofpar<(self.fitw.ui.sliderlayout.count()):
+                no_ofpars_torem=self.fitw.ui.sliderlayout.count()-no_ofpar
+                for i in range(no_ofpars_torem):
+                    lastind=self.fitw.ui.sliderlayout.count()-1
+                    self.fitw.ui.sliderlayout.itemAt(lastind).widget().deleteLater()
+                    self.fitw.ui.sliderlayout.removeWidget(self.fitw.ui.sliderlayout.itemAt(lastind).widget())
+                    del self.fitw.psliders[lastind]
+            self.ptry=[0]*int(float(self.fitw.ui.parsValue.text()))
+            self.psim=[0]*int(float(self.fitw.ui.parsValue.text()))
+        except Exception as Argument:
+            self.genLogforException(Argument)
+    def paramchanged(self, n,ind):
+        try:
+            if self.fitw.ui.simulatecb.isChecked():
+                self.psim[ind]=float(self.fitw.psliders[ind].slval.text())
+                y_sim_new=self.simfun(self.x_sim,self.psim)
+                self.linesim.set_ydata(y_sim_new)
+                self.fitw.mFit.draw()
+            elif self.fitw.ui.trycb.isChecked():
+                self.ptry[ind]=float(self.fitw.psliders[ind].slval.text())
+                funstr=self.fitw.ui.fValue.text()
+                def tryfun(x,p):
                     pyF = self.execPyFuns()
                     return eval(funstr)
-                newydata=tempfitfun(self.x_try,self.ptry)
-                self.linetries[i].set_ydata(newydata)
-            self.fitw.mFit.draw()
+                y_try_new=tryfun(self.x_try,self.ptry)
+                self.linetry.set_ydata(y_try_new)
+                for i in range(self.fitw.ui.fList.count()):
+                    funstr=self.fitw.ui.fList.item(i).text()
+                    def tempfitfun(x,p):
+                        pyF = self.execPyFuns()
+                        return eval(funstr)
+                    newydata=tempfitfun(self.x_try,self.ptry)
+                    self.linetries[i].set_ydata(newydata)
+                self.fitw.mFit.draw()
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def quickparamaddBtn(self):
         try:
             paramstoadd=self.fitw.ui.inparams.text().split(' ')
@@ -5009,8 +5031,11 @@ class AppWindow(QDialog):
                 self.fitw.psliders[i].slidernumchanged()
             self.genLogforException(Argument)
     def py2tex(self,expr):
-        pt = ast.parse(expr)
-        return LatexVisitor().visit(pt.body[0].value)
+        try:
+            pt = ast.parse(expr)
+            return LatexVisitor().visit(pt.body[0].value)
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def saveBtn(self, nameToSave = '', needSaved = True, showPopInfo = True): #need fix
         try:
             list_tosave=[]
@@ -5338,88 +5363,95 @@ class AppWindow(QDialog):
         np.save(self.fitw.ui.fitsavename.text(),list_tosave) #needs fix, use pathlib
         
     def copyfig(self,fromcanvas):
-        figloc = self.makeFolderinDocuments('Saved Figures')
-        figloc = figloc/'tempimg.svg'
-        fromcanvas.figure.savefig(figloc, format='svg', dpi=1200,bbox_inches=0, transparent=True)
-        datatocopy = QMimeData()
-        pathtofile=os.path.abspath(figloc)
-        url = QUrl.fromLocalFile(pathtofile)
-        datatocopy.setUrls([url])
-        self.app.clipboard().setMimeData(datatocopy)
+        try:
+            figloc = self.makeFolderinDocuments('Saved Figures')
+            figloc = figloc/'tempimg.svg'
+            fromcanvas.figure.savefig(figloc, format='svg', dpi=1200,bbox_inches=0, transparent=True)
+            datatocopy = QMimeData()
+            pathtofile=os.path.abspath(figloc)
+            url = QUrl.fromLocalFile(pathtofile)
+            datatocopy.setUrls([url])
+            self.app.clipboard().setMimeData(datatocopy)
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def legshorten(self,long_leg):
-        def find_all(a_str, sub):
-            start = 0
-            while True:
-                start = a_str.find(sub, start)
-                if start == -1: return
-                yield start
-                start += len(sub) # use start += 1 to find overlapping matches
-        
-        short_leg = []
-        for strs in long_leg:
-            short_leg.append("" + strs)
-        for i in range(len(long_leg)):
-            short_leg [i] = short_leg[i].replace('_',' ')
-            short_leg [i] = short_leg[i].replace('-',' ')
-        
-        wrd_strs = [[]*len(long_leg) for _ in range(len(long_leg))]
-        for j in range(len(short_leg)):
-            ind_sp=list(find_all(short_leg[j],' '))
-            ind_sp.insert(0,-1)
-            for i in range(len(ind_sp)):
-                if i<len(ind_sp)-1:
-                    wrd_strs[j].append(short_leg[j][ind_sp[i]+1:ind_sp[i+1]])
-                else:
-                    wrd_strs[j].append(short_leg[j][ind_sp[i]+1:]);
-        
-        str_rem = set(wrd_strs[0])
-        for s in wrd_strs[1:]:
-            str_rem.intersection_update(s)
-        str_rem=list(str_rem)
-        
-        remCnt = [[]*len(wrd_strs) for _ in range(len(wrd_strs))]
-        for i in range(len(wrd_strs)):
+        try:
+            def find_all(a_str, sub):
+                start = 0
+                while True:
+                    start = a_str.find(sub, start)
+                    if start == -1: return
+                    yield start
+                    start += len(sub) # use start += 1 to find overlapping matches
+            
+            short_leg = []
+            for strs in long_leg:
+                short_leg.append("" + strs)
+            for i in range(len(long_leg)):
+                short_leg [i] = short_leg[i].replace('_',' ')
+                short_leg [i] = short_leg[i].replace('-',' ')
+            
+            wrd_strs = [[]*len(long_leg) for _ in range(len(long_leg))]
+            for j in range(len(short_leg)):
+                ind_sp=list(find_all(short_leg[j],' '))
+                ind_sp.insert(0,-1)
+                for i in range(len(ind_sp)):
+                    if i<len(ind_sp)-1:
+                        wrd_strs[j].append(short_leg[j][ind_sp[i]+1:ind_sp[i+1]])
+                    else:
+                        wrd_strs[j].append(short_leg[j][ind_sp[i]+1:]);
+            
+            str_rem = set(wrd_strs[0])
+            for s in wrd_strs[1:]:
+                str_rem.intersection_update(s)
+            str_rem=list(str_rem)
+            
+            remCnt = [[]*len(wrd_strs) for _ in range(len(wrd_strs))]
+            for i in range(len(wrd_strs)):
+                for j in range(len(str_rem)):
+                    remCnt[i].append(wrd_strs[i].count(str_rem[j]))
+            
+            
+                        
+            for i in range(len(wrd_strs)):
+                for j in range(len(str_rem)):
+                    for k in range(remCnt[i][j]):
+                        indx=short_leg[i].index(str_rem[j])
+                        if not str_rem[j]==' ' and not str_rem[j]=='' and indx!=0:
+                            short_leg[i]=short_leg[i].replace(''.join([' ',str_rem[j]]),'',1)
+                        if not str_rem[j]==' ' and not str_rem[j]=='' and indx==0:
+                            short_leg[i]=short_leg[i].replace(str_rem[j],'',1)
+                            short_leg[i]=short_leg[i][1:]
+            for i in range(len(short_leg)):
+                short_leg[i]=short_leg[i].strip()
+            
+            tempsorted=[]
+            for i in range(len(long_leg)):
+                long_leg [i] = long_leg[i].replace('_',' ')
+                long_leg [i] = long_leg[i].replace('-',' ')
             for j in range(len(str_rem)):
-                remCnt[i].append(wrd_strs[i].count(str_rem[j]))
-        
-        
-                    
-        for i in range(len(wrd_strs)):
-            for j in range(len(str_rem)):
-                for k in range(remCnt[i][j]):
-                    indx=short_leg[i].index(str_rem[j])
-                    if not str_rem[j]==' ' and not str_rem[j]=='' and indx!=0:
-                        short_leg[i]=short_leg[i].replace(''.join([' ',str_rem[j]]),'',1)
-                    if not str_rem[j]==' ' and not str_rem[j]=='' and indx==0:
-                        short_leg[i]=short_leg[i].replace(str_rem[j],'',1)
-                        short_leg[i]=short_leg[i][1:]
-        for i in range(len(short_leg)):
-            short_leg[i]=short_leg[i].strip()
-        
-        tempsorted=[]
-        for i in range(len(long_leg)):
-            long_leg [i] = long_leg[i].replace('_',' ')
-            long_leg [i] = long_leg[i].replace('-',' ')
-        for j in range(len(str_rem)):
-            tempsorted.append(long_leg[0].index(str_rem[j]))
-        tempor=[0]*len(tempsorted)
-        for i in range(len(tempsorted)):
-            tempor[i]=tempsorted[i]
-        tempsorted.sort()
-        
-        ordtojjoin=[]
-        
-        for i in range(len(tempor)):
-            ordtojjoin.append(tempor.index(tempsorted[i]))
-        
-        if ordtojjoin==[]:
-            titletouse=''
-        else:
-            titletouse=str_rem[ordtojjoin[0]]
-            for i in range(len(ordtojjoin)-1):
-                titletouse=' '.join([titletouse,str_rem[ordtojjoin[i+1]]])
-        
-        return [short_leg,titletouse]
+                tempsorted.append(long_leg[0].index(str_rem[j]))
+            tempor=[0]*len(tempsorted)
+            for i in range(len(tempsorted)):
+                tempor[i]=tempsorted[i]
+            tempsorted.sort()
+            
+            ordtojjoin=[]
+            
+            for i in range(len(tempor)):
+                ordtojjoin.append(tempor.index(tempsorted[i]))
+            
+            if ordtojjoin==[]:
+                titletouse=''
+            else:
+                titletouse=str_rem[ordtojjoin[0]]
+                for i in range(len(ordtojjoin)-1):
+                    titletouse=' '.join([titletouse,str_rem[ordtojjoin[i+1]]])
+            
+            return [short_leg,titletouse]
+        except Exception as Argument:
+            return [long_leg,'']
+            self.genLogforException(Argument)
     
     def autogenX (self):
         try:
@@ -5437,54 +5469,66 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
     def addtoGroup(self):
-        dtemp3D=dict()
-        lenlist=[]
-        tempdictname={self.xyzmaker.ui.Grname.text():[self.dlistGr,self.xlistGr]}
-        for i in range(self.xyzmaker.ui.xGrList.count()):
-            lenlist.append(len(self.dGrtemp[self.dlistGr[i]]['x']))
-        maxlen=max(lenlist)
-        indtomax=lenlist.index(maxlen)
-        z=[[0]*(self.xyzmaker.ui.xGrList.count()) for _ in range(maxlen)]
-        z=np.array(z).astype(float)
-        z[:][:]=np.nan
-        for i in range(self.xyzmaker.ui.xGrList.count()):
-            indtotake=self.v2in(self.xdataGrnotsort,self.xdataGr[i])
-            z[0:len(self.dGrtemp[self.dlistGr[indtotake]]['y']),i]=self.dGrtemp[self.dlistGr[indtotake]]['y']
-        y=self.dGrtemp[self.dlistGr[indtomax]]['x']
-        x=self.xdataGr
-        tempdata={'a':self.xyzmaker.ui.Grname.text(), 't':x, 'w':y, 'd':z}
-        dtemp3D[self.xyzmaker.ui.Grname.text()]=tempdata
-        if self.dGrnames==[] or self.dGrnames[-1]!=self.xyzmaker.ui.Grname.text():
-            tempbtn=QPushButton(self.xyzmaker.ui)
-            tempbtn.setText(self.xyzmaker.ui.Grname.text())
-            self.grdatanames={**self.grdatanames,**tempdictname}
-            tempbtn.clicked.connect(lambda itemstoadd: self.grnameClicked(itemstoadd=self.grdatanames[tempbtn.text()]))
-            self.xyzmaker.ui.datagenlay.addWidget(tempbtn)
-            self.dGr={**self.dGr, **dtemp3D}
-            self.dGrnames.append(self.xyzmaker.ui.Grname.text())
+        try:
+            dtemp3D=dict()
+            lenlist=[]
+            tempdictname={self.xyzmaker.ui.Grname.text():[self.dlistGr,self.xlistGr]}
+            for i in range(self.xyzmaker.ui.xGrList.count()):
+                lenlist.append(len(self.dGrtemp[self.dlistGr[i]]['x']))
+            maxlen=max(lenlist)
+            indtomax=lenlist.index(maxlen)
+            z=[[0]*(self.xyzmaker.ui.xGrList.count()) for _ in range(maxlen)]
+            z=np.array(z).astype(float)
+            z[:][:]=np.nan
+            for i in range(self.xyzmaker.ui.xGrList.count()):
+                indtotake=self.v2in(self.xdataGrnotsort,self.xdataGr[i])
+                z[0:len(self.dGrtemp[self.dlistGr[indtotake]]['y']),i]=self.dGrtemp[self.dlistGr[indtotake]]['y']
+            y=self.dGrtemp[self.dlistGr[indtomax]]['x']
+            x=self.xdataGr
+            tempdata={'a':self.xyzmaker.ui.Grname.text(), 't':x, 'w':y, 'd':z}
+            dtemp3D[self.xyzmaker.ui.Grname.text()]=tempdata
+            if self.dGrnames==[] or self.dGrnames[-1]!=self.xyzmaker.ui.Grname.text():
+                tempbtn=QPushButton(self.xyzmaker.ui)
+                tempbtn.setText(self.xyzmaker.ui.Grname.text())
+                self.grdatanames={**self.grdatanames,**tempdictname}
+                tempbtn.clicked.connect(lambda itemstoadd: self.grnameClicked(itemstoadd=self.grdatanames[tempbtn.text()]))
+                self.xyzmaker.ui.datagenlay.addWidget(tempbtn)
+                self.dGr={**self.dGr, **dtemp3D}
+                self.dGrnames.append(self.xyzmaker.ui.Grname.text())
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def remfrGr(self):
-        lastind=self.xyzmaker.ui.datagenlay.count()-1
-        self.xyzmaker.ui.datagenlay.itemAt(lastind).widget().deleteLater()
-        self.xyzmaker.ui.datagenlay.removeWidget(self.xyzmaker.ui.datagenlay.itemAt(lastind).widget())
-        del self.dGr[self.dGrnames[lastind]]
-        del self.dGrnames[lastind]
+        try:
+            lastind=self.xyzmaker.ui.datagenlay.count()-1
+            self.xyzmaker.ui.datagenlay.itemAt(lastind).widget().deleteLater()
+            self.xyzmaker.ui.datagenlay.removeWidget(self.xyzmaker.ui.datagenlay.itemAt(lastind).widget())
+            del self.dGr[self.dGrnames[lastind]]
+            del self.dGrnames[lastind]
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def grtomain(self):
-        self.ui.dataBox.addItems(self.dGrnames)
-        self.d={**self.d, **self.dGr}
+        try:
+            self.ui.dataBox.addItems(self.dGrnames)
+            self.d={**self.d, **self.dGr}
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def grnameClicked(self,itemstoadd):
-        tempdlg=QDialog()
-        tempdlg.resize(250,300)
-        tempdlg.setMaximumSize(250,300)
-        templay=QtWidgets.QHBoxLayout(tempdlg)
-        dlistw=QListWidget()
-        dlistw.setMaximumSize(150,300)
-        dlistw.addItems(itemstoadd[0])
-        xlistw=QListWidget()
-        xlistw.addItems(itemstoadd[1])
-        xlistw.setMaximumSize(100,300)
-        templay.addWidget(dlistw)
-        templay.addWidget(xlistw)
-        tempdlg.exec()
+        try:
+            tempdlg=QDialog()
+            tempdlg.resize(250,300)
+            tempdlg.setMaximumSize(250,300)
+            templay=QtWidgets.QHBoxLayout(tempdlg)
+            dlistw=QListWidget()
+            dlistw.setMaximumSize(150,300)
+            dlistw.addItems(itemstoadd[0])
+            xlistw=QListWidget()
+            xlistw.addItems(itemstoadd[1])
+            xlistw.setMaximumSize(100,300)
+            templay.addWidget(dlistw)
+            templay.addWidget(xlistw)
+            tempdlg.exec()
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def draw_blit(self,figcanvas,ax,line,axbackground):
         figcanvas.restore_region(axbackground)
         ax.draw_artist(line)
@@ -5586,6 +5630,7 @@ class fitWindow(QDialog):
         self.parcounterList = [] #Needs to be tracked when function is removed
         self.ui.optparams.setReadOnly(True)
         self.ui.optErrPars.setReadOnly(True)
+        self.ui.fValueEdit.setReadOnly(True)
         
         # self.mbar = self.menuAdder()
         # #self.mbar.setObjectName("tabMenuBar")
@@ -5601,7 +5646,7 @@ class fitWindow(QDialog):
         
         self.ui.layoutFit.addWidget(NavigationToolbar_new(self.mFit, self.axFit,self,isGraph = False),0, 0, 1, 1)
         index=self.ui.layoutFit.count()-1
-        self.ui.layoutFit.itemAt(index).widget().setMaximumSize(QtCore.QSize(2250, int(self.currWindowSize.height()*0.02)))
+        self.ui.layoutFit.itemAt(index).widget().setMaximumSize(QtCore.QSize(2250, int(self.currWindowSize.height()*0.01)))
         
         self.eqcanvas=PlotCanvas(self, width=17.41, height=2,dpi=100)
         self.eqcanvas.setMaximumSize(QtCore.QSize(3000, int(self.currWindowSize.height()*0.05)))
@@ -5620,16 +5665,17 @@ class fitWindow(QDialog):
         self.ui.layoutFun.addWidget(NavigationToolbar_new(self.mFun,self.axFun, self, isGraph = False,isEquation = True),0, 0, 1, 1)
         
         index=self.ui.layoutFun.count()-1
-        self.ui.layoutFun.itemAt(index).widget().setMaximumSize(QtCore.QSize(1500, int(self.currWindowSize.height()*0.02)))
-    def menuAdder(self, alreadyExist = False):
-        if alreadyExist:
-            self.mbar.parent(None)
-        mbar=QMenuBar(self)
-        mbar.setNativeMenuBar(False)
-        #file=mbar.addMenu("File")
-        dataMenu = mbar.addMenu("Fit tab")
-        tabs = mbar.addMenu("Mode")
-        self.views = mbar.addMenu("View")
+        self.ui.layoutFun.itemAt(index).widget().setMaximumSize(QtCore.QSize(1500, int(self.currWindowSize.height()*0.01)))
+    # def menuAdder(self, alreadyExist = False):
+    #     if alreadyExist:
+    #         self.mbar.parent(None)
+    #     mbar=QMenuBar(self)
+    #     mbar.setNativeMenuBar(False)
+    #     #file=mbar.addMenu("File")
+    #     dataMenu = mbar.addMenu("Fit tab")
+    #     tabs = mbar.addMenu("Mode")
+    #     self.views = mbar.addMenu("View")
+    #     return mbar
         
         # #file.addAction("Open...")
         # #file.addSeparator()
@@ -5800,8 +5846,6 @@ class fitWindow(QDialog):
         # self.figureSpec.setCheckable(True)
         # self.figureSpec.setChecked(True)
         # self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
-        
-        return mbar
     def resizeUI(self):
         desktop = QApplication.desktop()
         newDPI=QApplication.screens()[0].physicalDotsPerInch()
@@ -5916,102 +5960,111 @@ class sliderObj(QFrame):
         self.slval.setText(self.num2str(self.pslider.value()/self.slacc,4))
         #self.pslider.setTracking(False)
     def maxlimchanged(self,needvalSet=True,needminSet=True,needmaxSet=True):
-        oldval=float(self.slval.text())
-        self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-        self.compNo = float(1/self.slacc*100) #To check whether limit needs to be changed
-        newpos=int(oldval*self.slacc)
-        if needmaxSet:
-            self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) #fix this step 10 later
-        if needminSet:
-            self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
-        if needvalSet:
-            self.pslider.setValue(newpos)
-        self.slval.setText(self.num2str(self.pslider.value()/self.slacc,4))
+        try:
+            oldval=float(self.slval.text())
+            self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+            self.compNo = float(1/self.slacc*100) #To check whether limit needs to be changed
+            newpos=int(oldval*self.slacc)
+            if needmaxSet:
+                self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) #fix this step 10 later
+            if needminSet:
+                self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+            if needvalSet:
+                self.pslider.setValue(newpos)
+            self.slval.setText(self.num2str(self.pslider.value()/self.slacc,4))
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def minlimchanged(self,needvalSet=True,needminSet=True,needmaxSet=True):
-        oldval=float(self.slval.text())
-        self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-        self.compNo = float(1/self.slacc*100) #To check whether limit needs to be changed
-        newpos=int(oldval*self.slacc)
-        if needminSet:
-            self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
-        if needmaxSet:
-            self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc))
-        if needvalSet:
-            self.pslider.setValue(newpos)
-        self.slval.setText(self.num2str(self.pslider.value()/self.slacc,4))
+        try:
+            oldval=float(self.slval.text())
+            self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+            self.compNo = float(1/self.slacc*100) #To check whether limit needs to be changed
+            newpos=int(oldval*self.slacc)
+            if needminSet:
+                self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+            if needmaxSet:
+                self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc))
+            if needvalSet:
+                self.pslider.setValue(newpos)
+            self.slval.setText(self.num2str(self.pslider.value()/self.slacc,4))
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def slidernumchanged(self):
-        minNo = 70
-        if abs(float(self.slval.text()))>=float(1/self.slacc*minNo):
-            print('default')
-            if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
-                print('1')
-                oldval=float(self.slval.text())
-                self.pslider.setMaximum(int((float(self.slval.text())+abs(float(self.slval.text()))*0.5)*self.slacc)) #fix this step 10 later
-                self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
-                self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
-                self.maxlimchanged(needvalSet=False)
-                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-                newpos=int(oldval*self.slacc)
-                self.pslider.setValue(newpos)
-            elif int(float(self.slval.text())*self.slacc)<=self.pslider.maximum() and int(float(self.slval.text())*self.slacc)>=self.pslider.minimum():
-                print('2')
-                oldval=float(self.slval.text())
-                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-                #self.slacc = int(self.slacc-0.01*self.slacc)
-                newpos=int(oldval*self.slacc)
-                #self.pslider.setMaximum(int(float(self.slmax.text())*1.01*self.slacc)) #fix this step 10 later
-                #self.pslider.setMinimum(int(float(self.slmin.text())*1.01*self.slacc))
-                self.pslider.setValue(newpos)
-            elif int(float(self.slval.text())*self.slacc)<self.pslider.minimum():
-                print('3')
-                oldval=float(self.slval.text())
-                self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) 
-                self.pslider.setMinimum(int((float(self.slval.text())-abs(float(self.slval.text())*0.5))*self.slacc))
-                self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
-                self.minlimchanged(needvalSet=False)
-                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-                newpos=int(oldval*self.slacc)
-                self.pslider.setValue(newpos)
-        elif abs(float(self.slval.text()))<float(1/self.slacc*minNo):
-            print('divided')
-            #print(abs(float(self.slval.text())))
-            #print(float(1/self.slacc*100))
-            if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
-                print('1')
-                oldval=float(self.slval.text())
-                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-                newpos=int(oldval*self.slacc)
-                self.pslider.setMaximum(int((float(self.slval.text())+abs(float(self.slval.text()))*0.5)*self.slacc)) #fix this step 10 later
-                self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
-                self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
-                self.maxlimchanged(needvalSet=False)
-                self.pslider.setValue(newpos)
-            if int(float(self.slval.text())*self.slacc)<=self.pslider.maximum() and int(float(self.slval.text())*self.slacc)>=self.pslider.minimum():
-                print('2')
-                oldval=float(self.slval.text())
-                if abs(float(self.slval.text())) == float(self.slval.text()):
-                    self.pslider.setMaximum(int(2*minNo)) #fix this step 10 later
+        try:
+            minNo = 70
+            if abs(float(self.slval.text()))>=float(1/self.slacc*minNo):
+                #print('default')
+                if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
+                    #print('1')
+                    oldval=float(self.slval.text())
+                    self.pslider.setMaximum(int((float(self.slval.text())+abs(float(self.slval.text()))*0.5)*self.slacc)) #fix this step 10 later
                     self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
                     self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
                     self.maxlimchanged(needvalSet=False)
-                else:
-                    self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) #fix this step 10 later
-                    self.pslider.setMinimum(int(2*minNo))
+                    self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                    newpos=int(oldval*self.slacc)
+                    self.pslider.setValue(newpos)
+                elif int(float(self.slval.text())*self.slacc)<=self.pslider.maximum() and int(float(self.slval.text())*self.slacc)>=self.pslider.minimum():
+                    #print('2')
+                    oldval=float(self.slval.text())
+                    self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                    #self.slacc = int(self.slacc-0.01*self.slacc)
+                    newpos=int(oldval*self.slacc)
+                    #self.pslider.setMaximum(int(float(self.slmax.text())*1.01*self.slacc)) #fix this step 10 later
+                    #self.pslider.setMinimum(int(float(self.slmin.text())*1.01*self.slacc))
+                    self.pslider.setValue(newpos)
+                elif int(float(self.slval.text())*self.slacc)<self.pslider.minimum():
+                    #print('3')
+                    oldval=float(self.slval.text())
+                    self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) 
+                    self.pslider.setMinimum(int((float(self.slval.text())-abs(float(self.slval.text())*0.5))*self.slacc))
                     self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
                     self.minlimchanged(needvalSet=False)
-                #self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-                newpos=int(oldval*self.slacc)
-                self.pslider.setValue(newpos)
-            elif int(float(self.slval.text())*self.slacc)<self.pslider.minimum():
-                print('3')
-                oldval=float(self.slval.text())
-                self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) 
-                self.pslider.setMinimum(int((float(self.slval.text())-abs(float(self.slval.text())*0.5))*self.slacc))
-                self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
-                self.minlimchanged(needvalSet=False)
-                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-                newpos=int(oldval*self.slacc)
-                self.pslider.setValue(newpos)
+                    self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                    newpos=int(oldval*self.slacc)
+                    self.pslider.setValue(newpos)
+            elif abs(float(self.slval.text()))<float(1/self.slacc*minNo):
+                #print('divided')
+                #print(abs(float(self.slval.text())))
+                #print(float(1/self.slacc*100))
+                if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
+                    #print('1')
+                    oldval=float(self.slval.text())
+                    self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                    newpos=int(oldval*self.slacc)
+                    self.pslider.setMaximum(int((float(self.slval.text())+abs(float(self.slval.text()))*0.5)*self.slacc)) #fix this step 10 later
+                    self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+                    self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
+                    self.maxlimchanged(needvalSet=False)
+                    self.pslider.setValue(newpos)
+                if int(float(self.slval.text())*self.slacc)<=self.pslider.maximum() and int(float(self.slval.text())*self.slacc)>=self.pslider.minimum():
+                    #print('2')
+                    oldval=float(self.slval.text())
+                    if abs(float(self.slval.text())) == float(self.slval.text()):
+                        self.pslider.setMaximum(int(2*minNo)) #fix this step 10 later
+                        self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+                        self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
+                        self.maxlimchanged(needvalSet=False)
+                    else:
+                        self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) #fix this step 10 later
+                        self.pslider.setMinimum(int(2*minNo))
+                        self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
+                        self.minlimchanged(needvalSet=False)
+                    #self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                    newpos=int(oldval*self.slacc)
+                    self.pslider.setValue(newpos)
+                elif int(float(self.slval.text())*self.slacc)<self.pslider.minimum():
+                    #print('3')
+                    oldval=float(self.slval.text())
+                    self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) 
+                    self.pslider.setMinimum(int((float(self.slval.text())-abs(float(self.slval.text())*0.5))*self.slacc))
+                    self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
+                    self.minlimchanged(needvalSet=False)
+                    self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                    newpos=int(oldval*self.slacc)
+                    self.pslider.setValue(newpos)
+        except Exception as Argument:
+            self.genLogforException(Argument)
         
         # try:
         #     if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
