@@ -173,7 +173,7 @@ class AppWindow(QDialog):
         
         #Disable certain items until data is loaded or plotting is ready, to avoid app crash:
         #self.ui.fitBtn.setEnabled(False)
-        self.fitter.setEnabled(False)
+        self.fitter.setEnabled(True)
         self.ui.addButton.setEnabled(False)
         self.addoneAction.setEnabled(False)
         self.ui.addallButton.setEnabled(False)
@@ -4694,128 +4694,188 @@ class AppWindow(QDialog):
                     self.p0[i]=float(self.fitw.psliders[i].slval.text())
                     self.lb[i]=float(self.fitw.psliders[i].slmin.text())
                     self.ub[i]=float(self.fitw.psliders[i].slmax.text())
-                if self.fitw.multfitmode.isChecked() and not self.fitw.ui.plonlycb.isChecked():
-                    poptarr=[]
-                    if self.fitw.xdatabox.currentText()=='xright':
-                        nd=self.ui.dataBox.currentText()
-                        t=self.d[nd]['t']
-                        tr=self.fitw.ui.xyfitrange.text().split(',')
-                        trin=float(tr[0])
-                        trfin=float(tr[1])
-                        self.xy=t[self.v2in(t,trin):self.v2in(t,trfin)]
-                        plt.figure(figsize=(14, 7))
-                        for xyi in self.xy:
-                            #time.sleep(0.4)
-                            w=self.d[nd]['w']
-                            temp=self.tslice(self.d[nd],xyi)
-                            if self.tsc[0]!=0:
-                                tempsc=0
-                                for ts in self.tsc:
-                                    tempsc=tempsc+self.tslice(self.d[nd],ts)
-                                tempsc=tempsc/len(self.tsc)
-                                temp=temp-tempsc
-                            temp=temp[self.v2in(w,self.twr[2]):(self.v2in(w,self.twr[3])+1)]
-                            w=w[self.v2in(w,self.twr[2]):(self.v2in(w,self.twr[3])+1)]
-                            xd=w
-                            yd=10**(-temp)-1
-                            popt, pcov = curve_fit(fitfun, xd, yd,self.p0, bounds=(self.lb,self.ub))
-                            y_fit=fitfun(x_fit,*popt)
-                            popt_err=np.sqrt(np.diag(pcov))
-                            plt.clf()
-                            plt.cla()
-                            plt.plot(xd, yd,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=markerls)
-                            plt.plot(x_fit, y_fit,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
-                            for i in range(self.fitw.ui.fList.count()):
-                                funstr=self.fitw.ui.fList.item(i).text()
-                                def tempfitfun(x,p):
-                                    pyF = self.execPyFuns()
-                                    return eval(funstr)
-                                y_fit_temp=tempfitfun(x_fit,popt)
-                                plt.plot(x_fit, y_fit_temp,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
-                            plt.show()
-                            plt.pause(1e-3)
-                            poptarr.append(popt)
-                        if self.fitw.ui.plotaftercb.isChecked():
-                            plt.figure(figsize=(14, 7))
-                            plt.clf()
-                            plt.cla()
-                            self.poptarrnp=np.array(poptarr)
-                            plotpars=self.fitw.ui.plotpars.text()
-                            self.plotpars=plotpars.split(',')
-                            xpl=self.xy
-                            for i in range(len(self.plotpars)):
-                                ypl=self.poptarrnp[0:len(xpl),int(float(self.plotpars[i]))]
-                                plt.plot(xpl, ypl,"o", ms=3, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=1)
-                            plt.gca().legend(self.fitw.ui.plotparsleg.text().split(','),framealpha=0.25)
-                            plt.show()
-                        self.fitw.mFit.draw()
-                elif self.fitw.ui.plonlycb.isChecked():
-                    plt.figure(figsize=(14, 7))
-                    plt.clf()
-                    plt.cla()
-                    xpl=self.xy
-                    for i in range(len(self.plotpars)):
-                        ypl=self.poptarrnp[0:len(xpl),int(float(self.plotpars[i]))]
-                        plt.plot(xpl, ypl,"o", ms=3, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=1)
-                    plt.gca().legend(self.fitw.ui.plotparsleg.text().split(','),framealpha=0.25)
-                    plt.show()
-                else:
-                    xd=self.fitw.xdata
-                    yd=self.fitw.ydata
-                    if self.fitw.ui.fitrcb.isChecked():
-                        xfitr=[float(self.fitw.ui.fitrange.text().split(',')[0]),float(self.fitw.ui.fitrange.text().split(',')[1])]
-                        xdnew=xd[self.v2in(xd,xfitr[0]):self.v2in(xd,xfitr[1])]
-                        ydnew=yd[self.v2in(xd,xfitr[0]):self.v2in(xd,xfitr[1])]
-                        xd=xdnew
-                        yd=ydnew
-                    popt, pcov = curve_fit(fitfun, xd, yd,self.p0, bounds=(self.lb,self.ub))
-                    popt_err=np.sqrt(np.diag(pcov))
-                    y_fit=fitfun(x_fit,*popt)
-                    if self.fitw.ui.fitplrangecb.isChecked():
-                        xfitplr=[float(self.fitw.ui.fitplrange.text().split(',')[0]),float(self.fitw.ui.fitplrange.text().split(',')[1])]
-                        xfitnew=x_fit[self.v2in(x_fit,xfitplr[0]):self.v2in(x_fit,xfitplr[1])]
-                        yfitnew=y_fit[self.v2in(x_fit,xfitplr[0]):self.v2in(x_fit,xfitplr[1])]
-                        x_fit=xfitnew
-                        y_fit=yfitnew
-                    self.fitw.axFit.clear()
+                
+                xd=self.fitw.xdata
+                yd=self.fitw.ydata
+                if self.fitw.ui.fitrcb.isChecked():
+                    xfitr=[float(self.fitw.ui.fitrange.text().split(',')[0]),float(self.fitw.ui.fitrange.text().split(',')[1])]
+                    xdnew=xd[self.v2in(xd,xfitr[0]):self.v2in(xd,xfitr[1])]
+                    ydnew=yd[self.v2in(xd,xfitr[0]):self.v2in(xd,xfitr[1])]
+                    xd=xdnew
+                    yd=ydnew
+                popt, pcov = curve_fit(fitfun, xd, yd,self.p0, bounds=(self.lb,self.ub))
+                popt_err=np.sqrt(np.diag(pcov))
+                y_fit=fitfun(x_fit,*popt)
+                if self.fitw.ui.fitplrangecb.isChecked():
+                    xfitplr=[float(self.fitw.ui.fitplrange.text().split(',')[0]),float(self.fitw.ui.fitplrange.text().split(',')[1])]
+                    xfitnew=x_fit[self.v2in(x_fit,xfitplr[0]):self.v2in(x_fit,xfitplr[1])]
+                    yfitnew=y_fit[self.v2in(x_fit,xfitplr[0]):self.v2in(x_fit,xfitplr[1])]
+                    x_fit=xfitnew
+                    y_fit=yfitnew
+                self.fitw.axFit.clear()
+                
+                #For column of data:
+                self.csvarray=np.zeros((self.lenofx+2,self.fitw.ui.fList.count()*2+4),dtype=object)
+                self.csvarray[:][:] = np.nan
+                self.csvarray[0][0]='Data'
+                self.csvarray[0][1]=''
+                self.csvarray[1][0]='x'
+                self.csvarray[1][1]='y'
+                self.csvarray[2:len(self.fitw.xdata)+2,0]=self.fitw.xdata
+                self.csvarray[2:len(self.fitw.ydata)+2,1]=self.fitw.ydata
+                self.csvarray[0][2]='Fit'
+                self.csvarray[0][3]=''
+                self.csvarray[1][2]='x'
+                self.csvarray[1][3]='y'
+                self.csvarray[2:len(x_fit)+2,2]=x_fit
+                self.csvarray[2:len(y_fit)+2,3]=y_fit
+                
+                self.lineplot,= self.fitw.axFit.plot(self.fitw.xdata, self.fitw.ydata,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=markerls)
+                self.linefit, =self.fitw.axFit.plot(x_fit, y_fit,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=3)
+                for i in range(self.fitw.ui.fList.count()):
+                   funstr=self.fitw.ui.fList.item(i).text()
+                   def tempfitfun(x,*p):
+                       pyF = self.execPyFuns()
+                       return eval(funstr)
+                   y_fit_temp=tempfitfun(x_fit,*popt)
+                   self.csvarray[0][4+2*(i)]=''.join(['Fit ',str(i+1)])
+                   self.csvarray[0][5+2*(i)]=''
+                   self.csvarray[1][4+2*(i)]='x'
+                   self.csvarray[1][5+2*(i)]='y'
+                   self.csvarray[2:len(x_fit)+2,4+2*(i)]=x_fit
+                   self.csvarray[2:len(y_fit_temp)+2,5+2*(i)]=y_fit_temp
+                   self.fitw.axFit.plot(x_fit, y_fit_temp,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
+                self.fitw.mFit.draw()
+                self.fitw.ui.optparams.setText(str(popt).replace(']','').replace('[',''))
+                self.fitw.ui.optErrPars.setText(str(popt_err).replace(']','').replace('[',''))
+                presetsDir = self.makeFolderinDocuments('Data')
+                dataPath = presetsDir / 'datafit.csv'
+                np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                
+                #Will work on these later:
                     
-                    #For column of data:
-                    self.csvarray=np.zeros((self.lenofx+2,self.fitw.ui.fList.count()*2+4),dtype=object)
-                    self.csvarray[:][:] = np.nan
-                    self.csvarray[0][0]='Data'
-                    self.csvarray[0][1]=''
-                    self.csvarray[1][0]='x'
-                    self.csvarray[1][1]='y'
-                    self.csvarray[2:len(self.fitw.xdata)+2,0]=self.fitw.xdata
-                    self.csvarray[2:len(self.fitw.ydata)+2,1]=self.fitw.ydata
-                    self.csvarray[0][2]='Fit'
-                    self.csvarray[0][3]=''
-                    self.csvarray[1][2]='x'
-                    self.csvarray[1][3]='y'
-                    self.csvarray[2:len(x_fit)+2,2]=x_fit
-                    self.csvarray[2:len(y_fit)+2,3]=y_fit
+                # if self.fitw.multfitmode.isChecked() and not self.fitw.ui.plonlycb.isChecked():
+                #     poptarr=[]
+                #     if self.fitw.xdatabox.currentText()=='xright':
+                #         nd=self.ui.dataBox.currentText()
+                #         t=self.d[nd]['t']
+                #         tr=self.fitw.ui.xyfitrange.text().split(',')
+                #         trin=float(tr[0])
+                #         trfin=float(tr[1])
+                #         self.xy=t[self.v2in(t,trin):self.v2in(t,trfin)]
+                #         plt.figure(figsize=(14, 7))
+                #         for xyi in self.xy:
+                #             #time.sleep(0.4)
+                #             w=self.d[nd]['w']
+                #             temp=self.tslice(self.d[nd],xyi)
+                #             if self.tsc[0]!=0:
+                #                 tempsc=0
+                #                 for ts in self.tsc:
+                #                     tempsc=tempsc+self.tslice(self.d[nd],ts)
+                #                 tempsc=tempsc/len(self.tsc)
+                #                 temp=temp-tempsc
+                #             temp=temp[self.v2in(w,self.twr[2]):(self.v2in(w,self.twr[3])+1)]
+                #             w=w[self.v2in(w,self.twr[2]):(self.v2in(w,self.twr[3])+1)]
+                #             xd=w
+                #             yd=10**(-temp)-1
+                #             popt, pcov = curve_fit(fitfun, xd, yd,self.p0, bounds=(self.lb,self.ub))
+                #             y_fit=fitfun(x_fit,*popt)
+                #             popt_err=np.sqrt(np.diag(pcov))
+                #             plt.clf()
+                #             plt.cla()
+                #             plt.plot(xd, yd,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=markerls)
+                #             plt.plot(x_fit, y_fit,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
+                #             for i in range(self.fitw.ui.fList.count()):
+                #                 funstr=self.fitw.ui.fList.item(i).text()
+                #                 def tempfitfun(x,p):
+                #                     pyF = self.execPyFuns()
+                #                     return eval(funstr)
+                #                 y_fit_temp=tempfitfun(x_fit,popt)
+                #                 plt.plot(x_fit, y_fit_temp,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
+                #             plt.show()
+                #             plt.pause(1e-3)
+                #             poptarr.append(popt)
+                #         if self.fitw.ui.plotaftercb.isChecked():
+                #             plt.figure(figsize=(14, 7))
+                #             plt.clf()
+                #             plt.cla()
+                #             self.poptarrnp=np.array(poptarr)
+                #             plotpars=self.fitw.ui.plotpars.text()
+                #             self.plotpars=plotpars.split(',')
+                #             xpl=self.xy
+                #             for i in range(len(self.plotpars)):
+                #                 ypl=self.poptarrnp[0:len(xpl),int(float(self.plotpars[i]))]
+                #                 plt.plot(xpl, ypl,"o", ms=3, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=1)
+                #             plt.gca().legend(self.fitw.ui.plotparsleg.text().split(','),framealpha=0.25)
+                #             plt.show()
+                #         self.fitw.mFit.draw()
+                # elif self.fitw.ui.plonlycb.isChecked():
+                #     plt.figure(figsize=(14, 7))
+                #     plt.clf()
+                #     plt.cla()
+                #     xpl=self.xy
+                #     for i in range(len(self.plotpars)):
+                #         ypl=self.poptarrnp[0:len(xpl),int(float(self.plotpars[i]))]
+                #         plt.plot(xpl, ypl,"o", ms=3, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=1)
+                #     plt.gca().legend(self.fitw.ui.plotparsleg.text().split(','),framealpha=0.25)
+                #     plt.show()
+                # else:
+                #     xd=self.fitw.xdata
+                #     yd=self.fitw.ydata
+                #     if self.fitw.ui.fitrcb.isChecked():
+                #         xfitr=[float(self.fitw.ui.fitrange.text().split(',')[0]),float(self.fitw.ui.fitrange.text().split(',')[1])]
+                #         xdnew=xd[self.v2in(xd,xfitr[0]):self.v2in(xd,xfitr[1])]
+                #         ydnew=yd[self.v2in(xd,xfitr[0]):self.v2in(xd,xfitr[1])]
+                #         xd=xdnew
+                #         yd=ydnew
+                #     popt, pcov = curve_fit(fitfun, xd, yd,self.p0, bounds=(self.lb,self.ub))
+                #     popt_err=np.sqrt(np.diag(pcov))
+                #     y_fit=fitfun(x_fit,*popt)
+                #     if self.fitw.ui.fitplrangecb.isChecked():
+                #         xfitplr=[float(self.fitw.ui.fitplrange.text().split(',')[0]),float(self.fitw.ui.fitplrange.text().split(',')[1])]
+                #         xfitnew=x_fit[self.v2in(x_fit,xfitplr[0]):self.v2in(x_fit,xfitplr[1])]
+                #         yfitnew=y_fit[self.v2in(x_fit,xfitplr[0]):self.v2in(x_fit,xfitplr[1])]
+                #         x_fit=xfitnew
+                #         y_fit=yfitnew
+                #     self.fitw.axFit.clear()
                     
-                    self.lineplot,= self.fitw.axFit.plot(self.fitw.xdata, self.fitw.ydata,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=markerls)
-                    self.linefit, =self.fitw.axFit.plot(x_fit, y_fit,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=3)
-                    for i in range(self.fitw.ui.fList.count()):
-                       funstr=self.fitw.ui.fList.item(i).text()
-                       def tempfitfun(x,*p):
-                           pyF = self.execPyFuns()
-                           return eval(funstr)
-                       y_fit_temp=tempfitfun(x_fit,*popt)
-                       self.csvarray[0][4+2*(i)]=''.join(['Fit ',str(i+1)])
-                       self.csvarray[0][5+2*(i)]=''
-                       self.csvarray[1][4+2*(i)]='x'
-                       self.csvarray[1][5+2*(i)]='y'
-                       self.csvarray[2:len(x_fit)+2,4+2*(i)]=x_fit
-                       self.csvarray[2:len(y_fit_temp)+2,5+2*(i)]=y_fit_temp
-                       self.fitw.axFit.plot(x_fit, y_fit_temp,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
-                    self.fitw.mFit.draw()
-                    self.fitw.ui.optparams.setText(str(popt).replace(']','').replace('[',''))
-                    self.fitw.ui.optErrPars.setText(str(popt_err).replace(']','').replace('[',''))
-                    presetsDir = self.makeFolderinDocuments('Data')
-                    dataPath = presetsDir / 'datafit.csv'
-                    np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
+                #     #For column of data:
+                #     self.csvarray=np.zeros((self.lenofx+2,self.fitw.ui.fList.count()*2+4),dtype=object)
+                #     self.csvarray[:][:] = np.nan
+                #     self.csvarray[0][0]='Data'
+                #     self.csvarray[0][1]=''
+                #     self.csvarray[1][0]='x'
+                #     self.csvarray[1][1]='y'
+                #     self.csvarray[2:len(self.fitw.xdata)+2,0]=self.fitw.xdata
+                #     self.csvarray[2:len(self.fitw.ydata)+2,1]=self.fitw.ydata
+                #     self.csvarray[0][2]='Fit'
+                #     self.csvarray[0][3]=''
+                #     self.csvarray[1][2]='x'
+                #     self.csvarray[1][3]='y'
+                #     self.csvarray[2:len(x_fit)+2,2]=x_fit
+                #     self.csvarray[2:len(y_fit)+2,3]=y_fit
+                    
+                #     self.lineplot,= self.fitw.axFit.plot(self.fitw.xdata, self.fitw.ydata,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=markerls)
+                #     self.linefit, =self.fitw.axFit.plot(x_fit, y_fit,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls="-",linewidth=3)
+                #     for i in range(self.fitw.ui.fList.count()):
+                #        funstr=self.fitw.ui.fList.item(i).text()
+                #        def tempfitfun(x,*p):
+                #            pyF = self.execPyFuns()
+                #            return eval(funstr)
+                #        y_fit_temp=tempfitfun(x_fit,*popt)
+                #        self.csvarray[0][4+2*(i)]=''.join(['Fit ',str(i+1)])
+                #        self.csvarray[0][5+2*(i)]=''
+                #        self.csvarray[1][4+2*(i)]='x'
+                #        self.csvarray[1][5+2*(i)]='y'
+                #        self.csvarray[2:len(x_fit)+2,4+2*(i)]=x_fit
+                #        self.csvarray[2:len(y_fit_temp)+2,5+2*(i)]=y_fit_temp
+                #        self.fitw.axFit.plot(x_fit, y_fit_temp,"-", ms=1, markerfacecolor="None",markeredgewidth=1.5,ls=":",linewidth=3)
+                #     self.fitw.mFit.draw()
+                #     self.fitw.ui.optparams.setText(str(popt).replace(']','').replace('[',''))
+                #     self.fitw.ui.optErrPars.setText(str(popt_err).replace(']','').replace('[',''))
+                #     presetsDir = self.makeFolderinDocuments('Data')
+                #     dataPath = presetsDir / 'datafit.csv'
+                #     np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
         except Exception as Argument:
             self.genLogforException(Argument)
     def faddBtn(self):
@@ -4937,10 +4997,16 @@ class AppWindow(QDialog):
             paramstoadd = [y for y in paramstoadd if y != '']
             rangetemp=np.nanmin([len(paramstoadd),len(self.fitw.psliders)])
             #print(paramstoadd)
-            for i in range(rangetemp):
-                self.fitw.psliders[i].slval.setText(paramstoadd[i])
-                self.fitw.psliders[i].slidernumchanged()
+            if not paramstoadd==[]:
+                for i in range(rangetemp):
+                    self.fitw.psliders[i].slval.setText(paramstoadd[i])
+                    self.fitw.psliders[i].slidernumchanged()
+            else:
+                for i in range(len(self.fitw.psliders)):
+                    self.fitw.psliders[i].slidernumchanged()
         except Exception as Argument:
+            for i in range(rangetemp):
+                self.fitw.psliders[i].slidernumchanged()
             self.genLogforException(Argument)
     def py2tex(self,expr):
         pt = ast.parse(expr)
@@ -5518,6 +5584,8 @@ class fitWindow(QDialog):
         self.currWindowSize = self.app.desktop().geometry()
         self.parcounter = 0 #Counts the # parameters need to be added
         self.parcounterList = [] #Needs to be tracked when function is removed
+        self.ui.optparams.setReadOnly(True)
+        self.ui.optErrPars.setReadOnly(True)
         
         # self.mbar = self.menuAdder()
         # #self.mbar.setObjectName("tabMenuBar")
@@ -5821,10 +5889,12 @@ class sliderObj(QFrame):
         self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
         self.pslider.setSingleStep(int(1))
         self.pslider.valueChanged.connect(self.pslidervaluechanged)
+        self.pslider.sliderReleased.connect(self.psliderrelease)
         self.slmax.editingFinished.connect(self.maxlimchanged)
         self.slmin.editingFinished.connect(self.minlimchanged)
         self.slval.editingFinished.connect(self.slidernumchanged)
         self.pslider.setValue(int(float(self.slval.text())*self.slacc))
+        #self.compNo = float(1/self.slacc*100) #To check whether limit needs to be changed
         
     def makeFolderinDocuments(self, foldName): 
         foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'
@@ -5839,42 +5909,130 @@ class sliderObj(QFrame):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         f.write(''.join(['\n',str([exc_tb.tb_lineno,Argument]),datetime.now(). strftime("%m/%d/%Y, %H:%M:%S")]))
         f.close()
+    def psliderrelease(self):
+        pass
     def pslidervaluechanged(self):
+        #self.pslider.setTracking(True)
         self.slval.setText(self.num2str(self.pslider.value()/self.slacc,4))
-    def maxlimchanged(self,needvalSet=True):
+        #self.pslider.setTracking(False)
+    def maxlimchanged(self,needvalSet=True,needminSet=True,needmaxSet=True):
         oldval=float(self.slval.text())
         self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+        self.compNo = float(1/self.slacc*100) #To check whether limit needs to be changed
         newpos=int(oldval*self.slacc)
-        self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) #fix this step 10 later
-        self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+        if needmaxSet:
+            self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) #fix this step 10 later
+        if needminSet:
+            self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
         if needvalSet:
             self.pslider.setValue(newpos)
-    def minlimchanged(self,needvalSet=True):
+        self.slval.setText(self.num2str(self.pslider.value()/self.slacc,4))
+    def minlimchanged(self,needvalSet=True,needminSet=True,needmaxSet=True):
         oldval=float(self.slval.text())
         self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+        self.compNo = float(1/self.slacc*100) #To check whether limit needs to be changed
         newpos=int(oldval*self.slacc)
-        self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
-        self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc))
+        if needminSet:
+            self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+        if needmaxSet:
+            self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc))
         if needvalSet:
             self.pslider.setValue(newpos)
+        self.slval.setText(self.num2str(self.pslider.value()/self.slacc,4))
     def slidernumchanged(self):
-        try:
+        minNo = 70
+        if abs(float(self.slval.text()))>=float(1/self.slacc*minNo):
+            print('default')
             if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
+                print('1')
                 oldval=float(self.slval.text())
-                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
-                newpos=int(oldval*self.slacc)
-                self.pslider.setMaximum(int((float(self.slval.text())+float(self.slval.text())*0.5)*self.slacc)) #fix this step 10 later
+                self.pslider.setMaximum(int((float(self.slval.text())+abs(float(self.slval.text()))*0.5)*self.slacc)) #fix this step 10 later
                 self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
-                self.pslider.setValue(newpos)
                 self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
-            elif int(float(self.slval.text())*self.slacc)<self.pslider.minimum():
-                oldval=float(self.slval.text())
+                self.maxlimchanged(needvalSet=False)
                 self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
                 newpos=int(oldval*self.slacc)
+                self.pslider.setValue(newpos)
+            elif int(float(self.slval.text())*self.slacc)<=self.pslider.maximum() and int(float(self.slval.text())*self.slacc)>=self.pslider.minimum():
+                print('2')
+                oldval=float(self.slval.text())
+                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                #self.slacc = int(self.slacc-0.01*self.slacc)
+                newpos=int(oldval*self.slacc)
+                #self.pslider.setMaximum(int(float(self.slmax.text())*1.01*self.slacc)) #fix this step 10 later
+                #self.pslider.setMinimum(int(float(self.slmin.text())*1.01*self.slacc))
+                self.pslider.setValue(newpos)
+            elif int(float(self.slval.text())*self.slacc)<self.pslider.minimum():
+                print('3')
+                oldval=float(self.slval.text())
                 self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) 
                 self.pslider.setMinimum(int((float(self.slval.text())-abs(float(self.slval.text())*0.5))*self.slacc))
-                self.pslider.setValue(newpos)
                 self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
+                self.minlimchanged(needvalSet=False)
+                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                newpos=int(oldval*self.slacc)
+                self.pslider.setValue(newpos)
+        elif abs(float(self.slval.text()))<float(1/self.slacc*minNo):
+            print('divided')
+            #print(abs(float(self.slval.text())))
+            #print(float(1/self.slacc*100))
+            if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
+                print('1')
+                oldval=float(self.slval.text())
+                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                newpos=int(oldval*self.slacc)
+                self.pslider.setMaximum(int((float(self.slval.text())+abs(float(self.slval.text()))*0.5)*self.slacc)) #fix this step 10 later
+                self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+                self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
+                self.maxlimchanged(needvalSet=False)
+                self.pslider.setValue(newpos)
+            if int(float(self.slval.text())*self.slacc)<=self.pslider.maximum() and int(float(self.slval.text())*self.slacc)>=self.pslider.minimum():
+                print('2')
+                oldval=float(self.slval.text())
+                if abs(float(self.slval.text())) == float(self.slval.text()):
+                    self.pslider.setMaximum(int(2*minNo)) #fix this step 10 later
+                    self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+                    self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
+                    self.maxlimchanged(needvalSet=False)
+                else:
+                    self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) #fix this step 10 later
+                    self.pslider.setMinimum(int(2*minNo))
+                    self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
+                    self.minlimchanged(needvalSet=False)
+                #self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                newpos=int(oldval*self.slacc)
+                self.pslider.setValue(newpos)
+            elif int(float(self.slval.text())*self.slacc)<self.pslider.minimum():
+                print('3')
+                oldval=float(self.slval.text())
+                self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) 
+                self.pslider.setMinimum(int((float(self.slval.text())-abs(float(self.slval.text())*0.5))*self.slacc))
+                self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
+                self.minlimchanged(needvalSet=False)
+                self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+                newpos=int(oldval*self.slacc)
+                self.pslider.setValue(newpos)
+        
+        # try:
+        #     if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
+        #         oldval=float(self.slval.text())
+        #         self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+        #         newpos=int(oldval*self.slacc)
+        #         self.pslider.setMaximum(int((float(self.slval.text())+float(self.slval.text())*0.5)*self.slacc)) #fix this step 10 later
+        #         self.pslider.setMinimum(int(float(self.slmin.text())*self.slacc))
+        #         self.pslider.setValue(newpos)
+        #         self.slmax.setText(self.num2str(self.pslider.maximum()/self.slacc,4))
+        #     elif int(float(self.slval.text())*self.slacc)<self.pslider.minimum():
+        #         oldval=float(self.slval.text())
+        #         self.slacc=max(int(1/((float(self.slmax.text())-float(self.slmin.text()))*self.slacno)),1)
+        #         newpos=int(oldval*self.slacc)
+        #         self.pslider.setMaximum(int(float(self.slmax.text())*self.slacc)) 
+        #         self.pslider.setMinimum(int((float(self.slval.text())-abs(float(self.slval.text())*0.5))*self.slacc))
+        #         self.pslider.setValue(newpos)
+        #         self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
+        #     self.pslider.setValue(int(float(self.slval.text())*self.slacc))
+        # except Exception as Argument:
+        #     self.genLogforException(Argument)
             # else:
                 
             # if int(float(self.slval.text())*self.slacc)>self.pslider.maximum():
@@ -5909,11 +6067,7 @@ class sliderObj(QFrame):
             #     #self.slmin.setText(self.num2str(self.pslider.minimum()/self.slacc,4))
             #     #print(int(float(self.slval.text())))
             #     #print(newpos/self.slacc)
-            self.pslider.setValue(int(float(self.slval.text())*self.slacc))
             # else:
-            
-        except Exception as Argument:
-            self.genLogforException(Argument)
     def num2str(self,x,p):
         """
         returns a string representation of x formatted with a precision of p
