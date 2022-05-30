@@ -414,7 +414,7 @@
               <item row="0" column="3" rowspan="2">
                <widget class="QFrame" name="frame_12">
                 <property name="sizePolicy">
-                 <sizepolicy hsizetype="Ignored" vsizetype="Ignored">
+                 <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                   <horstretch>0</horstretch>
                   <verstretch>0</verstretch>
                  </sizepolicy>
@@ -462,9 +462,9 @@
                   <number>0</number>
                  </property>
                  <item row="3" column="1">
-                  <widget class="QPushButton" name="addSliders_2">
+                  <widget class="QPushButton" name="modelsButton">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -519,9 +519,9 @@
                   </widget>
                  </item>
                  <item row="3" column="2">
-                  <widget class="QPushButton" name="addSliders_3">
+                  <widget class="QPushButton" name="addModelAs">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
@@ -552,9 +552,9 @@
                   </widget>
                  </item>
                  <item row="3" column="3" colspan="2">
-                  <widget class="QLineEdit" name="parsValue_2">
+                  <widget class="QLineEdit" name="modelName">
                    <property name="enabled">
-                    <bool>false</bool>
+                    <bool>true</bool>
                    </property>
                    <property name="sizePolicy">
                     <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
@@ -580,7 +580,7 @@
                     </font>
                    </property>
                    <property name="text">
-                    <string>1</string>
+                    <string>model name</string>
                    </property>
                    <property name="alignment">
                     <set>Qt::AlignCenter</set>

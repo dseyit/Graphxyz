@@ -105,7 +105,7 @@ class AppWindow(QDialog):
         self.impw=impOptionsWindow()
         self.funw = funOptionsWindow()
         self.xyzmaker=xyzMakerWindow()
-        self.fitw=fitWindow(app = self.app)
+        self.fitw=fitWindow(app = self.app, mainDialog=self)
         self.pyFunsDlg = pyFunWindow()
         
         #Add icons to buttons:
@@ -313,6 +313,11 @@ class AppWindow(QDialog):
         self.fitw.cpfitbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.fitfigcanvas))
         self.fitw.cpeqbtn.clicked.connect(lambda fromcanvas: self.copyfig(fromcanvas=self.fitw.eqcanvas))
         self.fitw.ui.quickaddParam.clicked.connect(self.quickparamaddBtn)
+        self.fitw.addModelAs.clicked.connect(self.modelsUpdate)
+        self.fitw.modelsW.compareModels.clicked.connect(self.modelsCompare)
+        self.fitw.modelsW.clearModels.clicked.connect(self.modelsClear)
+        self.fitw.modelsW.addInfo.clicked.connect(self.comparisonInfoAdd)
+        self.fitw.modelsW.remInfo.clicked.connect(self.comparisonInfoRem)
         
         #Imp and functions window button connects
         self.impw.ui.xyz.toggled.connect(self.modechanged)
@@ -501,6 +506,7 @@ class AppWindow(QDialog):
         # impPref=tools.addAction("Preset options...")
         # impPref.triggered.connect(self.impOptBtnClicked)
         self.fitter = tools.addAction("Fit...")
+        self.fitter.setShortcut(QKeySequence("Ctrl+F"))
         maker3D=tools.addAction("3D maker: XY+Z...")
         maker3D.triggered.connect(self.xyzmakerClicked)
         
@@ -1177,7 +1183,7 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
     def refreshBtn(self):
         try:
-            self.showPopInfo("Loading files...", durationToShow = 0.5)
+            self.showPopInfo("Loading files...", durationToShow = 0.5,widgetToShowOn=self.mbar)
             filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
             filesloc = getResourcePath(filesloc)
             datfoldnames=self.xyzdatagenerator(filesloc)
@@ -1216,10 +1222,10 @@ class AppWindow(QDialog):
                 #     self.figureDyn.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
-            self.showPopInfo('Make sure that the data loaded with correct preset! Folder might be empty!',durationToShow=3, color = 'red')
+            self.showPopInfo('Make sure that the data loaded with correct preset! Folder might be empty!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
     def addBtn(self):
         try:
-            self.showPopInfo("Adding folder...", durationToShow = 0.5)
+            self.showPopInfo("Adding folder...", durationToShow = 0.5,widgetToShowOn=self.mbar)
             # if self.impw.ui.xyz.isChecked():
             #     self.figure2D.setChecked(True)
             #     self.figureDyn.setChecked(True)
@@ -1255,7 +1261,7 @@ class AppWindow(QDialog):
                 self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
-            self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red')
+            self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
     def loadallBtn(self):
         self.addallBtn(loadMode = True)
         if self.impw.ui.xyz.isChecked() and not self.d=={}:
@@ -1269,7 +1275,7 @@ class AppWindow(QDialog):
             self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
             self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
     def addallBtn(self, loadMode=False):
-        self.showPopInfo("Adding all folders...", durationToShow = 0.5)
+        self.showPopInfo("Adding all folders...", durationToShow = 0.5,widgetToShowOn=self.mbar)
         try:
             # if self.impw.ui.xyz.isChecked():
             #     self.figure2D.setChecked(True)
@@ -1314,7 +1320,7 @@ class AppWindow(QDialog):
             self.plotControlsAction.setChecked(True)
         except Exception as Argument:
             self.genLogforException(Argument)
-            self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red')
+            self.showPopInfo('Make sure that the data added with correct preset!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
     def addGrBtn(self):
         try:
             filesloc=self.xyzmaker.ui.GrLoc.currentText().split('   -Import preset:')[0]
@@ -1411,10 +1417,10 @@ class AppWindow(QDialog):
                    self.csvarray[2:len(self.axspec.lines[i].get_ydata())+2,1+2*(i)]=self.axspec.lines[i].get_ydata()
                 presetsDir = self.makeFolderinDocuments('Data')
                 dataPath = presetsDir / 'datayz.csv'
-                self.showPopInfo('Raw data (dataxz.csv and datayz.csv) is succesfully saved in Username/Documents/Graphxyz')
+                self.showPopInfo('Raw data (dataxz.csv and datayz.csv) is succesfully saved in Username/Documents/Graphxyz',widgetToShowOn=self.mbar)
             except Exception as Argument:
                 self.genLogforException(Argument)
-                self.showPopInfo('Data export failed! Make sure to Submit and Plot first!',durationToShow=3, color = 'red')
+                self.showPopInfo('Data export failed! Make sure to Submit and Plot first!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
         elif not self.impw.ui.xyz.isChecked():
             try:
                 if self.ui.graphsel.currentText()=='plot left':
@@ -1437,7 +1443,7 @@ class AppWindow(QDialog):
                     presetsDir = self.makeFolderinDocuments('Data')
                     dataPath = presetsDir / 'dataleft.csv'
                     np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
-                    self.showPopInfo('Raw data (dataleft.csv) is succesfully saved in Username/Documents/Graphxyz')
+                    self.showPopInfo('Raw data (dataleft.csv) is succesfully saved in Username/Documents/Graphxyz',widgetToShowOn=self.mbar)
                 if self.ui.graphsel.currentText()=='plot right':
                     noofdspec=(len(self.axspec.lines)-0)
                     lenofx_lines=[]
@@ -1459,7 +1465,7 @@ class AppWindow(QDialog):
                     self.showPopInfo('Raw data (dataright.csv) is succesfully saved in Username/Documents/Graphxyz')
             except Exception as Argument:
                 self.genLogforException(Argument)
-                self.showPopInfo('Data export failed! Make sure to Submit and Plot first!',durationToShow=3, color = 'red')
+                self.showPopInfo('Data export failed! Make sure to Submit and Plot first!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
     def submitButtonPushed(self, noMessage = False):
         self.legendtext_dyn=[]
         self.legendtext_spec=[]
@@ -1563,7 +1569,7 @@ class AppWindow(QDialog):
                         self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
-                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
+                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
                 #multiple xy mode
                 elif self.plotModes.checkedAction().text()=="Single at multiple x and y":
                     if self.ui.dataList.count()==0:
@@ -1648,7 +1654,7 @@ class AppWindow(QDialog):
                         self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
-                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
+                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
                 #multiple d mode
                 elif self.plotModes.checkedAction().text()=="Multiple at single x and y":
                     if self.ui.dataList.count()==0:
@@ -1730,7 +1736,7 @@ class AppWindow(QDialog):
                         self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
-                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
+                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
                 #multiple xy and d matched mode
                 elif self.plotModes.checkedAction().text()=="Matched with x and y":
                     if self.ui.dataList.count()==0:
@@ -1809,7 +1815,7 @@ class AppWindow(QDialog):
                         self.mspec.draw()
                     except Exception as Argument:
                         self.genLogforException(Argument)
-                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
+                        self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
                 # try:
                 #     #Dyn
                 #     noofddyn=(len(self.axdyn.lines)-1)
@@ -1957,7 +1963,7 @@ class AppWindow(QDialog):
                         # self.showPopInfo('Raw data (.csv) is succesfully saved in Username/Documents/Graphxyz')
                 except Exception as Argument:
                     self.genLogforException(Argument)
-                    self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
+                    self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red',widgetToShowOn=self.mbar)
             if self.ui.refinecb.isChecked():
                 self.refineBtn()
             else:
@@ -2235,7 +2241,7 @@ class AppWindow(QDialog):
                 self.c_map_ax.tick_params(left=True,labelleft=True,bottom=True,labelbottom=True)
                 self.c_map_ax.set(frame_on=True)
                 self.c_map_ax.set_ylabel(self.ztoplb,rotation=0)
-            self.fitw=fitWindow()
+            #self.fitw=fitWindow()
         else:
             self.contStyleToUse = 'default'
             self.axcolor2D = 'k'
@@ -2262,7 +2268,7 @@ class AppWindow(QDialog):
                 self.c_map_ax.tick_params(left=True,labelleft=True,bottom=True,labelbottom=True)
                 self.c_map_ax.set(frame_on=True)
                 self.c_map_ax.set_ylabel(self.ztoplb,rotation=0)
-            self.fitw=fitWindow()
+            #self.fitw=fitWindow()
         self.submitButtonPushed()
 
     #These are functions for multiple mode:
@@ -3198,7 +3204,7 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
             self.loadIntimpBtn()
-            self.showPopInfo('Select preset location',color = 'red')
+            self.showPopInfo('Select preset location',color = 'red',widgetToShowOn=self.mbar)
     def loadfunBtn(self):
         try:
             #DataDir = getResourcePath("prs")
@@ -3226,7 +3232,7 @@ class AppWindow(QDialog):
         except Exception as Argument:
             self.genLogforException(Argument)
             self.loadIntfunBtn()
-            self.showPopInfo('Select functions location',color = 'red')
+            self.showPopInfo('Select functions location',color = 'red',widgetToShowOn=self.mbar)
     def prefimp_main(self):
         ind=self.impw.ui.listprefs.findText(self.ui.listprefs_main.currentText())
         self.impw.ui.listprefs.setCurrentIndex(ind)
@@ -4733,6 +4739,13 @@ class AppWindow(QDialog):
                     xd=xdnew
                     yd=ydnew
                 popt, pcov = curve_fit(fitfun, xd, yd,self.p0, bounds=(self.lb,self.ub))
+                residuals = yd- fitfun(xd, *popt)
+                
+                SS = np.sum(residuals**2)
+                N  = len(xd)
+                K  = len(popt)+1
+                self.fitw.currentAIC = N*log(SS/N)+2*K+(2*K*(K+1))/(N-K-1)
+                
                 popt_err=np.sqrt(np.diag(pcov))
                 y_fit=fitfun(x_fit,*popt)
                 if self.fitw.ui.fitplrangecb.isChecked():
@@ -4907,6 +4920,57 @@ class AppWindow(QDialog):
                 #     np.savetxt(dataPath, self.csvarray, delimiter = ",",fmt="%s")
         except Exception as Argument:
             self.genLogforException(Argument)
+    def modelsUpdate(self):
+        try:
+            if self.fitw.modelsW.modelList1.findText(self.fitw.modelName.text())==-1:
+                self.fitw.modelAICs.append(self.fitw.currentAIC)
+                self.fitw.modelsList.append(self.fitw.modelName.text())
+                self.fitw.modelsW.modelList1.addItem(self.fitw.modelName.text())
+                self.fitw.modelsW.modelList2.addItem(self.fitw.modelName.text())
+                self.showPopInfo("Successfully added", durationToShow = 0.5,widgetToShowOn=self.fitw.notesedit,color='green')
+            else:
+                self.showPopInfo("Model already exist!", durationToShow = 0.5,widgetToShowOn=self.fitw.notesedit,color='orange')
+        except Exception as Argument:
+            self.showPopInfo("Make sure to fit first then add!", durationToShow = 0.5,widgetToShowOn=self.fitw.notesedit,color='red')
+            self.genLogforException(Argument)
+    def modelsClear(self):
+        self.fitw.modelsW.modelList1.clear()
+        self.fitw.modelsW.modelList2.clear()
+        self.fitw.modelAICs=[]
+        self.fitw.modelsList=[]
+    def modelsCompare(self):
+        try:
+            ind1 = self.fitw.modelsList.index(self.fitw.modelsW.modelList1.currentText())
+            ind2 = self.fitw.modelsList.index(self.fitw.modelsW.modelList2.currentText())
+            AIC1 = self.fitw.modelAICs[ind1]
+            AIC2 = self.fitw.modelAICs[ind2]
+            model_ratio1to2=exp((AIC2-AIC1)/2)
+            if model_ratio1to2>1:
+                self.fitw.modelsW.comparisonResult.setText(''.join([ 'Model ',self.fitw.modelsList[ind1],' is better than model ',self.fitw.modelsList[ind2],' by the factor of ',"{0:.2e}".format(model_ratio1to2)]))
+            elif model_ratio1to2<1:
+                self.fitw.modelsW.comparisonResult.setText(''.join([ 'Model ',self.fitw.modelsList[ind2],' is better than model ',self.fitw.modelsList[ind1],' by the factor of ',"{0:.2e}".format(1/model_ratio1to2)]))
+            else:
+                self.fitw.modelsW.comparisonResult.setText('Models are same!')
+        except Exception as Argument:
+            self.fitw.modelsW.comparisonResult.setText('Failed! Make sure to fit first!')
+            self.genLogforException(Argument)
+    def comparisonInfoAdd(self):
+        items = [0]*self.fitw.modelsW.infoList.count()
+        listy=self.ui.yList
+        if not items:
+            listy.addItem(self.fitw.modelsW.comparisonResult.text())
+        elif listy.selectedItems():
+            for listitems in listy.selectedItems():
+                listy.insertItem(listy.row(listitems)+1,self.fitw.modelsW.comparisonResult.text())
+        else:
+            listy.insertItem(0,self.ui.yValue.text())
+    def comparisonInfoRem(self):
+        listy=self.fitw.modelsW.infoList
+        if listy.selectedItems():
+            for listitems in listy.selectedItems():
+                listy.takeItem(listy.row(listitems))
+        else:
+            listy.takeItem(listy.row(listy.item(0)))
     def faddBtn(self):
         try:
             items = [0]*self.fitw.ui.fList.count()
@@ -5134,19 +5198,17 @@ class AppWindow(QDialog):
             for menu in templist:
                 temp=[]
                 for action in menu.actions():
-                    #print([action.text(),action.isChecked()])
-                    print(action.text())
                     temp.append(action.isChecked())
                 list_tosave.append(temp)
             if showPopInfo:
-                self.showPopInfo('Successfully saved!',durationToShow=0.5, color = 'green')
+                self.showPopInfo('Successfully saved!',durationToShow=0.5, color = 'green',widgetToShowOn=self.mbar)
             if needSaved and not nameToSave=='':
                 np.save(nameToSave,list_tosave)
             else:
                 return list_tosave
         except Exception as Argument:
             self.genLogforException(Argument)
-            self.showPopInfo('Issue with saving! Check read-write permissions.',durationToShow=1.5, color = 'red')
+            self.showPopInfo('Issue with saving! Check read-write permissions.',durationToShow=1.5, color = 'red',widgetToShowOn=self.mbar)
     
     def loadBtn(self,datatoload, arrayLoadMode = False, needLoaded = True, showPopInfo = True, fitneedloaded=True):
         try:
@@ -5292,21 +5354,17 @@ class AppWindow(QDialog):
             templist=self.mbar.findChildren(QMenu)
             for i in range(len(templist)-1):
                 temp=list_toload[k]
-                #print(templist[i])
                 actsList = templist[i].actions()
-                #print([len(actsList),len(temp)])
                 for i in range(len(temp)):
-                    #print([actsList[i].text(),temp[i]])
-                    #print(temp[i])
                     actsList[i].setChecked(temp[i])
                 k=k+1
             
             if showPopInfo:
-                self.showPopInfo('Successfully loaded!',durationToShow=0.5, color = 'green')
+                self.showPopInfo('Successfully loaded!',durationToShow=0.5, color = 'green',widgetToShowOn=self.mbar)
         except Exception as Argument:
             self.genLogforException(Argument)
             if showPopInfo:
-                self.showPopInfo('Loading issue. Partially loaded.',durationToShow=1.5, color = 'orange')
+                self.showPopInfo('Loading issue. Partially loaded.',durationToShow=1.5, color = 'orange',widgetToShowOn=self.mbar)
         
     def resetBtn(self):
         #DataDir = getResourcePath("/Users/seyitliyev/Desktop/My Drive/PhD - NCSU/PhD Projects/Python/PyInstaller_pack/Graphxyz_clean/src/data")
@@ -5324,7 +5382,7 @@ class AppWindow(QDialog):
         #self.customAxisClear(self.axdyn)
         #self.axdyn.clear()
         #self.modechanged()
-        self.showPopInfo('Successfully reset!',durationToShow=1.5, color = 'green')
+        self.showPopInfo('Successfully reset!',durationToShow=1.5, color = 'green',widgetToShowOn=self.mbar)
         #self.hideAllViews()
     def loadDefBtn(self):
         try:
@@ -5336,7 +5394,7 @@ class AppWindow(QDialog):
             self.submitButtonPushed()
         except Exception as Argument:
             self.genLogforException(Argument)
-            self.showPopInfo('Data could not be loaded! Check if the location of the data on the hard drive changed.',durationToShow=2, color = 'orange')
+            self.showPopInfo('Data could not be loaded! Check if the location of the data on the hard drive changed.',durationToShow=2, color = 'orange',widgetToShowOn=self.mbar)
     def loadasBtn(self):
         try:
             file_dialog = QFileDialog()
@@ -5360,7 +5418,7 @@ class AppWindow(QDialog):
             self.submitButtonPushed()
         except Exception as Argument:
             self.genLogforException(Argument)
-            self.showPopInfo('Data could not be loaded! Check if the location of the data on the hard drive changed.',durationToShow=2, color = 'orange')
+            self.showPopInfo('Data could not be loaded! Check if the location of the data on the hard drive changed.',durationToShow=2, color = 'orange',widgetToShowOn=self.mbar)
     def saveasBtn(self):
         try:
             filter=''.join(['npy','(*','.npy',')'])
@@ -5684,7 +5742,7 @@ class AppWindow(QDialog):
         newSize = self.geometry()
         self.screenSizeChanged.emit(newSize)
         return super().resizeEvent(event)
-    def showPopInfo(self,labelToShow,durationToShow = 2,color = 'green'):
+    def showPopInfo(self,labelToShow,widgetToShowOn=None,durationToShow = 2,color = 'green'):
         # labelToShow='this is information'
         # durationToShow = 4
         # locationToShow = [500,500]
@@ -5692,8 +5750,8 @@ class AppWindow(QDialog):
         # labelToShow=arr[0]
         # durationToShow = arr[1]
         # locationToShow = arr[2]
-        uisize = self.mbar.mapToGlobal(QPoint(0, 0))
-        locationToShow = [int(uisize.x()+self.mbar.geometry().width()/2),int(uisize.y()+self.mbar.geometry().height()/4)]
+        uisize = widgetToShowOn.mapToGlobal(QPoint(0, 0))
+        locationToShow = [int(uisize.x()+widgetToShowOn.geometry().width()/2),int(uisize.y()+widgetToShowOn.geometry().height()/4)]
 
         start = time.time()
         testlabel = QLabel()
@@ -5758,7 +5816,7 @@ class pyFunWindow(QDialog):
         self.ui.setWindowTitle('Import Python functions')
 class fitWindow(QDialog):
     screenSizeChanged = QtCore.pyqtSignal(QtCore.QRect)
-    def __init__(self, app):
+    def __init__(self,app,mainDialog):
         super().__init__()
         DataDir = getResourcePath("uis")
         uiPath = DataDir / 'Fit.ui'
@@ -5778,6 +5836,13 @@ class fitWindow(QDialog):
         self.ui.optparams.setReadOnly(True)
         self.ui.optErrPars.setReadOnly(True)
         self.ui.fValueEdit.setReadOnly(True)
+        QShortcut(QKeySequence("Ctrl+L"), self).activated.connect(mainDialog.loadDefBtn)
+        QShortcut(QKeySequence("Ctrl+S"), self).activated.connect(mainDialog.saveDefBtn)
+        
+        self.modelsW=modelsWindow()
+        self.modelsButton.clicked.connect(self.showModels)
+        self.modelsList = []
+        self.modelAICs = []
         
         # self.mbar = self.menuAdder()
         # #self.mbar.setObjectName("tabMenuBar")
@@ -5817,6 +5882,10 @@ class fitWindow(QDialog):
         self.eqTlb.setMaximumSize(QtCore.QSize(1500, int(self.currWindowSize.height()*0.015)))
         self.screenSizeChanged.connect(lambda newSize: self.resizeUI2(newSize))
         self.exceptionLogLocation = self.makeFolderinDocuments('.logs')
+    def showModels(self):
+        uisize = self.ui.modelsButton.mapToGlobal(QPoint(0, 0))
+        self.modelsW.move(int(uisize.x()-uisize_main.width()*0.05),int(uisize.y())) 
+        self.modelsW.show()
     def makeFolderinDocuments(self, foldName): 
         foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'
         os.makedirs(foldDir, exist_ok = True)
@@ -5902,6 +5971,13 @@ class xyzMakerWindow(QDialog):
         
         self.ui.setWindowTitle('3D Maker')
         self.ui.datagenlay = QtWidgets.QGridLayout(self.ui.dataGenList)
+class modelsWindow(QDialog):
+    def __init__(self):
+        super().__init__()
+        DataDir = getResourcePath("uis")
+        uiPath = DataDir / 'models.ui'
+        self.ui = uic.loadUi(uiPath,self)
+        self.ui.setWindowTitle('Compare models')
 class sliderObj(QFrame):
     def __init__(self,sliderno,app):
         super().__init__()
@@ -6715,7 +6791,7 @@ class MainWindow(QMainWindow):
         self.show()
         
         if not appVersionText == latestVersion:
-            self.tbw.wdg.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue',durationToShow = 1)
+            self.tbw.wdg.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue',durationToShow = 1,widgetToShowOn=self.mbar)
     def getSettingsValues(self):
         self.settingWindow = QSettings('Graphxyz', 'Window Size')
     def closeEvent(self,event):
@@ -6905,6 +6981,10 @@ class higherMainWindow(QWidget): #This window allows to make multiple instances 
         self.app = app
         self.myApps = []
         self.myApp = MainWindow(app=self.app)
+        
+        QShortcut(QKeySequence("Ctrl+W"), self).activated.connect(self.myApp.tbw.closeTab)
+        #QShortcut(QKeySequence("Ctrl+T"), self).activated.connect(self.myApp.tbw.newBtn)
+        
         self.myApp.newWindowAction.triggered.connect(self.newWindowOpen)
         self.myApps.append(self.myApp)
         self.myApp.raise_()
