@@ -48,11 +48,11 @@ import sys
 # Note: File icon can be added using --icon=icon.icns for mac, icon.png for linux and icon.png for windows
 
 # For Windows:
-# pyinstaller --onefile --windowed --add-data "uis/*.ui;uis" --add-data "prs/*.txt;prs" --add-data "icns/*.png;icns" Graphxyz.py
-# pyinstaller --noconsole --add-data "uis/*.ui;uis" --add-data "prs/*.txt;prs" --add-data "icns/*.png;icns" Graphxyz.py
+# pyinstaller --onefile --windowed --add-data "uis/*.ui;uis" --add-data "prs/*.txt;prs" --add-data "icns/*.png;icns" --add-data "funs/*.py;funs" --add-data "funs/*.txt;funs" Graphxyz.py
+# pyinstaller --noconsole --add-data "uis/*.ui;uis" --add-data "prs/*.txt;prs" --add-data "icns/*.png;icns" --add-data "funs/*.py;funs" --add-data "funs/*.txt;funs" Graphxyz.py
 
 # For Mac:
-# /opt/homebrew/bin/python3 -m PyInstaller --onefile --windowed --add-data "uis/*.ui:uis" --add-data "prs/*.txt:prs" --add-data "icns/*.png:icns" Graphxyz.py
+# /opt/homebrew/bin/python3 -m PyInstaller --onefile --windowed --add-data "uis/*.ui:uis" --add-data "prs/*.txt:prs" --add-data "icns/*.png:icns" --add-data "funs/*.py:funs" --add-data "funs/*.txt:funs" Graphxyz.py
 
 # exception shortcut:
 # except Exception as Argument:
