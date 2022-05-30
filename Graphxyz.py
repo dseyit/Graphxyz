@@ -546,6 +546,39 @@ class AppWindow(QDialog):
         self.hideShowAllAction.setShortcut(QKeySequence("Ctrl+V"))
         #showAll = self.views.addAction("Show all")
         #showAll.triggered.connect(self.showAllViews)
+        
+        self.views.addSeparator()
+        self.figure2D = self.views.addAction("Top figure")
+        self.figure2D.setCheckable(True)
+        self.figure2D.setChecked(False)
+        self.figure2D.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frame2D, mAction = self.figure2D))
+        
+        self.figureDyn = self.views.addAction("Left figure")
+        self.figureDyn.setCheckable(True)
+        self.figureDyn.setChecked(True)
+        self.figureDyn.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
+        
+        self.figureSpec = self.views.addAction("Right figure")
+        self.figureSpec.setCheckable(True)
+        self.figureSpec.setChecked(True)
+        self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
+        
+        self.views.addSeparator()
+        self.graphAction = self.views.addAction("Refine settings")
+        self.graphAction.setCheckable(True)
+        self.graphAction.setChecked(False)
+        self.graphAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.controlsframe, mAction = self.graphAction))
+        
+        self.plotControlsAction = self.views.addAction("Plot controls")
+        self.plotControlsAction.setCheckable(True)
+        self.plotControlsAction.setChecked(False)
+        self.plotControlsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower([self.mdynTlb, self.mspecTlb, self.m2DTlb, self.controlsFrame2D, self.controlsFrameSpec,self.controlsFrameDyn], mAction = self.plotControlsAction))
+        
+        self.plotAction = self.views.addAction("Plot limits")
+        self.plotAction.setCheckable(True)
+        self.plotAction.setChecked(False)
+        self.plotAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.plotLimits, mAction = self.plotAction))
+        
         self.views.addSeparator()
         self.dataListAction = self.views.addAction("Data list")
         self.dataListAction.setCheckable(True)
@@ -586,38 +619,6 @@ class AppWindow(QDialog):
         self.fzAction.setCheckable(True)
         self.fzAction.setChecked(False)
         self.fzAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.fzzFrame, mAction = self.fzAction))
-        
-        self.views.addSeparator()
-        self.figure2D = self.views.addAction("Top figure")
-        self.figure2D.setCheckable(True)
-        self.figure2D.setChecked(False)
-        self.figure2D.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frame2D, mAction = self.figure2D))
-        
-        self.figureDyn = self.views.addAction("Left figure")
-        self.figureDyn.setCheckable(True)
-        self.figureDyn.setChecked(True)
-        self.figureDyn.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameDyn, mAction = self.figureDyn))
-        
-        self.figureSpec = self.views.addAction("Right figure")
-        self.figureSpec.setCheckable(True)
-        self.figureSpec.setChecked(True)
-        self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
-        
-        self.views.addSeparator()
-        self.graphAction = self.views.addAction("Refine settings")
-        self.graphAction.setCheckable(True)
-        self.graphAction.setChecked(False)
-        self.graphAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.controlsframe, mAction = self.graphAction))
-        
-        self.plotControlsAction = self.views.addAction("Plot controls")
-        self.plotControlsAction.setCheckable(True)
-        self.plotControlsAction.setChecked(False)
-        self.plotControlsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower([self.mdynTlb, self.mspecTlb, self.m2DTlb, self.controlsFrame2D, self.controlsFrameSpec,self.controlsFrameDyn], mAction = self.plotControlsAction))
-        
-        self.plotAction = self.views.addAction("Plot limits")
-        self.plotAction.setCheckable(True)
-        self.plotAction.setChecked(False)
-        self.plotAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.plotLimits, mAction = self.plotAction))
         
         return mbar
     def widgetHiderShower(self, widgetFrame, mAction = None):
