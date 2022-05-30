@@ -496,7 +496,7 @@ class AppWindow(QDialog):
         loadas.setShortcut(QKeySequence("Ctrl+Shift+L"))
         saveas = tabs.addAction("Save as...")
         saveas.triggered.connect(self.saveasBtn)
-        saveas.setShortcut(QKeySequence("Ctrl+Shift+S"))
+        #saveas.setShortcut(QKeySequence("Ctrl+Shift+S"))
         
         # impPref=tools.addAction("Preset options...")
         # impPref.triggered.connect(self.impOptBtnClicked)
@@ -539,10 +539,13 @@ class AppWindow(QDialog):
         self.plotModes.addAction(self.matchD)
         
         #View Menu action items:
-        hideAll = self.views.addAction("Hide all")
-        hideAll.triggered.connect(self.hideAllViews)
-        showAll = self.views.addAction("Show all")
-        showAll.triggered.connect(self.showAllViews)
+        self.hideShowAllAction = self.views.addAction("All")
+        self.hideShowAllAction.setCheckable(True)
+        self.hideShowAllAction.setChecked(False)
+        self.hideShowAllAction.toggled.connect(self.hideShowAll)
+        self.hideShowAllAction.setShortcut(QKeySequence("Ctrl+V"))
+        #showAll = self.views.addAction("Show all")
+        #showAll.triggered.connect(self.showAllViews)
         self.views.addSeparator()
         self.dataListAction = self.views.addAction("Data list")
         self.dataListAction.setCheckable(True)
@@ -717,12 +720,21 @@ class AppWindow(QDialog):
         elif not self.impw.ui.xyz.isChecked():
             resizeTo=int(mainWindowToResize.geometry().width()/2)
             mainWindowToResize.resize(resizeTo, mainWindowToResize.geometry().height())
-    def hideAllViews(self):
-        for action in self.views.actions():
-            action.setChecked(False)
-    def showAllViews(self):
-        for action in self.views.actions():
-            action.setChecked(True)
+    def hideShowAll(self):
+        if not self.hideShowAllAction.isChecked():
+            for action in self.views.actions():
+                if not action==self.hideShowAllAction and not action==self.figureDyn and not action==self.figureSpec and not action==self.figure2D:
+                    action.setChecked(False)
+        else:
+            for action in self.views.actions():
+                if not action==self.hideShowAllAction and not action==self.figureDyn and not action==self.figureSpec and not action==self.figure2D:
+                    action.setChecked(True)
+    # def hideAllViews(self):
+    #     for action in self.views.actions():
+    #         action.setChecked(False)
+    # def showAllViews(self):
+    #     for action in self.views.actions():
+    #         action.setChecked(True)
         
     def addPlotCanvas(self,contourStyleToUse,contourLabelColor):
         plt.style.use(contourStyleToUse)
@@ -1164,7 +1176,7 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
     def refreshBtn(self):
         try:
-            self.showPopInfo("Loading files...", durationToShow = 1.5)
+            self.showPopInfo("Loading files...", durationToShow = 0.5)
             filesloc=self.ui.filesLoc.currentText().split('   -Import preset:')[0]
             filesloc = getResourcePath(filesloc)
             datfoldnames=self.xyzdatagenerator(filesloc)
@@ -1206,7 +1218,7 @@ class AppWindow(QDialog):
             self.showPopInfo('Make sure that the data loaded with correct preset! Folder might be empty!',durationToShow=3, color = 'red')
     def addBtn(self):
         try:
-            self.showPopInfo("Adding folder...", durationToShow = 1.5)
+            self.showPopInfo("Adding folder...", durationToShow = 0.5)
             # if self.impw.ui.xyz.isChecked():
             #     self.figure2D.setChecked(True)
             #     self.figureDyn.setChecked(True)
@@ -1256,7 +1268,7 @@ class AppWindow(QDialog):
             self.ui.yminValue.setText("{0:.2e}".format(np.nanmin(self.d[self.dataBox.currentText()]['y'])))
             self.ui.ymaxValue.setText("{0:.2e}".format(np.nanmax(self.d[self.dataBox.currentText()]['y'])))
     def addallBtn(self, loadMode=False):
-        self.showPopInfo("Adding all folders...", durationToShow = 1.5)
+        self.showPopInfo("Adding all folders...", durationToShow = 0.5)
         try:
             # if self.impw.ui.xyz.isChecked():
             #     self.figure2D.setChecked(True)
@@ -6535,18 +6547,23 @@ class MainWindow(QMainWindow):
         self.file=self.mbar.addMenu("File")
         
         self.newWindowAction = self.file.addAction("New Window")
+        self.newWindowAction.setShortcut(QKeySequence("Ctrl+N"))
         self.file.addSeparator()
         openAction = self.file.addAction("Open...")
         openAction.triggered.connect(self.loadasProject)
+        openAction.setShortcut(QKeySequence("Ctrl+Shift+O"))
         openDefAction = self.file.addAction("Open Default")
+        openDefAction.setShortcut(QKeySequence("Ctrl+O"))
         openDefAction.triggered.connect(self.loadDefProject)
         recentFiles=self.file.addMenu("Recents")
         self.file.addSeparator()
         saveCurAction = self.file.addAction("Save")
-        saveCurAction.triggered.connect(self.saveCurProject)
+        saveCurAction.setShortcut(QKeySequence("Ctrl+Shift+S"))
         
         saveDefAction = self.file.addAction("Save Default")
+        saveDefAction.setShortcut(QKeySequence("Ctrl+D"))
         saveDefAction.triggered.connect(self.saveDefProject)
+        saveDefAction.triggered.connect(self.saveCurProject)
         
         saveasAction = self.file.addAction("Save as...")
         saveasAction.triggered.connect(self.saveasProject)
@@ -6564,7 +6581,7 @@ class MainWindow(QMainWindow):
         self.show()
         
         if not appVersionText == latestVersion:
-            self.tbw.wdg.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue')
+            self.tbw.wdg.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue',durationToShow = 1)
     def getSettingsValues(self):
         self.settingWindow = QSettings('Graphxyz', 'Window Size')
     def closeEvent(self,event):
