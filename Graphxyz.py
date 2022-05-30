@@ -588,22 +588,6 @@ class AppWindow(QDialog):
         self.fzAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.fzzFrame, mAction = self.fzAction))
         
         self.views.addSeparator()
-        self.graphAction = self.views.addAction("Refine settings")
-        self.graphAction.setCheckable(True)
-        self.graphAction.setChecked(False)
-        self.graphAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.controlsframe, mAction = self.graphAction))
-        
-        self.plotControlsAction = self.views.addAction("Plot controls")
-        self.plotControlsAction.setCheckable(True)
-        self.plotControlsAction.setChecked(False)
-        self.plotControlsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower([self.mdynTlb, self.mspecTlb, self.m2DTlb, self.controlsFrame2D, self.controlsFrameSpec,self.controlsFrameDyn], mAction = self.plotControlsAction))
-        
-        self.plotAction = self.views.addAction("Plot limits")
-        self.plotAction.setCheckable(True)
-        self.plotAction.setChecked(False)
-        self.plotAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.plotLimits, mAction = self.plotAction))
-        self.views.addSeparator()
-        
         self.figure2D = self.views.addAction("Top figure")
         self.figure2D.setCheckable(True)
         self.figure2D.setChecked(False)
@@ -618,6 +602,22 @@ class AppWindow(QDialog):
         self.figureSpec.setCheckable(True)
         self.figureSpec.setChecked(True)
         self.figureSpec.toggled.connect(lambda widgetFrame: self.figHiderShower(self.ui.frameSpec, mAction = self.figureSpec))
+        
+        self.views.addSeparator()
+        self.graphAction = self.views.addAction("Refine settings")
+        self.graphAction.setCheckable(True)
+        self.graphAction.setChecked(False)
+        self.graphAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.controlsframe, mAction = self.graphAction))
+        
+        self.plotControlsAction = self.views.addAction("Plot controls")
+        self.plotControlsAction.setCheckable(True)
+        self.plotControlsAction.setChecked(False)
+        self.plotControlsAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower([self.mdynTlb, self.mspecTlb, self.m2DTlb, self.controlsFrame2D, self.controlsFrameSpec,self.controlsFrameDyn], mAction = self.plotControlsAction))
+        
+        self.plotAction = self.views.addAction("Plot limits")
+        self.plotAction.setCheckable(True)
+        self.plotAction.setChecked(False)
+        self.plotAction.toggled.connect(lambda widgetFrame: self.widgetHiderShower(self.ui.plotLimits, mAction = self.plotAction))
         
         return mbar
     def widgetHiderShower(self, widgetFrame, mAction = None):
@@ -5082,7 +5082,7 @@ class AppWindow(QDialog):
             list_tosave.append(self.getitemsqc(self.ui.filesLoc))
             list_tosave.append(self.ui.dataBox.currentText())
             
-            templist=self.menuFrame.findChildren(QMenu)
+            templist=self.mbar.findChildren(QMenu)
             for menu in templist:
                 temp=[]
                 for action in menu.actions():
@@ -5156,12 +5156,14 @@ class AppWindow(QDialog):
                 self.ui.dataBox.setCurrentIndex(ind)
             k=k+1
             
-            templist=self.menuFrame.findChildren(QMenu)
-            for menu in templist:
+            templist=self.mbar.findChildren(QMenu)
+            for i in range(len(templist)-1):
                 temp=list_toload[k]
-                actsList = menu.actions()
+                print(templist[i])
+                actsList = templist[i].actions()
+                print([len(actsList),len(temp)])
                 for i in range(len(temp)):
-                    #print([actsList[i].text(),temp[i]])
+                    print([actsList[i].text(),temp[i]])
                     actsList[i].setChecked(temp[i])
                 k=k+1
             
