@@ -223,6 +223,9 @@
                     <property name="text">
                      <string>Fun:</string>
                     </property>
+                    <property name="autoDefault">
+                     <bool>false</bool>
+                    </property>
                    </widget>
                   </item>
                   <item>
@@ -1172,7 +1175,7 @@
        </item>
       </layout>
      </widget>
-     <widget class="QScrollArea" name="parea_2">
+     <widget class="QScrollArea" name="slidersframe">
       <property name="minimumSize">
        <size>
         <width>0</width>
@@ -1227,7 +1230,7 @@
         <item>
          <layout class="QHBoxLayout" name="sliderlayout">
           <property name="spacing">
-           <number>0</number>
+           <number>-1</number>
           </property>
          </layout>
         </item>
@@ -1266,35 +1269,8 @@
        <property name="verticalSpacing">
         <number>0</number>
        </property>
-       <item row="1" column="0">
-        <widget class="QPushButton" name="quickaddParam">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>140</width>
-           <height>32</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Initial Params:</string>
-         </property>
-         <property name="autoDefault">
-          <bool>false</bool>
-         </property>
-        </widget>
-       </item>
-       <item row="0" column="0">
-        <widget class="QLabel" name="label_14">
+       <item row="4" column="0">
+        <widget class="QLabel" name="label_17">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
            <horstretch>0</horstretch>
@@ -1313,7 +1289,34 @@
           </font>
          </property>
          <property name="text">
-          <string>Function:</string>
+          <string>Notes:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="3" column="0">
+        <widget class="QLabel" name="label_13">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Errors:</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
@@ -1347,10 +1350,64 @@
          </property>
         </widget>
        </item>
-       <item row="0" column="1">
+       <item row="0" column="0">
+        <widget class="QLabel" name="label_14">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>150</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Function:</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item row="1" column="0">
+        <widget class="QPushButton" name="quickaddParam">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="MinimumExpanding" vsizetype="Fixed">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>140</width>
+           <height>32</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>Initial Params:</string>
+         </property>
+         <property name="autoDefault">
+          <bool>false</bool>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
         <widget class="QFrame" name="frameFun">
          <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+          <sizepolicy hsizetype="Preferred" vsizetype="Maximum">
            <horstretch>0</horstretch>
            <verstretch>0</verstretch>
           </sizepolicy>
@@ -1358,13 +1415,13 @@
          <property name="minimumSize">
           <size>
            <width>0</width>
-           <height>45</height>
+           <height>0</height>
           </size>
          </property>
          <property name="maximumSize">
           <size>
            <width>16777215</width>
-           <height>1200</height>
+           <height>234124</height>
           </size>
          </property>
          <property name="font">
@@ -1397,35 +1454,11 @@
          </layout>
         </widget>
        </item>
-       <item row="3" column="0">
-        <widget class="QLabel" name="label_13">
-         <property name="sizePolicy">
-          <sizepolicy hsizetype="Preferred" vsizetype="MinimumExpanding">
-           <horstretch>0</horstretch>
-           <verstretch>0</verstretch>
-          </sizepolicy>
+       <item row="3" column="1" colspan="2">
+        <widget class="QLineEdit" name="optErrPars">
+         <property name="enabled">
+          <bool>true</bool>
          </property>
-         <property name="maximumSize">
-          <size>
-           <width>150</width>
-           <height>20</height>
-          </size>
-         </property>
-         <property name="font">
-          <font>
-           <pointsize>12</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>Errors:</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item row="1" column="1">
-        <widget class="QLineEdit" name="inparams">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
            <horstretch>0</horstretch>
@@ -1449,12 +1482,9 @@
            <pointsize>12</pointsize>
           </font>
          </property>
-         <property name="inputMethodHints">
-          <set>Qt::ImhNone</set>
-         </property>
         </widget>
        </item>
-       <item row="2" column="1">
+       <item row="2" column="1" colspan="2">
         <widget class="QLineEdit" name="optparams">
          <property name="enabled">
           <bool>true</bool>
@@ -1484,8 +1514,38 @@
          </property>
         </widget>
        </item>
-       <item row="3" column="1">
-        <widget class="QLineEdit" name="optErrPars">
+       <item row="1" column="1" colspan="2">
+        <widget class="QLineEdit" name="inparams">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Ignored" vsizetype="Expanding">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>20</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>16777215</width>
+           <height>25</height>
+          </size>
+         </property>
+         <property name="font">
+          <font>
+           <pointsize>12</pointsize>
+          </font>
+         </property>
+         <property name="inputMethodHints">
+          <set>Qt::ImhNone</set>
+         </property>
+        </widget>
+       </item>
+       <item row="4" column="1" colspan="2">
+        <widget class="QLineEdit" name="notesedit">
          <property name="enabled">
           <bool>true</bool>
          </property>
@@ -1511,6 +1571,9 @@
           <font>
            <pointsize>12</pointsize>
           </font>
+         </property>
+         <property name="text">
+          <string>You can take notes here!</string>
          </property>
         </widget>
        </item>

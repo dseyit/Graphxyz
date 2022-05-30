@@ -11,7 +11,7 @@ import platform
 import csv
 import pickle
 import ast
-from PyQt5.QtWidgets import QShortcut,QAction, QAbstractItemView, QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
+from PyQt5.QtWidgets import QShortcut,QAction,QSpacerItem, QAbstractItemView, QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
 from PyQt5 import QtWidgets
 import matplotlib
 import pandas as pd
@@ -411,7 +411,7 @@ class AppWindow(QDialog):
         
         npyDir = self.makeFolderinDocuments ('Saved Tabs')
         npyPath = npyDir / 'reset'
-        self.saveBtn(npyPath, showPopInfo= False)#Renews reset file everytime it launches so reset becomes as intended, otherwise software update will require new reset file everytime
+        self.saveBtn(npyPath, showPopInfo= False,fitneedsaved=False)#Renews reset file everytime it launches so reset becomes as intended, otherwise software update will require new reset file everytime
     # def addWidgetToLoadList(self, widget, key):
     #     widget.setObjectName(key)
     #     self.listOfWidgetKeys.
@@ -922,15 +922,15 @@ class AppWindow(QDialog):
             comp6=self.ui.findChildren(QComboBox)
             comp7=self.ui.findChildren(QListWidget)
             
-            comp8=self.impw.ui.findChildren(QLineEdit)
-            comp9=self.impw.ui.findChildren(QLabel)
-            comp10=self.impw.ui.findChildren(QLineEdit)
-            comp11=self.impw.ui.findChildren(QRadioButton)
-            comp12=self.impw.ui.findChildren(QCheckBox)
-            comp13=self.impw.ui.findChildren(QComboBox)
-            comp14=self.impw.ui.findChildren(QListWidget)
+            # comp8=self.impw.ui.findChildren(QLineEdit)
+            # comp9=self.impw.ui.findChildren(QLabel)
+            # comp10=self.impw.ui.findChildren(QLineEdit)
+            # comp11=self.impw.ui.findChildren(QRadioButton)
+            # comp12=self.impw.ui.findChildren(QCheckBox)
+            # comp13=self.impw.ui.findChildren(QComboBox)
+            # comp14=self.impw.ui.findChildren(QListWidget)
             
-            comp=comp1+comp2+comp3+comp4+comp5+comp6+comp7+comp8++comp9+comp10+comp11+comp12+comp13+comp14
+            comp=comp1+comp2+comp3+comp4+comp5+comp6+comp7#+comp8++comp9+comp10+comp11+comp12+comp13+comp14
             for ci in range(len(comp)):
                 compi=comp[ci]
                 try:
@@ -4991,7 +4991,7 @@ class AppWindow(QDialog):
                 no_ofpars_toadd=no_ofpar-self.fitw.ui.sliderlayout.count()
                 #indcs=[]
                 for i in range(no_ofpars_toadd):
-                    self.fitw.ui.sliderlayout.addWidget(sliderObj(sliderno=self.fitw.ui.sliderlayout.count()))
+                    self.fitw.ui.sliderlayout.addWidget(sliderObj(sliderno=self.fitw.ui.sliderlayout.count(),app=self.app))
                     lastind=self.fitw.ui.sliderlayout.count()-1
                     #indcs
                     self.fitw.psliders.append(self.fitw.ui.sliderlayout.itemAt(lastind).widget())
@@ -5052,7 +5052,7 @@ class AppWindow(QDialog):
     def py2tex(self,expr):
         pt = ast.parse(expr)
         return LatexVisitor().visit(pt.body[0].value)
-    def saveBtn(self, nameToSave = '', needSaved = True, showPopInfo = True): #need fix
+    def saveBtn(self, nameToSave = '',needSaved=True,showPopInfo=True,fitneedsaved=True): #need fix
         try:
             list_tosave=[]
             
@@ -5083,14 +5083,61 @@ class AppWindow(QDialog):
             list_tosave.append(self.getitemsqc(self.ui.filesLoc))
             list_tosave.append(self.ui.dataBox.currentText())
             
+            #Below are to save fit tool parameters:
+            if fitneedsaved:
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QLineEdit)
+                for widgets in templist:
+                    list_tosave.append(widgets.text())
+                
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QCheckBox)
+                for widgets in templist:
+                    list_tosave.append(str(widgets.isChecked()))
+                    
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QComboBox)
+                for widgets in templist:
+                    list_tosave.append(widgets.currentText())
+                    
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QRadioButton)
+                for widgets in templist:
+                    list_tosave.append(str(widgets.isChecked()))
+                    
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QListWidget)
+                for widgets in templist:
+                    temp=[]
+                    for i in range(widgets.count()):
+                        temp.append(widgets.item(i).text())
+                    list_tosave.append(temp)
+                    
+                
+                list_tosave.append(self.fitw.ui.notesedit.text())
+                
+                
+                # templist=self.fitw.ui.paramsframe.findChildren(QLineEdit)
+                # for widgets in templist:
+                #     list_tosave.append(widgets.text())
+                
+                # templist=self.fitw.ui.paramsframe.findChildren(QCheckBox)
+                # for widgets in templist:
+                #     list_tosave.append(str(widgets.isChecked()))
+                    
+                
+                templist=self.fitw.ui.slidersframe.findChildren(QLineEdit)
+                for widgets in templist:
+                    list_tosave.append(widgets.text())
+                
+                templist=self.fitw.ui.slidersframe.findChildren(QCheckBox)
+                for widgets in templist:
+                    list_tosave.append(str(widgets.isChecked()))
+                list_tosave.append(self.fitw.ui.fValue.text())
+            
             templist=self.mbar.findChildren(QMenu)
             for menu in templist:
                 temp=[]
                 for action in menu.actions():
                     #print([action.text(),action.isChecked()])
+                    print(action.text())
                     temp.append(action.isChecked())
                 list_tosave.append(temp)
-            print(nameToSave)
             if showPopInfo:
                 self.showPopInfo('Successfully saved!',durationToShow=0.5, color = 'green')
             if needSaved and not nameToSave=='':
@@ -5101,7 +5148,7 @@ class AppWindow(QDialog):
             self.genLogforException(Argument)
             self.showPopInfo('Issue with saving! Check read-write permissions.',durationToShow=1.5, color = 'red')
     
-    def loadBtn(self,datatoload, arrayLoadMode = False, needLoaded = True, showPopInfo = True):
+    def loadBtn(self,datatoload, arrayLoadMode = False, needLoaded = True, showPopInfo = True, fitneedloaded=True):
         try:
             if arrayLoadMode:
                 list_toload = datatoload
@@ -5157,22 +5204,103 @@ class AppWindow(QDialog):
                 self.ui.dataBox.setCurrentIndex(ind)
             k=k+1
             
-            templist=self.mbar.findChildren(QMenu)
-            for i in range(len(templist)-1):
-                temp=list_toload[k]
-                print(templist[i])
-                actsList = templist[i].actions()
-                print([len(actsList),len(temp)])
-                for i in range(len(temp)):
-                    print([actsList[i].text(),temp[i]])
-                    actsList[i].setChecked(temp[i])
-                k=k+1
-            
             if self.ui.filesLoc.count()!=0:
                 self.ui.addButton.setEnabled(True)
                 self.ui.addallButton.setEnabled(True)
                 self.ui.refreshButton.setEnabled(True)
                 self.ui.refreshAllButton.setEnabled(True)
+            
+            #Below are fit parameter loads
+            if fitneedloaded:
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QLineEdit)
+                for widgets in templist:
+                    widgets.setText(list_toload[k])
+                    k=k+1
+                
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QCheckBox)
+                for widgets in templist:
+                    if list_toload[k]=='True':
+                        s=True
+                    else:
+                        s=False
+                    widgets.setChecked(s)
+                    k=k+1
+                    
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QComboBox)
+                for widgets in templist:
+                    widgets.setCurrentText(list_toload[k])
+                    k=k+1
+                
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QRadioButton)
+                for widgets in templist:
+                    if list_toload[k]=='True':
+                        s=True
+                    else:
+                        s=False
+                    widgets.setChecked(s)
+                    k=k+1
+                
+                templist=self.fitw.ui.fitcontrolsframe.findChildren(QListWidget)
+                for widgets in templist:
+                    temp=list_toload[k]
+                    widgets.clear()
+                    for i in range(len(temp)):
+                        widgets.insertItem(i,temp[i]) #check this
+                    k=k+1
+                
+                
+                self.fitw.ui.notesedit.setText(list_toload[k])
+                k=k+1
+                
+                
+                # templist=self.fitw.ui.paramsframe.findChildren(QLineEdit)
+                # for widgets in templist:
+                #     widgets.setText(list_toload[k])
+                #     k=k+1
+                
+                # templist=self.fitw.ui.paramsframe.findChildren(QCheckBox)
+                # for widgets in templist:
+                #     if list_toload[k]=='True':
+                #         s=True
+                #     else:
+                #         s=False
+                #     widgets.setChecked(s)
+                #     k=k+1
+                
+                self.addremparam()
+                
+                templist=self.fitw.ui.slidersframe.findChildren(QLineEdit)
+                for widgets in templist:
+                    widgets.setText(list_toload[k])
+                    k=k+1
+                
+                templist=self.fitw.ui.slidersframe.findChildren(QCheckBox)
+                for widgets in templist:
+                    if list_toload[k]=='True':
+                        s=True
+                    else:
+                        s=False
+                    widgets.setChecked(s)
+                    k=k+1
+                
+                for ind in range(int(float(self.fitw.ui.parsValue.text()))):
+                    sliderObj.minlimchanged(self.fitw.psliders[ind])
+                
+                self.fitw.ui.fValue.setText(list_toload[k])
+                k=k+1
+            
+            templist=self.mbar.findChildren(QMenu)
+            for i in range(len(templist)-1):
+                temp=list_toload[k]
+                #print(templist[i])
+                actsList = templist[i].actions()
+                #print([len(actsList),len(temp)])
+                for i in range(len(temp)):
+                    #print([actsList[i].text(),temp[i]])
+                    #print(temp[i])
+                    actsList[i].setChecked(temp[i])
+                k=k+1
+            
             if showPopInfo:
                 self.showPopInfo('Successfully loaded!',durationToShow=0.5, color = 'green')
         except Exception as Argument:
@@ -5186,7 +5314,7 @@ class AppWindow(QDialog):
         #presetsDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'/'Saved Tabs'
         #presetsDir = getResourcePath("npys")
         npyPath = presetsDir / 'reset.npy'
-        self.loadBtn(npyPath,showPopInfo=False, needLoaded=False)
+        self.loadBtn(npyPath,showPopInfo=False,needLoaded=False,fitneedloaded=False)
         self.ax2D.clear()
         self.axdyn.clear()
         self.axspec.clear()
@@ -5775,12 +5903,15 @@ class xyzMakerWindow(QDialog):
         self.ui.setWindowTitle('3D Maker')
         self.ui.datagenlay = QtWidgets.QGridLayout(self.ui.dataGenList)
 class sliderObj(QFrame):
-    def __init__(self,sliderno):
+    def __init__(self,sliderno,app):
         super().__init__()
+        self.app = app
+        self.currWindowSize = self.app.desktop().geometry()
         self.setFrameShape(QtWidgets.QFrame.NoFrame)
         self.setObjectName(''.join(['slider',str(sliderno)]))
-        self.setMinimumSize(QtCore.QSize(48, 150))
-        self.setMaximumSize(QtCore.QSize(75, 5000))
+        self.setMinimumSize(QtCore.QSize(int(0.03*self.currWindowSize.width()), 150))
+        self.setMaximumSize(QtCore.QSize(int(0.045*self.currWindowSize.width()), 5000))
+        #self.setSizePolicy(QtWidgets.QSizePolicy.Maximum,QtWidgets.QSizePolicy.Preferred)
         gridlayout=QtWidgets.QGridLayout(self)
         gridlayout.setContentsMargins(0,0,0,0)
         gridlayout.setSpacing(0)
