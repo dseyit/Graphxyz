@@ -6769,11 +6769,11 @@ class MainWindow(QMainWindow):
         self.file.addSeparator()
         saveCurAction = self.file.addAction("Save")
         saveCurAction.setShortcut(QKeySequence("Ctrl+Shift+S"))
+        saveCurAction.triggered.connect(self.saveCurProject)
         
         saveDefAction = self.file.addAction("Save Default")
         saveDefAction.setShortcut(QKeySequence("Ctrl+D"))
         saveDefAction.triggered.connect(self.saveDefProject)
-        saveDefAction.triggered.connect(self.saveCurProject)
         
         saveasAction = self.file.addAction("Save as...")
         saveasAction.triggered.connect(self.saveasProject)
@@ -6836,6 +6836,7 @@ class MainWindow(QMainWindow):
                 projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
             if not npzSave[0]=='':
                 np.savez(npzSave[0], *projectArray[:len(projectArray)]) #Saves all of the tabs as archived array npz
+            self.curProjLoc = npzSave[0]
         except Exception as Argument:
             self.tbw.wdg.genLogforException(Argument)
     def saveDefProject(self):
@@ -7007,6 +7008,7 @@ if __name__=='__main__':
 #Notes on where I left:
     # Code needs lots of clean up
     # I am omitting multiple fit option for now. I will work on it later
+    # Save currentproject button seems to have issues
     # Need to add splash screen
     # Add a way to save fits also add a way to compare  models of the fits
     # Handle the exception when app throws when changed from xy mode to xyz and accidentally trying to plot on that mode
