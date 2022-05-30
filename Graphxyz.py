@@ -5382,7 +5382,7 @@ class AppWindow(QDialog):
         #self.customAxisClear(self.axdyn)
         #self.axdyn.clear()
         #self.modechanged()
-        self.showPopInfo('Successfully reset!',durationToShow=1.5, color = 'green',widgetToShowOn=self.mbar)
+        self.showPopInfo('Successfully reset!',durationToShow=0.5, color = 'green',widgetToShowOn=self.mbar)
         #self.hideAllViews()
     def loadDefBtn(self):
         try:
