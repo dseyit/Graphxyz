@@ -11,14 +11,14 @@ import platform
 import csv
 import pickle
 import ast
-from PyQt5.QtWidgets import QAction, QAbstractItemView, QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
+from PyQt5.QtWidgets import QShortcut,QAction, QAbstractItemView, QGraphicsOpacityEffect, QDesktopWidget, QWidget, QActionGroup, QMainWindow, QMenu, QMenuBar, QTableView, QMessageBox, QDialog, QApplication,QFileDialog, QPushButton, QSlider, QFrame, QLabel, QLineEdit, QCheckBox, QComboBox, QListWidget, QRadioButton, QTabWidget, QListView,QAbstractItemView,QTreeView, QColorDialog, QListWidgetItem
 from PyQt5 import QtWidgets
 import matplotlib
 import pandas as pd
 matplotlib.use('Qt5Agg')
 from PyQt5 import QtCore, uic
 from PyQt5.QtCore import QEasingCurve, pyqtSignal, QMimeData, QUrl, Qt, QAbstractTableModel, QPoint, QObject, QSettings, QTimer,QPropertyAnimation
-from PyQt5.QtGui import QFont, QColor, QScreen, QPixmap, QIcon 
+from PyQt5.QtGui import QFont, QColor, QScreen, QPixmap, QIcon, QKeySequence
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg, NavigationToolbar2QT as NavigationToolbar
 import matplotlib.backends.backend_svg
 from matplotlib.figure import Figure
@@ -479,18 +479,24 @@ class AppWindow(QDialog):
         self.addTab=tabs.addAction("New Tab")
         #self.addTab.triggered.connect(self.newBtn)
         tabs.addSeparator()
+        self.addTab.setShortcut(QKeySequence("Ctrl+T"))
         resetTab=tabs.addAction("Reset")
         resetTab.triggered.connect(self.resetBtn)
+        resetTab.setShortcut(QKeySequence("Ctrl+R"))
         
         tabs.addSeparator()
         loadDef = tabs.addAction("Load default")
         loadDef.triggered.connect(self.loadDefBtn)
+        loadDef.setShortcut(QKeySequence("Ctrl+L"))
         saveDef = tabs.addAction("Save default")
         saveDef.triggered.connect(self.saveDefBtn)
+        saveDef.setShortcut(QKeySequence("Ctrl+S"))
         loadas = tabs.addAction("Load...")
         loadas.triggered.connect(self.loadasBtn)
+        loadas.setShortcut(QKeySequence("Ctrl+Shift+L"))
         saveas = tabs.addAction("Save as...")
         saveas.triggered.connect(self.saveasBtn)
+        saveas.setShortcut(QKeySequence("Ctrl+Shift+S"))
         
         # impPref=tools.addAction("Preset options...")
         # impPref.triggered.connect(self.impOptBtnClicked)
@@ -5031,11 +5037,8 @@ class AppWindow(QDialog):
                 self.fitw.psliders[i].slidernumchanged()
             self.genLogforException(Argument)
     def py2tex(self,expr):
-        try:
-            pt = ast.parse(expr)
-            return LatexVisitor().visit(pt.body[0].value)
-        except Exception as Argument:
-            self.genLogforException(Argument)
+        pt = ast.parse(expr)
+        return LatexVisitor().visit(pt.body[0].value)
     def saveBtn(self, nameToSave = '', needSaved = True, showPopInfo = True): #need fix
         try:
             list_tosave=[]
@@ -5074,10 +5077,10 @@ class AppWindow(QDialog):
                     #print([action.text(),action.isChecked()])
                     temp.append(action.isChecked())
                 list_tosave.append(temp)
-            
+            print(nameToSave)
             if showPopInfo:
-                self.showPopInfo('Successfully saved!',durationToShow=1.5, color = 'green')
-            if needSaved:
+                self.showPopInfo('Successfully saved!',durationToShow=0.5, color = 'green')
+            if needSaved and not nameToSave=='':
                 np.save(nameToSave,list_tosave)
             else:
                 return list_tosave
@@ -5156,7 +5159,7 @@ class AppWindow(QDialog):
                 self.ui.refreshButton.setEnabled(True)
                 self.ui.refreshAllButton.setEnabled(True)
             if showPopInfo:
-                self.showPopInfo('Successfully loaded!',durationToShow=1.5, color = 'green')
+                self.showPopInfo('Successfully loaded!',durationToShow=0.5, color = 'green')
         except Exception as Argument:
             self.genLogforException(Argument)
             if showPopInfo:
@@ -6438,6 +6441,7 @@ class TabWindow(QTabWidget):
         self.apptemp=[] #Necessary when closing temporary application during copying the figure
         self.wndws=[]        
         self.app = app
+        #self.setDocumentMode(True) #Experimental
         #self.setMinimumSize(QtCore.QSize(600, 720))
         self.setTabsClosable(True)
         self.setMovable(True)
@@ -6448,7 +6452,10 @@ class TabWindow(QTabWidget):
         self.addTab(self.wdg,'Home')
         self.setTabText(self.currentIndex(),self.wdg.ui.listprefs_main.currentText())
         self.tabBar().setTabButton(0, self.tabBar().LeftSide,None)
-
+        
+        #Keyboard shortcuts for tabs:
+        #QShortcut(QKeySequence("Ctrl+T"), self).activated.connect(self.newBtn)
+        QShortcut(QKeySequence("Ctrl+W"), self).activated.connect(self.closeTab)
         
         #Signals
         self.tabCloseRequested.connect(lambda index: self.removeTab(index))
@@ -6468,6 +6475,11 @@ class TabWindow(QTabWidget):
         self.lastaddedtab=temwdg
         self.addTab(self.lastaddedtab,self.lastaddedtab.impw.ui.listprefs.currentText())
         self.setCurrentIndex(self.count()-1)
+    def closeTab(self):
+        if not self.currentIndex()==0: #To avoid to close initial tab
+            self.removeTab(self.currentIndex())
+        else:
+            pass
     def renameTab(self):
         self.setTabText(self.currentIndex(),self.lastaddedtab.impw.ui.listprefs.currentText())
         #self.setTabText(self.currentIndex(),':'.join([self.lastaddedtab.impw.ui.listprefs.currentText(),self.lastaddedtab.impw.ui.bgmode.checkedButton().text()]))
@@ -6595,7 +6607,8 @@ class MainWindow(QMainWindow):
             npzSave = qfdlg.getSaveFileName(self, None, "Create New File",filter)
             for i in range(self.tbw.count()):
                 projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
-            np.savez(npzSave[0], *projectArray[:len(projectArray)]) #Saves all of the tabs as archived array npz
+            if not npzSave[0]=='':
+                np.savez(npzSave[0], *projectArray[:len(projectArray)]) #Saves all of the tabs as archived array npz
         except Exception as Argument:
             self.tbw.wdg.genLogforException(Argument)
     def saveDefProject(self):
