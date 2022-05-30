@@ -5779,7 +5779,7 @@ class AppWindow(QDialog):
 
         testlabel.move(locationToShow[0],locationToShow[1])
         testlabel.show()
-        testlabel.raise_()
+        #testlabel.raise_()
 
         while time.time()-start<=durationToShow:
             QApplication.processEvents()
