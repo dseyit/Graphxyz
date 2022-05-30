@@ -49,10 +49,13 @@ import sys
 
 # For Windows:
 # pyinstaller --onefile --windowed --add-data "uis/*.ui;uis" --add-data "prs/*.txt;prs" --add-data "icns/*.png;icns" --add-data "funs/*.py;funs" --add-data "funs/*.txt;funs" Graphxyz.py
-# pyinstaller --noconsole --add-data "uis/*.ui;uis" --add-data "prs/*.txt;prs" --add-data "icns/*.png;icns" --add-data "funs/*.py;funs" --add-data "funs/*.txt;funs" Graphxyz.py
+# pyinstaller --noconsole --add-data "uis/*.ui;uis" --add-data "prs/*.txt;prs" --add-data "icns/*.png;icns" --add-data "funs/*.py;funs" --add-data "funs/*.txt;funs" --icon=icns/logo.ico Graphxyz.py
 
 # For Mac:
-# /opt/homebrew/bin/python3 -m PyInstaller --onefile --windowed --add-data "uis/*.ui:uis" --add-data "prs/*.txt:prs" --add-data "icns/*.png:icns" --add-data "funs/*.py:funs" --add-data "funs/*.txt:funs" Graphxyz.py
+# /opt/homebrew/bin/python3 -m PyInstaller --onefile --windowed --add-data "uis/*.ui:uis" --add-data "prs/*.txt:prs" --add-data "icns/*.png:icns" --add-data "funs/*.py:funs" --add-data "funs/*.txt:funs" --icon=icns/logo.icns Graphxyz.py
+
+# For Linux:
+# pyinstaller --add-data "uis/*.ui:uis" --add-data "prs/*.txt:prs" --add-data "icns/*.png:icns" --add-data "funs/*.py:funs" --add-data "funs/*.txt:funs" --icon=icns/logo.png Graphxyz.py
 
 # exception shortcut:
 # except Exception as Argument:
@@ -68,7 +71,7 @@ import sys
 # print(''.join([getmembers(pyFuns, isfunction)[0][0],'(x,p)']))
 # pyFuns.testfun()
 
-appVersion = '0.5'
+appVersion = '0.5.5'
 appVersionText = ''.join(['Version ',appVersion])
 
 
