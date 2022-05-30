@@ -6797,6 +6797,7 @@ if __name__=='__main__':
     # Code needs lots of clean up
     # I am omitting multiple fit option for now. I will work on it later
     # Need to add splash screen
+    # Add a way to save fits also add a way to compare  models of the fits
     # Handle the exception when app throws when changed from xy mode to xyz and accidentally trying to plot on that mode
     # The app now works, I think exceptions keeps it from running, because I need to use pathlib to generate log to txt
     # Sizing issues needs to be very well refined, very buggy
