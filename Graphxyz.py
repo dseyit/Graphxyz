@@ -5838,7 +5838,7 @@ class fitWindow(QDialog):
         self.parcounterList = [] #Needs to be tracked when function is removed
         self.ui.optparams.setReadOnly(True)
         self.ui.optErrPars.setReadOnly(True)
-        self.ui.fValueEdit.setReadOnly(True)
+        #self.ui.fValueEdit.setReadOnly(True)
         QShortcut(QKeySequence("Ctrl+L"), self).activated.connect(mainDialog.loadDefBtn)
         QShortcut(QKeySequence("Ctrl+S"), self).activated.connect(mainDialog.saveDefBtn)
         
