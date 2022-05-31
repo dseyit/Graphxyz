@@ -1004,7 +1004,7 @@ class AppWindow(QDialog):
                 else:
                     compi.setFont(QFont(fontitype,max(int(self.orFonts[ci]*0.9*self.k_font2),10)))
             except Exception as Argument:
-                self.genLogforException(Argument)
+                print(Argument)
         try:
             minToolbarWidth_win = int(self.app.activeWindow().geometry().height()*0.03)
             minToolbarWidth_mac = int(self.app.activeWindow().geometry().height()*0.03)
@@ -1030,7 +1030,7 @@ class AppWindow(QDialog):
                 self.fitw.fitTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
                 self.fitw.eqTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
         except Exception as Argument:
-            self.genLogforException(Argument)
+            print(Argument)
         self.fontBtn(str(int(9*self.k_font)))
     def getFolderLoc(self):
         try:
@@ -5939,7 +5939,7 @@ class fitWindow(QDialog):
                 else:
                     compi.setFont(QFont(fontitype,max(int(self.orFonts[ci]*0.9*self.k_font2),10)))
             except Exception as Argument:
-                self.genLogforException(Argument)
+                print(Argument)
         try:
             minToolbarWidth_win = int(self.app.activeWindow().geometry().height()*0.03)
             minToolbarWidth_mac = int(self.app.activeWindow().geometry().height()*0.03)
@@ -5959,7 +5959,7 @@ class fitWindow(QDialog):
                 self.fitTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
                 self.eqTlb.setMaximumSize(QtCore.QSize(1250, minToolbarWidth_win ))
         except Exception as Argument:
-            self.genLogforException(Argument)
+            print(Argument)
         #self.fontBtn(str(int(9*self.k_font)))
     def resizeEvent(self, event):
         newSize = self.geometry()
