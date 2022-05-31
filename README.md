@@ -13,5 +13,15 @@ Intro video can be found in this <a href='https://youtu.be/Q1QfCpT_8oc'> link<a/
   The main purpose of this software is to combine multiple data types from various scientific instruments under single data structure so that they can all be combined in one software environment. Releases are now stable and please report if any crashes are encountered. If you prefer to use the source, Graphxyz.py is the file needs to be run. I suggest using dev branch.
 
 Documentation is also under construction. You are welcome to try without any guidance until then using the intro video above.
-
-![Scatter](screenshots/main.png)
+# Some examples:
+## Contour plots
+![Scatter](screenshots/xyz.png)
+## Conventional plots
+![Scatter](screenshots/xy.png)
+![Scatter](screenshots/xy2.png)
+## Fit to the Python equation
+![Scatter](screenshots/fit.png)
+##  Fit to the Python function
+![Scatter](screenshots/pyFit.png)
+## Compare models
+![Scatter](screenshots/models.png)
