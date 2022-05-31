@@ -4604,7 +4604,7 @@ class AppWindow(QDialog):
                 if self.ui.legcb.isChecked():
                     self.axspec.legend(self.legendtext_spec,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
         except Exception as Argument:
-            self.genLogforException(Argument)
+            print(Argument)
         try:
             if self.impw.ui.xyz.isChecked():
                 self.legendtext_dyn=[]
@@ -4621,7 +4621,7 @@ class AppWindow(QDialog):
                 if self.ui.legcb.isChecked():
                     self.axdyn.legend(self.legendtext_dyn,prop={"size":int(float(self.ui.fontsizeval.text()))},loc='best',framealpha=0).set_draggable(True)
         except Exception as Argument:
-            self.genLogforException(Argument)
+            print(Argument)
         self.axdyn.title.set_fontsize(int(float(self.ui.fontsizeval.text())))
         self.axspec.title.set_fontsize(int(float(self.ui.fontsizeval.text())))
         try:
@@ -5997,7 +5997,7 @@ class sliderObj(QFrame):
         self.pslider=QSlider(QtCore.Qt.Vertical)
         self.pslider.setTickPosition(QtWidgets.QSlider.NoTicks)
         gridlayout.addWidget(self.pslider,2,0,1,1)
-        plabel=QLabel(''.join(['p',str(sliderno)]))
+        plabel=QLabel(''.join(['p<sub>',str(sliderno)]))
         plabel.setAlignment(QtCore.Qt.AlignCenter)
         gridlayout.addWidget(plabel,0,0,1,2)
         self.slmax=QLineEdit('50')
