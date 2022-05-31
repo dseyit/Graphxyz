@@ -13,4 +13,4 @@ Intro video can be found in this <a href='https://youtu.be/Q1QfCpT_8oc'> link<a/
 
 Documentation is also under construction. You are welcome to try without any guidance until then using the intro video above.
 
-![Scatter](/../main/screenshots/main.png)
+![Scatter](screenshots/main.png)
