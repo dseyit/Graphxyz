@@ -1,5 +1,6 @@
 # Graphxyz
-A tool for rapid scientific plots and analysis
+A python-based tool for rapid scientific plots and analysis
+<img src="icns/logo.png" width="200" height="200" /><br>
 
 The aim of this project is to develop free and open source application that can serve as all-in-one package to plot and analyze scientific data. As a physicist in North Carolina State University, this project had started as a result of my desire to have a tool to boost my efficiency during my PhD studies. Dealing with multiple instruments and tools can become frustrating during the analysis of the scientific data. As a result, I aim to address this issue by developing this simple software with graphical user interface.
 
