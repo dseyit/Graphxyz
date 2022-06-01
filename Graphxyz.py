@@ -3487,6 +3487,7 @@ class AppWindow(QDialog):
             
             self.impw_list = test
             self.impw.ui.listprefs.removeItem(self.impw.ui.listprefs.currentIndex())
+            self.impw.ui.listprefs_main.removeItem(self.impw.ui.listprefs_main.currentIndex())
         except Exception as Argument:
             self.genLogforException(Argument)
     def remfunBtn(self):
@@ -3502,6 +3503,7 @@ class AppWindow(QDialog):
             
             self.funw_list = test
             self.funw.ui.listfuns.removeItem(self.funw.ui.listfuns.currentIndex())
+            self.fitw.ui.listfuns_main.removeItem(self.fitw.ui.listfuns_main.currentIndex())
             #print(self.funw_list)
         except Exception as Argument:
             self.genLogforException(Argument)
@@ -5200,8 +5202,10 @@ class AppWindow(QDialog):
             templist=self.mbar.findChildren(QMenu)
             for menu in templist:
                 temp=[]
+                #print(menu.title())
                 for action in menu.actions():
                     temp.append(action.isChecked())
+                    #print(action.text())
                 list_tosave.append(temp)
             if showPopInfo:
                 self.showPopInfo('Successfully saved!',durationToShow=0.5, color = 'green',widgetToShowOn=self.mbar)
@@ -5358,8 +5362,11 @@ class AppWindow(QDialog):
             for i in range(len(templist)-1):
                 temp=list_toload[k]
                 actsList = templist[i].actions()
-                for i in range(len(temp)):
-                    actsList[i].setChecked(temp[i])
+                for i in range(len(actsList)):
+                    try:
+                        actsList[i].setChecked(temp[i])
+                    except Exception as Argument:
+                        self.genLogforException(Argument)
                 k=k+1
             
             if showPopInfo:
