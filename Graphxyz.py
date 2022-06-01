@@ -71,7 +71,7 @@ import sys
 # print(''.join([getmembers(pyFuns, isfunction)[0][0],'(x,p)']))
 # pyFuns.testfun()
 
-appVersion = '0.5.5'
+appVersion = '0.5.6'
 appVersionText = ''.join(['Version ',appVersion])
 
 
@@ -1878,7 +1878,7 @@ class AppWindow(QDialog):
                 #     self.genLogforException(Argument)
                 #     self.showPopInfo('Make sure that the data loaded with correct preset!',durationToShow=3, color = 'red')
             elif not self.impw.ui.xyz.isChecked():
-                if self.plotModes.checkedAction().text()=="Multiple":
+                if self.plotModes.checkedAction().text()=="Multiple" or self.plotModes.checkedAction().text()=="Multiple with background":
                     if self.ui.dataList.count == 0:
                         msgBox = QMessageBox()
                         msgBox.setIcon(QMessageBox.Information)
@@ -3799,24 +3799,24 @@ class AppWindow(QDialog):
                     y=self.fry(self.frzList.item(ind).text(),y)
             
             if self.ui.bgdataCb.isChecked():
-                if self.plotModes.checkedAction().text()=="Matched with x and y" and not self.getitems(self.ui.bgdataList)[ind]=='0':
+                if self.plotModes.checkedAction().text()=="Multiple with background" and not self.getitems(self.ui.bgdataList)[ind]=='0':
                     yb=d[self.getitems(self.ui.bgdataList)[ind]]['y']
                     yb=yb[self.v2in(x0,xyr[0]):(self.v2in(x0,xyr[1])+1)]
-                    if normatx:
-                        if xnorm==0:
-                            yb=y/max(abs(yb))
-                        else:
-                            yb=yb/yb[self.v2in(x,xnorm)]
-                elif self.plotModes.checkedAction().text()=="Matched with x and y" and self.getitems(self.ui.bgdataList)[ind]=='0':
+                    # if normatx:
+                    #     if xnorm==0:
+                    #         yb=y/max(abs(yb))
+                    #     else:
+                    #         yb=yb/yb[self.v2in(x,xnorm)]
+                elif self.plotModes.checkedAction().text()=="Multiple with background" and self.getitems(self.ui.bgdataList)[ind]=='0':
                     yb=0
                 else:
                     yb=d[self.getitems(self.ui.bgdataList)[0]]['y']
                     yb=yb[self.v2in(x0,xyr[0]):(self.v2in(x0,xyr[1])+1)]
-                    if normatx:
-                        if xnorm==0:
-                            yb=yb/max(abs(yb))
-                        else:
-                            yb=yb/yb[self.v2in(x,xnorm)]
+                    # if normatx:
+                    #     if xnorm==0:
+                    #         yb=yb/max(abs(yb))
+                    #     else:
+                    #         yb=yb/yb[self.v2in(x,xnorm)]
                 y=y-yb
             
             if absmode:
@@ -5752,7 +5752,7 @@ class AppWindow(QDialog):
         newSize = self.geometry()
         self.screenSizeChanged.emit(newSize)
         return super().resizeEvent(event)
-    def showPopInfo(self,labelToShow,widgetToShowOn=None,durationToShow = 2,color = 'green'):
+    def showPopInfo(self,labelToShow,widgetToShowOn=None,durationToShow=2,color='green',needRaised=False):
         # labelToShow='this is information'
         # durationToShow = 4
         # locationToShow = [500,500]
@@ -5789,7 +5789,8 @@ class AppWindow(QDialog):
 
         testlabel.move(locationToShow[0],locationToShow[1])
         testlabel.show()
-        #testlabel.raise_()
+        if needRaised:
+            testlabel.raise_()
 
         while time.time()-start<=durationToShow:
             QApplication.processEvents()
@@ -6801,7 +6802,7 @@ class MainWindow(QMainWindow):
         self.show()
         
         if not appVersionText == latestVersion:
-            self.tbw.wdg.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue',durationToShow = 1,widgetToShowOn=self.mbar)
+            self.tbw.wdg.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue',durationToShow = 1.5,widgetToShowOn=self.mbar,needRaised=True)
     def getSettingsValues(self):
         self.settingWindow = QSettings('Graphxyz', 'Window Size')
     def closeEvent(self,event):
@@ -7017,6 +7018,7 @@ if __name__=='__main__':
     
 #Notes on where I left:
     # Code needs lots of clean up
+    # Fix custom xlims for xy mode
     # I am omitting multiple fit option for now. I will work on it later
     # Save currentproject button seems to have issues
     # Need to add splash screen
