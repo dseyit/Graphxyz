@@ -6857,7 +6857,10 @@ class MainWindow(QMainWindow):
             fileloc = self.makeFolderinDocuments('Saved Projects')
             fileloc = fileloc/'default'
             for i in range(self.tbw.count()):
-                projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
+                try:
+                    projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
+                except Exception as Argument:
+                    self.tbw.wdg.genLogforException(Argument)
             np.savez(fileloc, *projectArray[:len(projectArray)]) #Saves all of the tabs as archived array npz
         except Exception as Argument:
             self.tbw.wdg.genLogforException(Argument)
