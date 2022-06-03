@@ -826,6 +826,11 @@ class AppWindow(QDialog):
         self.lbleft.setText('C')
         self.lbleft.setToolTip('Press to Copy to Clipboard')
         
+        self.reportLeft=QtWidgets.QPushButton(self)
+        self.reportLeft.setMaximumSize(QtCore.QSize(32, 32))
+        self.reportLeft.setText('R')
+        self.reportLeft.setToolTip('Press to open .pptx reporter...')
+        
         self.optleft=QtWidgets.QPushButton(self)
         self.optleft.setMaximumSize(QtCore.QSize(40, 32))
         self.optleft.setText('...')
@@ -833,8 +838,9 @@ class AppWindow(QDialog):
         
         self.clrlaydyn.addWidget(self.optleft,0,0,1,1)
         self.clrlaydyn.addWidget(self.lbleft,0,1,1,1)
-        self.clrlaydyn.addWidget(self.clrCbdyn,0,2,1,1)
-        self.clrlaydyn.addWidget(self.clrBtndyn,0,3,1,1)
+        self.clrlaydyn.addWidget(self.reportLeft,0,2,1,1)
+        self.clrlaydyn.addWidget(self.clrCbdyn,0,3,1,1)
+        self.clrlaydyn.addWidget(self.clrBtndyn,0,4,1,1)
         
         #Adding extra menu to rigth figure:
         self.controlsFrameSpec=QtWidgets.QFrame(self)
@@ -859,6 +865,11 @@ class AppWindow(QDialog):
         self.lbright.setText('C')
         self.lbright.setToolTip('Press to Copy to Clipboard')
         
+        self.reportRight=QtWidgets.QPushButton(self)
+        self.reportRight.setMaximumSize(QtCore.QSize(32, 32))
+        self.reportRight.setText('R')
+        self.reportRight.setToolTip('Press to open .pptx reporter...')
+        
         self.optright=QtWidgets.QPushButton(self)
         self.optright.setMaximumSize(QtCore.QSize(40, 32))
         self.optright.setText('...')
@@ -866,8 +877,9 @@ class AppWindow(QDialog):
         
         self.clrlayspec.addWidget(self.optright,0,0,1,1)
         self.clrlayspec.addWidget(self.lbright,0,1,1,1)
-        self.clrlayspec.addWidget(self.clrCbspec,0, 2, 1, 1)
-        self.clrlayspec.addWidget(self.clrBtnspec,0, 3, 1, 1)
+        self.clrlayspec.addWidget(self.reportRight,0,2,1,1)
+        self.clrlayspec.addWidget(self.clrCbspec,0, 3, 1, 1)
+        self.clrlayspec.addWidget(self.clrBtnspec,0, 4, 1, 1)
         
         self.controlsFrame2D=QtWidgets.QFrame(self)
         self.ui.layout2D.addWidget(self.controlsFrame2D,0, 2, 1, 1)
@@ -5989,6 +6001,138 @@ class modelsWindow(QDialog):
         uiPath = DataDir / 'models.ui'
         self.ui = uic.loadUi(uiPath,self)
         self.ui.setWindowTitle('Compare models')
+
+class pptWindow(QDialog):
+    def __init__(self,fromcanvas=None):
+        super().__init__()
+        self.fromcanvas=fromcanvas
+        self.slides=[]
+        self.pptParameters = {'reportName':'', 'slides':self.slides}
+        DataDir = getResourcePath("uis")
+        uiPath = DataDir / 'ppt.ui'
+        self.ui = uic.loadUi(uiPath,self)
+        self.ui.setWindowTitle('Make .pptx slide')
+        self.ui.figureFrame.setVisible(False)
+        
+        self.slideTitles=['Add slide title here...']
+        self.slideFigureCaptions=[['Figure caption 1']]
+        self.slideNoOfFigures=[[1]]
+        self.slideFigureLocations=['']
+        
+        self.noOfFigures.activated.connect(self.noOfFiguresActivated)
+        self.slideTitle.textEdited.connect(self.slideTitleChanged)
+        #self.addSlide.clicked.connect(lambda listanditemToAdd: self.addBtn([self.slidesList,self.slideTitle.text()],addSlide=True))
+        self.remSlide.clicked.connect(lambda listToRem: self.remBtn(self.slidesList))
+        #self.addFigure.clicked.connect(lambda listanditemToAdd: self.addBtn([self.figureList,self.figName.text()],condition=self.figureList.count()<int(self.noOfFigures.currentText())))
+        self.addFigure.clicked.connect(self.addFigureClicked)
+        self.remFigure.clicked.connect(lambda listToRem: self.remBtn(self.figureList))
+        self.addSlide.clicked.connect(self.addSlideClicked)
+        self.slidesList.itemSelectionChanged.connect(self.slideRowChanged)
+        self.saveButton.clicked.connect(self.saveButtonClicked)
+    def setCanvas(self,newCanvas):
+        self.fromcanvas = newCanvas
+    def setParams(self,params):
+        self.pptParameters=params
+    def closeEvent(self,event):
+        self.pptParameters['reportName']=self.reportName.text()
+        self.pptParameters['slides']=self.slides
+        # self.pptParameters['noOfSlides']=self.slidesList.count()
+        # self.pptParameters['slideTitles']=self.slideTitles
+        # self.pptParameters['slideNoOfFigures']=self.slideNoOfFigures
+        # self.pptParameters['slideFigureCaptions']=self.slideFigureCaptions
+        # self.pptParameters['slideFigureLocations']=self.slideFigureLocations
+    # def addBtn(self,listanditemToAdd,condition=True,addSlide=False):
+    #     itemtoAdd=listanditemToAdd[1]
+    #     if addSlide:
+    #         temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[]}
+    #         temp['slideTitle']=self.slideTitle.text()
+    #         for i in range(self.figureCaptionList.count()):
+    #             temp['slideFigureCaptions'].append(self.figureCaptionList.item(i).text())
+    #             #print(self.figureCaptionList.item(i).text().split('\     '))
+    #             figloc=self.figureList.item(i).text().split('\     ')[1]
+    #             temp['slideFigureLocations'].append(figloc)
+    #         self.slides.append(temp)
+    #     else:
+    #         figloc = self.makeFolderinDocuments('Reports')
+    #         figloc = figloc/'tempimg.svg'
+    #         self.fromcanvas.figure.savefig(figloc, format='svg', dpi=1200,bbox_inches=0, transparent=True)
+    #         itemtoAdd='\     '.join([itemtoAdd,str(figloc)])
+        
+    #     if condition:
+    #         listy=listanditemToAdd[0]
+    #         listy.addItem(itemtoAdd)
+    def addSlideClicked(self):
+        if self.slidesList.count()==0:
+            self.ui.figureFrame.setVisible(True)
+            self.ui.figureFrame.setEnabled(False)
+        # items = [0]*self.slidesList.count()
+        listy=self.ui.slidesList
+        # if not items:
+        #     listy.addItem(self.slideTitle.text())
+        # elif listy.selectedItems():
+        #     for listitems in listy.selectedItems():
+        #         listy.insertItem(listy.row(listitems)+1,self.slideTitle.text())
+        # else:
+        #     listy.insertItem(self.slidesList.count(),self.slideTitle.text())
+        listy.insertItem(self.slidesList.count(),self.slideTitle.text())
+        item=self.slidesList.item(self.slidesList.count()-1)
+        item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+    def addFigureClicked(self):
+        if self.figureList.count()<int(self.noOfFigures.currentText()) and not self.slidesList.currentRow()==-1:
+            #items = [0]*self.figureList.count()
+            listy=self.ui.figureList
+            itemtoadd=self.figName.text()
+            figloc = self.makeFolderinDocuments(''.join(['Slide ',str(self.slidesList.currentRow()+1)]))
+            figloc = figloc/''.join([self.figName.text(),'.svg'])
+            self.fromcanvas.figure.savefig(figloc, format='svg', dpi=1200,bbox_inches=0, transparent=True)
+            itemtoadd='\     '.join([itemtoadd,str(figloc)])
+            listy.insertItem(self.figureList.count(),itemtoadd)
+    def slideRowChanged(self):
+        if len(self.slidesList.selectedItems())==0:
+            self.ui.figureFrame.setEnabled(False)
+        else:
+            self.ui.figureFrame.setEnabled(True)
+    def saveButtonClicked(self):
+        temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[]}
+        temp['slideTitle']=self.slideTitle.text()
+        if not self.slides==[]:
+            del self.slides[-1] #make sure this is correct
+        for i in range(self.figureCaptionList.count()):
+            temp['slideFigureCaptions'].append(self.figureCaptionList.item(i).text())
+            figloc=self.figureList.item(i).text().split('\     ')[1]
+            temp['slideFigureLocations'].append(figloc)
+        print(temp['slideTitle'])
+        print(temp['slideFigureCaptions'])
+        print(temp['slideFigureLocations'])
+        self.slides.append(temp)
+        self.saveButton.setEnabled(False)
+            
+    def remBtn(self,listToRem):
+        listy=listToRem
+        listy.takeItem(listy.row(listy.item(listy.count()-1)))
+        # if listy.selectedItems():
+        #     for listitems in listy.selectedItems():
+        #         listy.takeItem(listy.row(listitems))
+        # else:
+        #     listy.takeItem(listy.row(listy.item(listy.count()-1)))
+    def noOfFiguresActivated(self):
+        self.figureCaptionList.clear()
+        for i in range(int(self.noOfFigures.currentText())):
+            self.figureCaptionList.addItem(''.join(['Figure caption ',str(i+1)]))
+        for index in range(self.figureCaptionList.count()):
+            item = self.figureCaptionList.item(index)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+    def slideTitleChanged(self):
+        ind = int(self.noOfSlides.currentIndex())
+        self.slideTitles[ind]=self.slideTitle.text()
+    def makeFolderinDocuments(self, foldName): 
+        foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'/'Reports'
+        os.makedirs(foldDir, exist_ok = True)
+        foldDir = foldDir / foldName
+        os.makedirs(foldDir, exist_ok = True)
+        return foldDir
+    
+
 class sliderObj(QFrame):
     def __init__(self,sliderno,app):
         super().__init__()
@@ -6753,6 +6897,11 @@ class MainWindow(QMainWindow):
         self.tbw = TabWindow(self.app)
         self.setCentralWidget(self.tbw)
         
+        self.pptWindow = pptWindow()
+        self.tbw.lastaddedtab.reportLeft.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mdyn))
+        self.tbw.lastaddedtab.reportRight.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mspec))
+        #self.pptWindow.addSlide.clicked.connect(self.addSlideClicked)
+        
         # This will get saved settings values:
         self.getSettingsValues()
         height = self.settingWindow.value('window_height')
@@ -6789,6 +6938,10 @@ class MainWindow(QMainWindow):
         saveasAction = self.file.addAction("Save as...")
         saveasAction.triggered.connect(self.saveasProject)
         
+        self.file.addSeparator()
+        self.pptAction = self.file.addAction("Report as .pptx")
+        #pptAction.triggered.connect(self.pptReport)
+        
         helps = self.mbar.addMenu("Graphxyz")
         aboutMe = helps.addAction(" About Graphxyz")
         aboutMe.triggered.connect(self.aboutMenuPop)
@@ -6798,6 +6951,7 @@ class MainWindow(QMainWindow):
         #checkUpdate.setMenuRole(QAction.AboutRole)
         
         self.screenChanged.connect(lambda oldScreen,newScreen: self.tbw.wdg.resizeUI(oldScreen,newScreen))
+        self.tbw.currentWidget().addTab.triggered.connect(self.tabNewBtnClicked)
         
         self.show()
         
@@ -6805,6 +6959,10 @@ class MainWindow(QMainWindow):
             self.tbw.wdg.showPopInfo(''.join(['New ', latestVersion.lower(),' is available']),color = 'blue',durationToShow = 1.5,widgetToShowOn=self.mbar,needRaised=True)
     def getSettingsValues(self):
         self.settingWindow = QSettings('Graphxyz', 'Window Size')
+    def tabNewBtnClicked(self):
+        self.tbw.currentWidget().addTab.triggered.connect(self.tabNewBtnClicked)
+        self.tbw.lastaddedtab.reportLeft.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mdyn))
+        self.tbw.lastaddedtab.reportRight.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mspec))
     def closeEvent(self,event):
         # if self.wdg.apptemp!=[]:
         #     self.wdg.apptemp=QApplication([])
@@ -6834,7 +6992,10 @@ class MainWindow(QMainWindow):
     def saveProject(self,fileloc):
         projectArray = []
         for i in range(self.tbw.count()):
-            projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
+            try:
+                projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
+            except Exception as Argument:
+                self.tbw.wdg.genLogforException(Argument)
         np.savez(fileloc, *projectArray[:len(projectArray)]) #Saves all of the tabs as archived array npz
     def saveasProject(self):
         try:
@@ -6844,7 +7005,10 @@ class MainWindow(QMainWindow):
             #qfdlg.setFileMode(QFileDialog.AnyFile)
             npzSave = qfdlg.getSaveFileName(self, None, "Create New File",filter)
             for i in range(self.tbw.count()):
-                projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
+                try:
+                    projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
+                except Exception as Argument:
+                    self.tbw.wdg.genLogforException(Argument)
             if not npzSave[0]=='':
                 np.savez(npzSave[0], *projectArray[:len(projectArray)]) #Saves all of the tabs as archived array npz
             self.curProjLoc = npzSave[0]
@@ -6868,7 +7032,10 @@ class MainWindow(QMainWindow):
         try:
             projectArray = []
             for i in range(self.tbw.count()):
-                projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
+                try:
+                    projectArray.append(self.tbw.widget(i).saveBtn(needSaved = False))
+                except Exception as Argument:
+                    self.tbw.wdg.genLogforException(Argument)
             np.savez(self.curProjLoc, *projectArray[:len(projectArray)]) #Saves all of the tabs as archived array npz
         except Exception as Argument:
             self.tbw.wdg.genLogforException(Argument)
@@ -6952,6 +7119,16 @@ class MainWindow(QMainWindow):
             msgBox.setText(msgText)
             msgBox.setWindowTitle("Warning!")
             msgBox.exec()
+    def openReporter(self,newCanvas):
+        self.pptWindow.setCanvas(newCanvas)
+        self.pptWindow.show()
+    def pptGenerator(self):
+        self.pptParameters=self.pptWindow.pptParameters
+        pass
+    
+    # def addSlideClicked(self):
+    #     self.pptWindow.fromcanvas.axes.set_xlabel(self.pptWindow.slideTitle.text())
+    #     self.pptWindow.fromcanvas.draw()
 
 # class SplashScreen(QWidget):
 #     def __init__(self):

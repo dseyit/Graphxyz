@@ -1439,6 +1439,68 @@
                         </property>
                        </widget>
                       </item>
+                      <item row="5" column="2">
+                       <widget class="QPushButton" name="ybgaddButton_2">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>40</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <family>Arial</family>
+                          <pointsize>9</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>+</string>
+                        </property>
+                        <property name="autoDefault">
+                         <bool>false</bool>
+                        </property>
+                       </widget>
+                      </item>
+                      <item row="0" column="2">
+                       <widget class="QPushButton" name="ybgaddButton_3">
+                        <property name="enabled">
+                         <bool>true</bool>
+                        </property>
+                        <property name="sizePolicy">
+                         <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
+                          <horstretch>0</horstretch>
+                          <verstretch>0</verstretch>
+                         </sizepolicy>
+                        </property>
+                        <property name="maximumSize">
+                         <size>
+                          <width>40</width>
+                          <height>30</height>
+                         </size>
+                        </property>
+                        <property name="font">
+                         <font>
+                          <family>Arial</family>
+                          <pointsize>9</pointsize>
+                         </font>
+                        </property>
+                        <property name="text">
+                         <string>+</string>
+                        </property>
+                        <property name="autoDefault">
+                         <bool>false</bool>
+                        </property>
+                       </widget>
+                      </item>
                      </layout>
                     </widget>
                    </widget>
@@ -1547,7 +1609,7 @@
                              <item>
                               <widget class="QPushButton" name="dataAddButton">
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
@@ -1577,9 +1639,12 @@
                                <property name="orientation">
                                 <enum>Qt::Horizontal</enum>
                                </property>
+                               <property name="sizeType">
+                                <enum>QSizePolicy::Preferred</enum>
+                               </property>
                                <property name="sizeHint" stdset="0">
                                 <size>
-                                 <width>250</width>
+                                 <width>500</width>
                                  <height>20</height>
                                 </size>
                                </property>
@@ -1588,7 +1653,7 @@
                              <item>
                               <widget class="QPushButton" name="dataRemButton">
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
@@ -1664,14 +1729,14 @@
                              <item row="0" column="0">
                               <widget class="QCheckBox" name="multdaddcb">
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
                                </property>
                                <property name="maximumSize">
                                 <size>
-                                 <width>1650</width>
+                                 <width>1234123</width>
                                  <height>16777215</height>
                                 </size>
                                </property>
@@ -1692,7 +1757,7 @@
                           <item row="3" column="0" colspan="2">
                            <widget class="QListWidget" name="dataList">
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
@@ -1705,7 +1770,7 @@
                             </property>
                             <property name="maximumSize">
                              <size>
-                              <width>1650</width>
+                              <width>16777215</width>
                               <height>16777215</height>
                              </size>
                             </property>
@@ -1754,14 +1819,14 @@
                           <item row="1" column="0" colspan="3">
                            <widget class="QFrame" name="frame_3">
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Maximum" vsizetype="Preferred">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
                             </property>
                             <property name="maximumSize">
                              <size>
-                              <width>150</width>
+                              <width>2143214</width>
                               <height>16777215</height>
                              </size>
                             </property>
@@ -1793,7 +1858,7 @@
                                 <bool>true</bool>
                                </property>
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
@@ -1824,14 +1889,14 @@
                                 <bool>true</bool>
                                </property>
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
                                </property>
                                <property name="minimumSize">
                                 <size>
-                                 <width>50</width>
+                                 <width>0</width>
                                  <height>0</height>
                                 </size>
                                </property>
@@ -1852,7 +1917,7 @@
                                 <bool>true</bool>
                                </property>
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
@@ -1883,7 +1948,7 @@
                                 <bool>true</bool>
                                </property>
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Expanding" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
@@ -1959,14 +2024,14 @@
                              <item row="0" column="0">
                               <widget class="QCheckBox" name="bgdataCb">
                                <property name="sizePolicy">
-                                <sizepolicy hsizetype="Maximum" vsizetype="Fixed">
+                                <sizepolicy hsizetype="Preferred" vsizetype="Fixed">
                                  <horstretch>0</horstretch>
                                  <verstretch>0</verstretch>
                                 </sizepolicy>
                                </property>
                                <property name="maximumSize">
                                 <size>
-                                 <width>150</width>
+                                 <width>12343214</width>
                                  <height>16777215</height>
                                 </size>
                                </property>
@@ -1990,7 +2055,7 @@
                              <bool>true</bool>
                             </property>
                             <property name="sizePolicy">
-                             <sizepolicy hsizetype="Maximum" vsizetype="Expanding">
+                             <sizepolicy hsizetype="Preferred" vsizetype="Expanding">
                               <horstretch>0</horstretch>
                               <verstretch>0</verstretch>
                              </sizepolicy>
@@ -2003,7 +2068,7 @@
                             </property>
                             <property name="maximumSize">
                              <size>
-                              <width>1650</width>
+                              <width>12342</width>
                               <height>16777215</height>
                              </size>
                             </property>
