@@ -6013,11 +6013,12 @@ class pptWindow(QDialog):
         self.ui = uic.loadUi(uiPath,self)
         self.ui.setWindowTitle('Make .pptx slide')
         self.ui.figureFrame.setVisible(False)
+        self.rowTracker = [] #This is to track selected rows of sliders
         
-        self.slideTitles=['Add slide title here...']
-        self.slideFigureCaptions=[['Figure caption 1']]
-        self.slideNoOfFigures=[[1]]
-        self.slideFigureLocations=['']
+        #self.slideTitles=['Add slide title here...']
+        #self.slideFigureCaptions=[['Figure caption 1']]
+        #self.slideNoOfFigures=[[1]]
+        #self.slideFigureLocations=['']
         
         self.noOfFigures.activated.connect(self.noOfFiguresActivated)
         self.slideTitle.textEdited.connect(self.slideTitleChanged)
@@ -6027,8 +6028,12 @@ class pptWindow(QDialog):
         self.addFigure.clicked.connect(self.addFigureClicked)
         self.remFigure.clicked.connect(lambda listToRem: self.remBtn(self.figureList))
         self.addSlide.clicked.connect(self.addSlideClicked)
-        self.slidesList.itemSelectionChanged.connect(self.slideRowChanged)
+        self.slidesList.itemClicked.connect(self.slideRowChanged)
         self.saveButton.clicked.connect(self.saveButtonClicked)
+        self.figureCaptionList.itemDoubleClicked.connect(self.enableSaving)
+        self.noOfFigures.activated.connect(self.enableSaving)
+        #self.addFigure.clicked.connect(lambda condition: self.enableSaving(condition=self.figureList.count()<int(self.noOfFigures.currentText())))
+        #self.remFigure.clicked.connect(self.enableSaving)
     def setCanvas(self,newCanvas):
         self.fromcanvas = newCanvas
     def setParams(self,params):
@@ -6062,9 +6067,9 @@ class pptWindow(QDialog):
     #         listy=listanditemToAdd[0]
     #         listy.addItem(itemtoAdd)
     def addSlideClicked(self):
-        if self.slidesList.count()==0:
-            self.ui.figureFrame.setVisible(True)
-            self.ui.figureFrame.setEnabled(False)
+        # if self.slidesList.count()==0:
+        #     self.ui.figureFrame.setVisible(True)
+        #     self.ui.figureFrame.setEnabled(False)
         # items = [0]*self.slidesList.count()
         listy=self.ui.slidesList
         # if not items:
@@ -6077,6 +6082,9 @@ class pptWindow(QDialog):
         listy.insertItem(self.slidesList.count(),self.slideTitle.text())
         item=self.slidesList.item(self.slidesList.count()-1)
         item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+        
+        temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[],'slideFigureNames':[]}
+        self.slides.append(temp)
     def addFigureClicked(self):
         if self.figureList.count()<int(self.noOfFigures.currentText()) and not self.slidesList.currentRow()==-1:
             #items = [0]*self.figureList.count()
@@ -6087,29 +6095,81 @@ class pptWindow(QDialog):
             self.fromcanvas.figure.savefig(figloc, format='svg', dpi=1200,bbox_inches=0, transparent=True)
             itemtoadd='\     '.join([itemtoadd,str(figloc)])
             listy.insertItem(self.figureList.count(),itemtoadd)
+            # In order to make added item editable:
+            item=self.figureList.item(self.figureList.count()-1)
+            item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+            self.saveButton.setEnabled(True)
     def slideRowChanged(self):
+        self.rowTracker.append(self.slidesList.currentRow())
+        if not len(self.slides)==0 and not self.saveButton.isEnabled():
+            print(self.slidesList.currentRow()+1)
+            self.figCapLabel.setText(''.join(['Figures and captions of slide ',str(self.slidesList.currentRow()+1),':']))
+            self.slideLoader(self.slidesList.currentRow()+1)
+        elif len(self.rowTracker)>1:
+            self.slidesList.setCurrentRow(self.rowTracker[-2])
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgText = ''.join(["Make sure to <FONT COLOR='#800000'>Save</FONT> the slide ",str(self.rowTracker[-2]+1)," first!"])
+            msgBox.setText(msgText)
+            msgBox.setWindowTitle("Warning!")
+            msgBox.exec()
+            del self.rowTracker[-1]
+            print('need saving')
+        
         if len(self.slidesList.selectedItems())==0:
-            self.ui.figureFrame.setEnabled(False)
+            self.ui.figureFrame.setVisible(False)
+            self.rowTracker=[]
         else:
-            self.ui.figureFrame.setEnabled(True)
+            self.ui.figureFrame.setVisible(True)
+            
     def saveButtonClicked(self):
-        temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[]}
+        temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[],'slideFigureNames':[]}
         temp['slideTitle']=self.slideTitle.text()
-        if not self.slides==[]:
-            del self.slides[-1] #make sure this is correct
+        del self.slides[self.slidesList.currentRow()]
+        # if not self.slides==[]:
+        #     del self.slides[-1] #make sure this is correct
         for i in range(self.figureCaptionList.count()):
-            temp['slideFigureCaptions'].append(self.figureCaptionList.item(i).text())
-            figloc=self.figureList.item(i).text().split('\     ')[1]
-            temp['slideFigureLocations'].append(figloc)
+            try:
+                temp['slideFigureCaptions'].append(self.figureCaptionList.item(i).text())
+                figloc=self.figureList.item(i).text().split('\     ')
+                temp['slideFigureLocations'].append(figloc[1])
+                temp['slideFigureNames'].append(figloc[0])
+            except:
+                temp['slideFigureLocations'].append('')
+                temp['slideFigureNames'].append('')
         print(temp['slideTitle'])
         print(temp['slideFigureCaptions'])
         print(temp['slideFigureLocations'])
-        self.slides.append(temp)
+        self.slides.insert(self.slidesList.currentRow(),temp)
+        #self.slides.append(temp)
         self.saveButton.setEnabled(False)
+    def slideLoader(self,slideNo):
+        self.figureList.clear()
+        self.figureCaptionList.clear()
+        if not self.slides==[]:
+            try:
+                temp=self.slides[slideNo-1]
+            except:
+                temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[],'slideFigureNames':[]}
+            ind=self.noOfFigures.findText(str(len(temp['slideFigureCaptions'])))
+            self.noOfFigures.setCurrentIndex(ind)
+            for i in range(len(temp['slideFigureCaptions'])):
+                try:
+                    self.figureList.addItem( '\     '.join([temp['slideFigureNames'][i],temp['slideFigureLocations'][i]]) )
+                    self.figureCaptionList.addItem(temp['slideFigureCaptions'][i])
+                except:
+                    self.figureList.addItem('')
+                    self.figureCaptionList.addItem('')
+        
+    def enableSaving(self,condition=True):
+        if condition:
+            self.saveButton.setEnabled(True)
             
     def remBtn(self,listToRem):
         listy=listToRem
         listy.takeItem(listy.row(listy.item(listy.count()-1)))
+        del self.slides[-1]
+        self.saveButton.setEnabled(True)
         # if listy.selectedItems():
         #     for listitems in listy.selectedItems():
         #         listy.takeItem(listy.row(listitems))
