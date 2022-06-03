@@ -42,6 +42,12 @@ import requests # Used when app version is checked and to check if new version i
 from inspect import getmembers, isfunction #This is used to get the list of the functions inside python module
 import importlib.util #This helps to import external python files
 import sys
+
+from pptx import Presentation
+from pptx.util import Inches
+from pptx.enum.dml import MSO_THEME_COLOR
+from pptx.util import Pt
+from pptx.enum.text import PP_ALIGN
 #import resources for windows this resources function needed to be defined in a file, could not find a way to import local modules
 
 # Run these to build for each platforms (cd to src folder)
@@ -6003,10 +6009,12 @@ class modelsWindow(QDialog):
         self.ui.setWindowTitle('Compare models')
 
 class pptWindow(QDialog):
-    def __init__(self,fromcanvas=None):
+    def __init__(self,app,mainDialog,fromcanvas=None):
         super().__init__()
         self.fromcanvas=fromcanvas
         self.slides=[]
+        self.app=app
+        self.mainDialog = mainDialog
         self.pptParameters = {'reportName':'', 'slides':self.slides}
         DataDir = getResourcePath("uis")
         uiPath = DataDir / 'ppt.ui'
@@ -6014,6 +6022,7 @@ class pptWindow(QDialog):
         self.ui.setWindowTitle('Make .pptx slide')
         self.ui.figureFrame.setVisible(False)
         self.rowTracker = [] #This is to track selected rows of sliders
+        self.exceptionLogLocation = self.makeFolderinDocuments2('.logs')
         
         #self.slideTitles=['Add slide title here...']
         #self.slideFigureCaptions=[['Figure caption 1']]
@@ -6021,16 +6030,16 @@ class pptWindow(QDialog):
         #self.slideFigureLocations=['']
         
         self.noOfFigures.activated.connect(self.noOfFiguresActivated)
-        self.slideTitle.textEdited.connect(self.slideTitleChanged)
         #self.addSlide.clicked.connect(lambda listanditemToAdd: self.addBtn([self.slidesList,self.slideTitle.text()],addSlide=True))
-        self.remSlide.clicked.connect(lambda listToRem: self.remBtn(self.slidesList))
+        self.remSlide.clicked.connect(self.remSlideBtn)
         #self.addFigure.clicked.connect(lambda listanditemToAdd: self.addBtn([self.figureList,self.figName.text()],condition=self.figureList.count()<int(self.noOfFigures.currentText())))
         self.addFigure.clicked.connect(self.addFigureClicked)
-        self.remFigure.clicked.connect(lambda listToRem: self.remBtn(self.figureList))
+        self.remFigure.clicked.connect(self.remFigBtn)
         self.addSlide.clicked.connect(self.addSlideClicked)
         self.slidesList.itemClicked.connect(self.slideRowChanged)
         self.saveButton.clicked.connect(self.saveButtonClicked)
         self.figureCaptionList.itemDoubleClicked.connect(self.enableSaving)
+        self.slidesList.itemDoubleClicked.connect(self.enableSaving)
         self.noOfFigures.activated.connect(self.enableSaving)
         #self.addFigure.clicked.connect(lambda condition: self.enableSaving(condition=self.figureList.count()<int(self.noOfFigures.currentText())))
         #self.remFigure.clicked.connect(self.enableSaving)
@@ -6041,6 +6050,7 @@ class pptWindow(QDialog):
     def closeEvent(self,event):
         self.pptParameters['reportName']=self.reportName.text()
         self.pptParameters['slides']=self.slides
+        #np.save('test.npy',self.pptParameters,allow_pickle=True)
         # self.pptParameters['noOfSlides']=self.slidesList.count()
         # self.pptParameters['slideTitles']=self.slideTitles
         # self.pptParameters['slideNoOfFigures']=self.slideNoOfFigures
@@ -6071,7 +6081,6 @@ class pptWindow(QDialog):
         #     self.ui.figureFrame.setVisible(True)
         #     self.ui.figureFrame.setEnabled(False)
         # items = [0]*self.slidesList.count()
-        listy=self.ui.slidesList
         # if not items:
         #     listy.addItem(self.slideTitle.text())
         # elif listy.selectedItems():
@@ -6079,30 +6088,58 @@ class pptWindow(QDialog):
         #         listy.insertItem(listy.row(listitems)+1,self.slideTitle.text())
         # else:
         #     listy.insertItem(self.slidesList.count(),self.slideTitle.text())
-        listy.insertItem(self.slidesList.count(),self.slideTitle.text())
-        item=self.slidesList.item(self.slidesList.count()-1)
-        item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-        
-        temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[],'slideFigureNames':[]}
-        self.slides.append(temp)
-    def addFigureClicked(self):
-        if self.figureList.count()<int(self.noOfFigures.currentText()) and not self.slidesList.currentRow()==-1:
-            #items = [0]*self.figureList.count()
-            listy=self.ui.figureList
-            itemtoadd=self.figName.text()
-            figloc = self.makeFolderinDocuments(''.join(['Slide ',str(self.slidesList.currentRow()+1)]))
-            figloc = figloc/''.join([self.figName.text(),'.svg'])
-            self.fromcanvas.figure.savefig(figloc, format='svg', dpi=1200,bbox_inches=0, transparent=True)
-            itemtoadd='\     '.join([itemtoadd,str(figloc)])
-            listy.insertItem(self.figureList.count(),itemtoadd)
-            # In order to make added item editable:
-            item=self.figureList.item(self.figureList.count()-1)
+        try:
+            listy=self.ui.slidesList
+            listy.insertItem(self.slidesList.count(),self.slideTitle.text())
+            item=self.slidesList.item(self.slidesList.count()-1)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-            self.saveButton.setEnabled(True)
+            
+            temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[],'slideFigureNames':[],'slideFigureSizes':[]}
+            self.slides.append(temp)
+        except Exception as Argument:
+            self.genLogforException(Argument)
+            
+    def addFigureClicked(self):
+        try:
+            if self.figureList.count()<int(self.noOfFigures.currentText()) and not self.slidesList.currentRow()==-1:
+                items = [0]*self.figureList.count()
+                listy=self.ui.figureList
+                itemtoadd=self.figName.text()
+                figloc = self.makeFolderinDocuments(''.join(['Slide ',str(self.slidesList.currentRow()+1)]))
+                figloc = figloc/''.join([self.figName.text(),'.png'])
+                fig=self.fromcanvas.figure
+                oldSize=fig.get_size_inches()
+                # if int(self.noOfFigures.currentText())==4:
+                #     fig.set_size_inches(6,4)
+                # elif int(self.noOfFigures.currentText())==2:
+                #     fig.set_size_inches(7.5,5)
+                # elif int(self.noOfFigures.currentText())==1:
+                #     fig.set_size_inches(9,6)
+                
+                fig.savefig(figloc, format='png', dpi=600,bbox_inches=0, transparent=True)
+                itemtoadd='\     '.join([itemtoadd,str(figloc),'Size in inches:',str(oldSize[0]),str(oldSize[1])])
+                if not items:
+                    listy.addItem(itemtoadd)
+                    # In order to make added item editable:
+                    item=self.figureList.item(self.figureList.count()-1)
+                    item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                elif listy.selectedItems():
+                    for listitems in listy.selectedItems():
+                        listy.insertItem(listy.row(listitems)+1,itemtoadd)
+                        item = self.figureList.item(listy.row(listitems)+1)
+                        item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                else:
+                    listy.insertItem(self.figureList.count(),itemtoadd)
+                    # In order to make added item editable:
+                    item=self.figureList.item(self.figureList.count()-1)
+                    item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                self.saveButton.setEnabled(True)
+        except Exception as Argument:
+            self.genLogforException(Argument)
     def slideRowChanged(self):
         self.rowTracker.append(self.slidesList.currentRow())
         if not len(self.slides)==0 and not self.saveButton.isEnabled():
-            print(self.slidesList.currentRow()+1)
+            #print(self.slidesList.currentRow()+1)
             self.figCapLabel.setText(''.join(['Figures and captions of slide ',str(self.slidesList.currentRow()+1),':']))
             self.slideLoader(self.slidesList.currentRow()+1)
         elif len(self.rowTracker)>1:
@@ -6114,7 +6151,6 @@ class pptWindow(QDialog):
             msgBox.setWindowTitle("Warning!")
             msgBox.exec()
             del self.rowTracker[-1]
-            print('need saving')
         
         if len(self.slidesList.selectedItems())==0:
             self.ui.figureFrame.setVisible(False)
@@ -6123,8 +6159,9 @@ class pptWindow(QDialog):
             self.ui.figureFrame.setVisible(True)
             
     def saveButtonClicked(self):
-        temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[],'slideFigureNames':[]}
-        temp['slideTitle']=self.slideTitle.text()
+        temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[],'slideFigureNames':[],'slideFigureSizes':[]}
+        #temp['slideTitle']=self.slideTitle.text()
+        temp['slideTitle']=self.slidesList.item(self.slidesList.currentRow()).text()
         del self.slides[self.slidesList.currentRow()]
         # if not self.slides==[]:
         #     del self.slides[-1] #make sure this is correct
@@ -6134,12 +6171,15 @@ class pptWindow(QDialog):
                 figloc=self.figureList.item(i).text().split('\     ')
                 temp['slideFigureLocations'].append(figloc[1])
                 temp['slideFigureNames'].append(figloc[0])
-            except:
+                temp['slideFigureSizes'].append([float(figloc[3]),float(figloc[4])])
+            except Exception as Argument:
+                self.genLogforException(Argument)
                 temp['slideFigureLocations'].append('')
                 temp['slideFigureNames'].append('')
-        print(temp['slideTitle'])
-        print(temp['slideFigureCaptions'])
-        print(temp['slideFigureLocations'])
+                temp['slideFigureSizes'].append([0,0])
+        #print(temp['slideTitle'])
+        #print(temp['slideFigureCaptions'])
+        #print(temp['slideFigureLocations'])
         self.slides.insert(self.slidesList.currentRow(),temp)
         #self.slides.append(temp)
         self.saveButton.setEnabled(False)
@@ -6149,7 +6189,8 @@ class pptWindow(QDialog):
         if not self.slides==[]:
             try:
                 temp=self.slides[slideNo-1]
-            except:
+            except Exception as Argument:
+                self.genLogforException(Argument)
                 temp={'slideTitle':'', 'slideFigureCaptions':[],'slideFigureLocations':[],'slideFigureNames':[]}
             ind=self.noOfFigures.findText(str(len(temp['slideFigureCaptions'])))
             self.noOfFigures.setCurrentIndex(ind)
@@ -6157,24 +6198,42 @@ class pptWindow(QDialog):
                 try:
                     self.figureList.addItem( '\     '.join([temp['slideFigureNames'][i],temp['slideFigureLocations'][i]]) )
                     self.figureCaptionList.addItem(temp['slideFigureCaptions'][i])
-                except:
+                    item=self.figureCaptionList.item(self.figureCaptionList.count()-1)
+                    item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                    item=self.figureList.item(self.figureList.count()-1)
+                    item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                except Exception as Argument:
+                    self.genLogforException(Argument)
                     self.figureList.addItem('')
                     self.figureCaptionList.addItem('')
+                    item=self.figureCaptionList.item(self.figureCaptionList.count()-1)
+                    item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
+                    item=self.figureList.item(self.figureList.count()-1)
+                    item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
         
     def enableSaving(self,condition=True):
         if condition:
             self.saveButton.setEnabled(True)
             
-    def remBtn(self,listToRem):
-        listy=listToRem
-        listy.takeItem(listy.row(listy.item(listy.count()-1)))
-        del self.slides[-1]
+    def remSlideBtn(self):
+        listy=self.slidesList
         self.saveButton.setEnabled(True)
-        # if listy.selectedItems():
-        #     for listitems in listy.selectedItems():
-        #         listy.takeItem(listy.row(listitems))
-        # else:
-        #     listy.takeItem(listy.row(listy.item(listy.count()-1)))
+        if listy.selectedItems():
+            for listitems in listy.selectedItems():
+                listy.takeItem(listy.row(listitems))
+                del self.slides[listy.row(listitems)]
+        else:
+            listy.takeItem(listy.row(listy.item(listy.count()-1)))
+            del self.slides[-1]
+    def remFigBtn(self):
+        listy=self.figureList
+        if not self.figureList.count()==0:
+            self.saveButton.setEnabled(True)
+        if listy.selectedItems():
+            for listitems in listy.selectedItems():
+                listy.takeItem(listy.row(listitems))
+        else:
+            listy.takeItem(listy.row(listy.item(listy.count()-1)))
     def noOfFiguresActivated(self):
         self.figureCaptionList.clear()
         for i in range(int(self.noOfFigures.currentText())):
@@ -6182,15 +6241,26 @@ class pptWindow(QDialog):
         for index in range(self.figureCaptionList.count()):
             item = self.figureCaptionList.item(index)
             item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
-    def slideTitleChanged(self):
-        ind = int(self.noOfSlides.currentIndex())
-        self.slideTitles[ind]=self.slideTitle.text()
+        self.saveButton.setEnabled(True)
     def makeFolderinDocuments(self, foldName): 
         foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'/'Reports'
         os.makedirs(foldDir, exist_ok = True)
         foldDir = foldDir / foldName
         os.makedirs(foldDir, exist_ok = True)
         return foldDir
+    def makeFolderinDocuments2(self, foldName): 
+        foldDir = getResourcePath(os.path.expanduser('~'))/'Documents'/'Graphxyz'
+        os.makedirs(foldDir, exist_ok = True)
+        foldDir = foldDir / foldName
+        os.makedirs(foldDir, exist_ok = True)
+        return foldDir
+    def genLogforException(self, Argument):
+        logLoc = self.exceptionLogLocation
+        logLoc = logLoc / 'Exception logs.txt'
+        f = open(logLoc, "a")
+        exc_type, exc_obj, exc_tb = sys.exc_info()
+        f.write(''.join(['\n',str([exc_tb.tb_lineno,Argument]),datetime.now(). strftime("%m/%d/%Y, %H:%M:%S")]))
+        f.close()
     
 
 class sliderObj(QFrame):
@@ -6957,7 +7027,7 @@ class MainWindow(QMainWindow):
         self.tbw = TabWindow(self.app)
         self.setCentralWidget(self.tbw)
         
-        self.pptWindow = pptWindow()
+        self.pptWindow = pptWindow(self.app,self)
         self.tbw.lastaddedtab.reportLeft.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mdyn))
         self.tbw.lastaddedtab.reportRight.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mspec))
         #self.pptWindow.addSlide.clicked.connect(self.addSlideClicked)
@@ -7000,7 +7070,7 @@ class MainWindow(QMainWindow):
         
         self.file.addSeparator()
         self.pptAction = self.file.addAction("Report as .pptx")
-        #pptAction.triggered.connect(self.pptReport)
+        self.pptAction.triggered.connect(self.pptGenerator)
         
         helps = self.mbar.addMenu("Graphxyz")
         aboutMe = helps.addAction(" About Graphxyz")
@@ -7111,6 +7181,7 @@ class MainWindow(QMainWindow):
             
             if i<len(projectLoaded)-1:
                 self.tbw.newBtn()
+                self.tabNewBtnClicked()
     def loadDefProject(self):
         try:
             #datatoload = getResourcePath('npys')
@@ -7126,6 +7197,7 @@ class MainWindow(QMainWindow):
                 
                 if i<len(projectLoaded)-1:
                     self.tbw.newBtn()
+                    self.tabNewBtnClicked()
         except Exception as Argument:
             self.tbw.wdg.genLogforException(Argument)
     def loadasProject(self):
@@ -7156,6 +7228,7 @@ class MainWindow(QMainWindow):
                 
                 if i<len(projectLoaded)-1:
                     self.tbw.newBtn()
+                    self.tabNewBtnClicked()
         except Exception as Argument:
             self.tbw.wdg.genLogforException(Argument)
     def makeFolderinDocuments(self, foldName):
@@ -7184,7 +7257,127 @@ class MainWindow(QMainWindow):
         self.pptWindow.show()
     def pptGenerator(self):
         self.pptParameters=self.pptWindow.pptParameters
-        pass
+        
+        pptParameters=self.pptParameters
+
+        prs=Presentation()
+
+        slideWidth=16
+        slideHeight=9
+
+        prs.slide_width = Inches(slideWidth)
+        prs.slide_height = Inches(slideHeight)
+
+        for i in range(len(pptParameters['slides'])):
+            lyt = prs.slide_layouts[6] # choosing a slide layout
+            slide = prs.slides.add_slide(lyt) # adding a slide
+            slideParams = pptParameters['slides'][i]
+            
+            left = Inches(0)
+            top = Inches(0)
+            width = Inches(16)
+            height = Inches(0.5)
+            text_box=slide.shapes.add_textbox(left, top, width, height)
+            tb=text_box.text_frame
+            p = tb.paragraphs[0]
+            p.alignment = PP_ALIGN.CENTER
+            run = p.add_run()
+            run.text=slideParams['slideTitle']
+            font = run.font
+            font.name = 'Calibri'
+            font.size = Pt(25)
+            font.bold = True
+            font.italic = None  # cause value to be inherited from theme
+            #font.color.theme_color = MSO_THEME_COLOR.ACCENT_1
+            for k in range(len(slideParams['slideFigureCaptions'])):
+                figsize=slideParams['slideFigureCaptions']
+                if len(slideParams['slideFigureCaptions'])==1 and k==0:
+                    width=Inches(9)
+                    left=Inches(0.75)
+                    top=Inches(1.5)
+                    
+                    cwidth=Inches(9)
+                    cheight = Inches(2)
+                    cleft=Inches(0.75)+Inches(6.5)
+                    ctop=Inches(5.5)
+                elif len(slideParams['slideFigureCaptions'])==2 and k==0:
+                    width=Inches(7.5)
+                    left=Inches(0.25)
+                    top=Inches(1)
+                    
+                    cwidth=Inches(7.5)
+                    cheight = Inches(1)
+                    cleft=Inches(0.25)
+                    ctop=Inches(1)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                elif len(slideParams['slideFigureCaptions'])==2 and k==1:
+                    width=Inches(7.5)
+                    left=Inches(16-8)
+                    top=Inches(1)
+                    
+                    cwidth=Inches(7.5)
+                    cheight = Inches(1)
+                    cleft=Inches(16-8)
+                    ctop=Inches(1)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                elif len(slideParams['slideFigureCaptions'])==4 and k==0:
+                    width=Inches(6)
+                    left=Inches(1)
+                    top=Inches(0.5)
+                    
+                    cwidth=Inches(6)
+                    cheight = Inches(1)
+                    cleft=Inches(1)
+                    ctop=Inches(0.5)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                elif len(slideParams['slideFigureCaptions'])==4 and k==1:
+                    width=Inches(6)
+                    left=Inches(16-8.25)
+                    top=Inches(0.5)
+                    
+                    cwidth=Inches(6)
+                    cheight = Inches(1)
+                    cleft=Inches(16-8.25)
+                    ctop=Inches(0.5)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                elif len(slideParams['slideFigureCaptions'])==4 and k==2:
+                    width=Inches(6)
+                    left=Inches(1)
+                    top=Inches(4.6)
+                    
+                    cwidth=Inches(6)
+                    cheight = Inches(1)
+                    cleft=Inches(1)
+                    ctop=Inches(4.6)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                elif len(slideParams['slideFigureCaptions'])==4 and k==3:
+                    width=Inches(6)
+                    left=Inches(16-8.25)
+                    top=Inches(4.6)
+                    
+                    cwidth=Inches(6)
+                    cheight = Inches(1)
+                    cleft=Inches(16-8.25)
+                    ctop=Inches(4.6)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                
+                path=slideParams['slideFigureLocations'][k]
+                img=slide.shapes.add_picture(path,left,top,width=width)
+                
+                text_box=slide.shapes.add_textbox(cleft, ctop, cwidth, cheight)
+                tb=text_box.text_frame
+                p = tb.paragraphs[0]
+                p.alignment = PP_ALIGN.CENTER
+                run = p.add_run()
+                run.text=slideParams['slideFigureCaptions'][k]
+                font = run.font
+                font.name = 'Calibri'
+        
+        fileloc = self.makeFolderinDocuments('Reports')
+        fileloc = fileloc/''.join([pptParameters['reportName'],".pptx"])
+        prs.save(fileloc) #saving file
+        
+        #print(self.pptParameters)
+        msgBox = QMessageBox()
+        msgBox.setIcon(QMessageBox.Information)
+        msgText = "Report is saved in <FONT COLOR='#800000'>User/Documents/Graphxyz/Reports</FONT>"
+        msgBox.setText(msgText)
+        msgBox.setWindowTitle("Warning!")
+        msgBox.exec()
     
     # def addSlideClicked(self):
     #     self.pptWindow.fromcanvas.axes.set_xlabel(self.pptWindow.slideTitle.text())
