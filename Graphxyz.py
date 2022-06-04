@@ -78,7 +78,7 @@ from pptx.enum.text import PP_ALIGN
 # print(''.join([getmembers(pyFuns, isfunction)[0][0],'(x,p)']))
 # pyFuns.testfun()
 
-appVersion = '0.5.6'
+appVersion = '0.6'
 appVersionText = ''.join(['Version ',appVersion])
 
 
