@@ -42,6 +42,7 @@ import requests # Used when app version is checked and to check if new version i
 from inspect import getmembers, isfunction #This is used to get the list of the functions inside python module
 import importlib.util #This helps to import external python files
 import sys
+#import shutil
 
 from pptx import Presentation
 from pptx.util import Inches
@@ -7028,8 +7029,8 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.tbw)
         
         self.pptWindow = pptWindow(self.app,self)
-        self.tbw.lastaddedtab.reportLeft.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mdyn))
-        self.tbw.lastaddedtab.reportRight.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mspec))
+        self.tbw.currentWidget().reportLeft.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.currentWidget().mdyn))
+        self.tbw.currentWidget().reportRight.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.currentWidget().mspec))
         #self.pptWindow.addSlide.clicked.connect(self.addSlideClicked)
         
         # This will get saved settings values:
@@ -7081,7 +7082,7 @@ class MainWindow(QMainWindow):
         #checkUpdate.setMenuRole(QAction.AboutRole)
         
         self.screenChanged.connect(lambda oldScreen,newScreen: self.tbw.wdg.resizeUI(oldScreen,newScreen))
-        self.tbw.currentWidget().addTab.triggered.connect(self.tabNewBtnClicked)
+        self.tbw.lastaddedtab.addTab.triggered.connect(self.tabNewBtnClicked)
         
         self.show()
         
@@ -7091,8 +7092,8 @@ class MainWindow(QMainWindow):
         self.settingWindow = QSettings('Graphxyz', 'Window Size')
     def tabNewBtnClicked(self):
         self.tbw.currentWidget().addTab.triggered.connect(self.tabNewBtnClicked)
-        self.tbw.lastaddedtab.reportLeft.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mdyn))
-        self.tbw.lastaddedtab.reportRight.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.lastaddedtab.mspec))
+        self.tbw.currentWidget().reportLeft.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.currentWidget().mdyn))
+        self.tbw.currentWidget().reportRight.clicked.connect(lambda fromcanvas: self.openReporter(self.tbw.currentWidget().mspec))
     def closeEvent(self,event):
         # if self.wdg.apptemp!=[]:
         #     self.wdg.apptemp=QApplication([])
@@ -7178,10 +7179,10 @@ class MainWindow(QMainWindow):
                 self.tbw.currentWidget().submitButtonPushed()
             except Exception as Argument:
                 self.genLogforException(Argument)
-            
             if i<len(projectLoaded)-1:
+                #self.tabNewBtnClicked()
                 self.tbw.newBtn()
-                self.tabNewBtnClicked()
+                #self.tbw.lastaddedtab.addTab.trigger()
     def loadDefProject(self):
         try:
             #datatoload = getResourcePath('npys')
@@ -7253,6 +7254,7 @@ class MainWindow(QMainWindow):
             msgBox.setWindowTitle("Warning!")
             msgBox.exec()
     def openReporter(self,newCanvas):
+        print(newCanvas.axes.xaxis.get_label())
         self.pptWindow.setCanvas(newCanvas)
         self.pptWindow.show()
     def pptGenerator(self):
@@ -7296,10 +7298,10 @@ class MainWindow(QMainWindow):
                     left=Inches(0.75)
                     top=Inches(1.5)
                     
-                    cwidth=Inches(9)
+                    cwidth=Inches(16-9-0.75)
                     cheight = Inches(2)
-                    cleft=Inches(0.75)+Inches(6.5)
-                    ctop=Inches(5.5)
+                    cleft=Inches(9)+Inches(0.75)
+                    ctop=Inches(1.5)+Inches(2)
                 elif len(slideParams['slideFigureCaptions'])==2 and k==0:
                     width=Inches(7.5)
                     left=Inches(0.25)
@@ -7367,14 +7369,24 @@ class MainWindow(QMainWindow):
                 font = run.font
                 font.name = 'Calibri'
         
-        fileloc = self.makeFolderinDocuments('Reports')
-        fileloc = fileloc/''.join([pptParameters['reportName'],".pptx"])
+        folderloc = self.makeFolderinDocuments('Reports')
+        
+        allfiles = os.listdir(str(folderloc))
+        folderloc2=folderloc/pptParameters['reportName']
+        os.makedirs(folderloc2, exist_ok = True)
+        for f in allfiles:
+            if not f=='.DS_Store' and not f==pptParameters['reportName']:
+                source=folderloc/f
+                destination=folderloc2/f
+                os.rename(str(source), str(destination))
+        
+        fileloc = folderloc2/''.join([pptParameters['reportName'],".pptx"])
         prs.save(fileloc) #saving file
         
         #print(self.pptParameters)
         msgBox = QMessageBox()
         msgBox.setIcon(QMessageBox.Information)
-        msgText = "Report is saved in <FONT COLOR='#800000'>User/Documents/Graphxyz/Reports</FONT>"
+        msgText = ''.join(["Report is saved in <FONT COLOR='#00f900'>",str(folderloc),"</FONT>"])
         msgBox.setText(msgText)
         msgBox.setWindowTitle("Warning!")
         msgBox.exec()
