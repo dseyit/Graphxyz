@@ -42,7 +42,7 @@ import requests # Used when app version is checked and to check if new version i
 from inspect import getmembers, isfunction #This is used to get the list of the functions inside python module
 import importlib.util #This helps to import external python files
 import sys
-#import shutil
+import shutil
 
 from pptx import Presentation
 from pptx.util import Inches
@@ -6135,6 +6135,7 @@ class pptWindow(QDialog):
                     item=self.figureList.item(self.figureList.count()-1)
                     item.setFlags(item.flags() | QtCore.Qt.ItemIsEditable)
                 self.saveButton.setEnabled(True)
+                self.saveButtonClicked()
         except Exception as Argument:
             self.genLogforException(Argument)
     def slideRowChanged(self):
@@ -6183,6 +6184,8 @@ class pptWindow(QDialog):
         #print(temp['slideFigureLocations'])
         self.slides.insert(self.slidesList.currentRow(),temp)
         #self.slides.append(temp)
+        self.pptParameters['reportName']=self.reportName.text()
+        self.pptParameters['slides']=self.slides
         self.saveButton.setEnabled(False)
     def slideLoader(self,slideNo):
         self.figureList.clear()
@@ -6262,7 +6265,13 @@ class pptWindow(QDialog):
         exc_type, exc_obj, exc_tb = sys.exc_info()
         f.write(''.join(['\n',str([exc_tb.tb_lineno,Argument]),datetime.now(). strftime("%m/%d/%Y, %H:%M:%S")]))
         f.close()
-    
+    def reset(self):
+        self.slides=[]
+        self.pptParameters = {'reportName':'', 'slides':self.slides}
+        self.slidesList.clear()
+        self.figureList.clear()
+        self.figureCaptionList.clear()
+        self.noOfFigures.setCurrentIndex(-1)
 
 class sliderObj(QFrame):
     def __init__(self,sliderno,app):
@@ -7254,143 +7263,163 @@ class MainWindow(QMainWindow):
             msgBox.setWindowTitle("Warning!")
             msgBox.exec()
     def openReporter(self,newCanvas):
-        print(newCanvas.axes.xaxis.get_label())
+        #print(newCanvas.axes.xaxis.get_label())
         self.pptWindow.setCanvas(newCanvas)
         self.pptWindow.show()
     def pptGenerator(self):
-        self.pptParameters=self.pptWindow.pptParameters
-        
-        pptParameters=self.pptParameters
-
-        prs=Presentation()
-
-        slideWidth=16
-        slideHeight=9
-
-        prs.slide_width = Inches(slideWidth)
-        prs.slide_height = Inches(slideHeight)
-
-        for i in range(len(pptParameters['slides'])):
-            lyt = prs.slide_layouts[6] # choosing a slide layout
-            slide = prs.slides.add_slide(lyt) # adding a slide
-            slideParams = pptParameters['slides'][i]
+        try:
+            self.pptParameters=self.pptWindow.pptParameters
             
-            left = Inches(0)
-            top = Inches(0)
-            width = Inches(16)
-            height = Inches(0.5)
-            text_box=slide.shapes.add_textbox(left, top, width, height)
-            tb=text_box.text_frame
-            p = tb.paragraphs[0]
-            p.alignment = PP_ALIGN.CENTER
-            run = p.add_run()
-            run.text=slideParams['slideTitle']
-            font = run.font
-            font.name = 'Calibri'
-            font.size = Pt(25)
-            font.bold = True
-            font.italic = None  # cause value to be inherited from theme
-            #font.color.theme_color = MSO_THEME_COLOR.ACCENT_1
-            for k in range(len(slideParams['slideFigureCaptions'])):
-                figsize=slideParams['slideFigureCaptions']
-                if len(slideParams['slideFigureCaptions'])==1 and k==0:
-                    width=Inches(9)
-                    left=Inches(0.75)
-                    top=Inches(1.5)
-                    
-                    cwidth=Inches(16-9-0.75)
-                    cheight = Inches(2)
-                    cleft=Inches(9)+Inches(0.75)
-                    ctop=Inches(1.5)+Inches(2)
-                elif len(slideParams['slideFigureCaptions'])==2 and k==0:
-                    width=Inches(7.5)
-                    left=Inches(0.25)
-                    top=Inches(1)
-                    
-                    cwidth=Inches(7.5)
-                    cheight = Inches(1)
-                    cleft=Inches(0.25)
-                    ctop=Inches(1)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
-                elif len(slideParams['slideFigureCaptions'])==2 and k==1:
-                    width=Inches(7.5)
-                    left=Inches(16-8)
-                    top=Inches(1)
-                    
-                    cwidth=Inches(7.5)
-                    cheight = Inches(1)
-                    cleft=Inches(16-8)
-                    ctop=Inches(1)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
-                elif len(slideParams['slideFigureCaptions'])==4 and k==0:
-                    width=Inches(6)
-                    left=Inches(1)
-                    top=Inches(0.5)
-                    
-                    cwidth=Inches(6)
-                    cheight = Inches(1)
-                    cleft=Inches(1)
-                    ctop=Inches(0.5)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
-                elif len(slideParams['slideFigureCaptions'])==4 and k==1:
-                    width=Inches(6)
-                    left=Inches(16-8.25)
-                    top=Inches(0.5)
-                    
-                    cwidth=Inches(6)
-                    cheight = Inches(1)
-                    cleft=Inches(16-8.25)
-                    ctop=Inches(0.5)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
-                elif len(slideParams['slideFigureCaptions'])==4 and k==2:
-                    width=Inches(6)
-                    left=Inches(1)
-                    top=Inches(4.6)
-                    
-                    cwidth=Inches(6)
-                    cheight = Inches(1)
-                    cleft=Inches(1)
-                    ctop=Inches(4.6)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
-                elif len(slideParams['slideFigureCaptions'])==4 and k==3:
-                    width=Inches(6)
-                    left=Inches(16-8.25)
-                    top=Inches(4.6)
-                    
-                    cwidth=Inches(6)
-                    cheight = Inches(1)
-                    cleft=Inches(16-8.25)
-                    ctop=Inches(4.6)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+            pptParameters=self.pptParameters
+    
+            prs=Presentation()
+    
+            slideWidth=16
+            slideHeight=9
+    
+            prs.slide_width = Inches(slideWidth)
+            prs.slide_height = Inches(slideHeight)
+    
+            for i in range(len(pptParameters['slides'])):
+                lyt = prs.slide_layouts[6] # choosing a slide layout
+                slide = prs.slides.add_slide(lyt) # adding a slide
+                slideParams = pptParameters['slides'][i]
                 
-                path=slideParams['slideFigureLocations'][k]
-                img=slide.shapes.add_picture(path,left,top,width=width)
-                
-                text_box=slide.shapes.add_textbox(cleft, ctop, cwidth, cheight)
+                left = Inches(0)
+                top = Inches(0)
+                width = Inches(16)
+                height = Inches(0.5)
+                text_box=slide.shapes.add_textbox(left, top, width, height)
                 tb=text_box.text_frame
                 p = tb.paragraphs[0]
                 p.alignment = PP_ALIGN.CENTER
                 run = p.add_run()
-                run.text=slideParams['slideFigureCaptions'][k]
+                run.text=slideParams['slideTitle']
                 font = run.font
                 font.name = 'Calibri'
+                font.size = Pt(25)
+                font.bold = True
+                font.italic = None  # cause value to be inherited from theme
+                #font.color.theme_color = MSO_THEME_COLOR.ACCENT_1
+                for k in range(len(slideParams['slideFigureCaptions'])):
+                    figsize=slideParams['slideFigureCaptions']
+                    if len(slideParams['slideFigureCaptions'])==1 and k==0:
+                        width=Inches(9)
+                        left=Inches(0.75)
+                        top=Inches(1.5)
+                        
+                        cwidth=Inches(16-9-0.75)
+                        cheight = Inches(2)
+                        cleft=Inches(9)+Inches(0.75)
+                        ctop=Inches(1.5)+Inches(2)
+                    elif len(slideParams['slideFigureCaptions'])==2 and k==0:
+                        width=Inches(7.5)
+                        left=Inches(0.25)
+                        top=Inches(1)
+                        
+                        cwidth=Inches(7.5)
+                        cheight = Inches(1)
+                        cleft=Inches(0.25)
+                        ctop=Inches(1)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                    elif len(slideParams['slideFigureCaptions'])==2 and k==1:
+                        width=Inches(7.5)
+                        left=Inches(16-8)
+                        top=Inches(1)
+                        
+                        cwidth=Inches(7.5)
+                        cheight = Inches(1)
+                        cleft=Inches(16-8)
+                        ctop=Inches(1)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                    elif len(slideParams['slideFigureCaptions'])==4 and k==0:
+                        width=Inches(6)
+                        left=Inches(1)
+                        top=Inches(0.5)
+                        
+                        cwidth=Inches(6)
+                        cheight = Inches(1)
+                        cleft=Inches(1)
+                        ctop=Inches(0.5)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                    elif len(slideParams['slideFigureCaptions'])==4 and k==1:
+                        width=Inches(6)
+                        left=Inches(16-8.25)
+                        top=Inches(0.5)
+                        
+                        cwidth=Inches(6)
+                        cheight = Inches(1)
+                        cleft=Inches(16-8.25)
+                        ctop=Inches(0.5)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                    elif len(slideParams['slideFigureCaptions'])==4 and k==2:
+                        width=Inches(6)
+                        left=Inches(1)
+                        top=Inches(4.6)
+                        
+                        cwidth=Inches(6)
+                        cheight = Inches(1)
+                        cleft=Inches(1)
+                        ctop=Inches(4.6)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                    elif len(slideParams['slideFigureCaptions'])==4 and k==3:
+                        width=Inches(6)
+                        left=Inches(16-8.25)
+                        top=Inches(4.6)
+                        
+                        cwidth=Inches(6)
+                        cheight = Inches(1)
+                        cleft=Inches(16-8.25)
+                        ctop=Inches(4.6)+Inches(slideParams['slideFigureSizes'][k][1])*cwidth/Inches(slideParams['slideFigureSizes'][k][0])
+                    
+                    path=slideParams['slideFigureLocations'][k]
+                    img=slide.shapes.add_picture(path,left,top,width=width)
+                    
+                    text_box=slide.shapes.add_textbox(cleft, ctop, cwidth, cheight)
+                    tb=text_box.text_frame
+                    p = tb.paragraphs[0]
+                    p.alignment = PP_ALIGN.CENTER
+                    run = p.add_run()
+                    run.text=slideParams['slideFigureCaptions'][k]
+                    font = run.font
+                    font.name = 'Calibri'
+            
+            folderloc = self.makeFolderinDocuments('Reports')
+            
+            allfiles = os.listdir(str(folderloc))
+            folderloc2=folderloc/pptParameters['reportName']
+            shutil.rmtree(str(folderloc2), ignore_errors=True)
+            os.makedirs(folderloc2, exist_ok = True)
+            for f in allfiles:
+                if not f=='.DS_Store' and not f==pptParameters['reportName']:
+                    source=folderloc/f
+                    destination=folderloc2/f
+                    os.rename(str(source), str(destination))
+            
+            fileloc = folderloc2/''.join([pptParameters['reportName'],".pptx"])
+            if not self.pptWindow.pptParameters['slides']==[]:
+                prs.save(fileloc) #saving file
+            
+                #print(self.pptParameters)
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgText = ''.join(["Report is saved in <FONT COLOR='#00f900'>",str(folderloc),"</FONT>"])
+                msgBox.setText(msgText)
+                msgBox.setWindowTitle("Warning!")
+                msgBox.exec()
+                self.pptWindow.reset()
+            else:
+                msgBox = QMessageBox()
+                msgBox.setIcon(QMessageBox.Information)
+                msgText = ''.join(["Prepare slides and figures to report!"])
+                msgBox.setText(msgText)
+                msgBox.setWindowTitle("Warning!")
+                msgBox.exec()
+        except Exception as Argument:
+            self.tbw.wdg.genLogforException(Argument)
+            msgBox = QMessageBox()
+            msgBox.setIcon(QMessageBox.Information)
+            msgText = ''.join(["Prepare slides and figures to report!"])
+            msgBox.setText(msgText)
+            msgBox.setWindowTitle("Warning!")
+            msgBox.exec()
         
-        folderloc = self.makeFolderinDocuments('Reports')
         
-        allfiles = os.listdir(str(folderloc))
-        folderloc2=folderloc/pptParameters['reportName']
-        os.makedirs(folderloc2, exist_ok = True)
-        for f in allfiles:
-            if not f=='.DS_Store' and not f==pptParameters['reportName']:
-                source=folderloc/f
-                destination=folderloc2/f
-                os.rename(str(source), str(destination))
-        
-        fileloc = folderloc2/''.join([pptParameters['reportName'],".pptx"])
-        prs.save(fileloc) #saving file
-        
-        #print(self.pptParameters)
-        msgBox = QMessageBox()
-        msgBox.setIcon(QMessageBox.Information)
-        msgText = ''.join(["Report is saved in <FONT COLOR='#00f900'>",str(folderloc),"</FONT>"])
-        msgBox.setText(msgText)
-        msgBox.setWindowTitle("Warning!")
-        msgBox.exec()
-    
     # def addSlideClicked(self):
     #     self.pptWindow.fromcanvas.axes.set_xlabel(self.pptWindow.slideTitle.text())
     #     self.pptWindow.fromcanvas.draw()
