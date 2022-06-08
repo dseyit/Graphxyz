@@ -1518,7 +1518,10 @@ class AppWindow(QDialog):
                         self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
                         self.twr=self.tr+self.wr
                         if self.ui.xbgValue.text()!='0':
-                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                            try:
+                                self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                            except:
+                                self.tsc=[0]
                         else:
                             self.tsc=[0]
                         
@@ -1609,7 +1612,10 @@ class AppWindow(QDialog):
                         self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
                         self.twr=np.concatenate((self.tr,self.wr))
                         if self.ui.xbgValue.text()!='0':
-                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                            try:
+                                self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                            except:
+                                self.tsc=[0]
                         else:
                             self.tsc=[0]
                         
@@ -1694,7 +1700,10 @@ class AppWindow(QDialog):
                         self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
                         self.twr=np.concatenate((self.tr,self.wr))
                         if self.ui.xbgValue.text()!='0':
-                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                            try:
+                                self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                            except:
+                                self.tsc=[0]
                         else:
                             self.tsc=[0]
                         
@@ -1776,7 +1785,10 @@ class AppWindow(QDialog):
                         self.wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
                         self.twr=np.concatenate((self.tr,self.wr))
                         if self.ui.xbgValue.text()!='0':
-                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                            try:
+                                self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                            except:
+                                self.tsc=[0]
                         else:
                             self.tsc=[0]
                         
@@ -1913,7 +1925,10 @@ class AppWindow(QDialog):
                 self.xyr=self.xr+self.yr
                 try:
                     if self.ui.xbgValue.text()!=0:
-                        self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                        try:
+                            self.tsc=[float(i) for i in self.ui.xbgValue.text().split(',')]
+                        except:
+                            self.tsc=[0]
                     else:
                         self.tsc=[0]
                     if self.ui.graphsel.currentText()=='plot left':
@@ -7493,6 +7508,8 @@ if __name__=='__main__':
 #Notes on where I left:
     # Code needs lots of clean up
     # Fix custom xlims for xy mode
+    # range keeps changing when x axis is manipulated
+    # when background value changed, app throws error. Prob same for normalization
     # I am omitting multiple fit option for now. I will work on it later
     # Save currentproject button seems to have issues
     # Need to add splash screen

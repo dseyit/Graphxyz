@@ -820,6 +820,12 @@
                         <property name="text">
                          <string>0</string>
                         </property>
+                        <property name="placeholderText">
+                         <string>Enter 0 to disable</string>
+                        </property>
+                        <property name="clearButtonEnabled">
+                         <bool>false</bool>
+                        </property>
                        </widget>
                       </item>
                       <item row="3" column="2">
