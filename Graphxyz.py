@@ -2048,8 +2048,10 @@ class AppWindow(QDialog):
     def plotspec(self,plmd=1,multmodex=True,tsc=[0]):
         self.minmax=[]
         self.minmaxt=[]
+        #print(self.twr)
         line=self.plotxyz(self.d,plmd,self.nd,self.t,self.twr,self.figspec,self.axspec,self.ui.markery.currentText(),multmode=multmodex,tscatter=tsc,showleg=self.ui.legcb.isChecked(),normaty=self.ui.ynormcb.isChecked(),ynorm=float(self.ui.ynormValue.text()),absmode=self.optsSpecW.flipz.isChecked())
         if self.ui.bgdataCb.isChecked():
+            #print(self.twr)
             self.plotxyz(self.d,plmd,self.getitems(self.ui.bgdataList),self.t,self.twr,self.figspec,self.axspec,self.ui.markery.currentText(),multmode=multmodex,tscatter=tsc,showleg=self.ui.legcb.isChecked(),normaty=self.ui.ynormcb.isChecked(),ynorm=float(self.ui.ynormValue.text()),absmode=self.optsSpecW.flipz.isChecked())
         self.mspec.figure.tight_layout()
         return line
@@ -2150,7 +2152,10 @@ class AppWindow(QDialog):
                 #temp=10**(-temp)-1
                 if self.optsDynW.absz.isChecked():
                     temp=abs(temp)
-                xnorm=float(self.ui.xnormValue.text())
+                try:
+                    xnorm=float(self.ui.xnormValue.text())
+                except:
+                    xnorm=0
                 if self.ui.xnormcb.isChecked() and xnorm==0:
                     temp=temp/max(abs(temp))
                 elif self.ui.xnormcb.isChecked() and not xnorm==0:
@@ -2658,18 +2663,21 @@ class AppWindow(QDialog):
                 self.multSourceChooser.list.addItem(self.ui.filesLoc.itemText(i))
         
     def fitBtnClicked(self):
+        self.fitw.xdata=[]
+        self.fitw.ydata=[]
         if self.fitw.ui.ydatabox.currentText()=='yright':
-            self.fitw.xdata=self.axspec.lines[0].get_xdata()
-            self.fitw.ydata=self.axspec.lines[0].get_ydata()
+            for i in range(max(1,len(self.axspec.lines)-2)):
+                self.fitw.xdata.append(self.axspec.lines[i].get_xdata())
+                self.fitw.ydata.append(self.axspec.lines[i].get_ydata())
             marker=self.ui.markery.currentText()
             markerls=self.ui.markerlsy.currentText()
         else:
-            self.fitw.xdata=self.axdyn.lines[0].get_xdata()
-            self.fitw.ydata=self.axdyn.lines[0].get_ydata()
+            for i in range(max(1,len(self.axspec.lines)-2)):
+                self.fitw.xdata.append(self.axdyn.lines[i].get_xdata())
+                self.fitw.ydata.append(self.axdyn.lines[i].get_ydata())
             marker=self.ui.markerx.currentText()
             markerls=self.ui.markerlsx.currentText()
         self.fitw.axFit.plot(self.fitw.xdata, self.fitw.ydata,marker, ms=5, markerfacecolor="None",markeredgewidth=1.5,ls=markerls)
-                   
     def modechanged(self):
         if self.impw.ui.xy.isChecked():
             self.ax2D.clear()
@@ -3950,16 +3958,16 @@ class AppWindow(QDialog):
                     ind=nd.index(ni)
                     if self.ui.xrCb.isChecked():
                         xrnew=self.ui.xrList.item(ind).text().split(',')
-                        self.twr[0]=float(xrnew[0])
-                        self.twr[1]=float(xrnew[1])
+                        twr[0]=float(xrnew[0])
+                        twr[1]=float(xrnew[1])
                     if self.ui.xrCb.isChecked() and nd==self.getitems(self.ui.dataList):
                         xrnew=self.ui.xrList.item(ind).text().split(',')
-                        self.twr[0]=float(xrnew[0])
-                        self.twr[1]=float(xrnew[1])
+                        twr[0]=float(xrnew[0])
+                        twr[1]=float(xrnew[1])
                     elif self.ui.xrCb.isChecked() and nd==self.getitems(self.ui.bgdataList):
                         xrnew=self.ui.xrList.item(ind+self.ui.dataList.count()).text().split(',')
-                        self.twr[0]=float(xrnew[0])
-                        self.twr[1]=float(xrnew[1])
+                        twr[0]=float(xrnew[0])
+                        twr[1]=float(xrnew[1])
                     if self.ui.yavecb.isChecked():
                         tempy=0
                         for wm in self.ui.yaveValue.text().split(','):
@@ -4042,8 +4050,8 @@ class AppWindow(QDialog):
             for i in range(len(nd)):
                 if self.ui.xrCb.isChecked():
                     xrnew=self.ui.xrList.item(i).text().split(',')
-                    self.twr[0]=float(xrnew[0])
-                    self.twr[1]=float(xrnew[1])
+                    twr[0]=float(xrnew[0])
+                    twr[1]=float(xrnew[1])
                 for wi in wt:
                     temp=self.wslice(d[nd[i]],wi)
                     t=d[nd[i]]['t']
@@ -4171,18 +4179,19 @@ class AppWindow(QDialog):
         elif plmd==1:
             cltracker=0
             line=[]
+            twrOld=twr
             try:
                 for ni in nd:
                     temp=self.tslice(d[ni],wt[0])
                     ind=nd.index(ni)
                     if self.ui.yrCb.isChecked() and nd==self.getitems(self.ui.dataList):
                         yrnew=self.ui.yrList.item(ind).text().split(',')
-                        self.twr[2]=float(yrnew[0])
-                        self.twr[3]=float(yrnew[1])
+                        twr[2]=float(yrnew[0])
+                        twr[3]=float(yrnew[1])
                     elif self.ui.yrCb.isChecked() and nd==self.getitems(self.ui.bgdataList):
                         yrnew=self.ui.yrList.item(ind+self.ui.dataList.count()).text().split(',')
-                        self.twr[2]=float(yrnew[0])
-                        self.twr[3]=float(yrnew[1])
+                        twr[2]=float(yrnew[0])
+                        twr[3]=float(yrnew[1])
                     w=d[ni]['w']
                     t=d[ni]['t']
                     s=d[nd[0]]['d']
@@ -4244,15 +4253,19 @@ class AppWindow(QDialog):
                 msgBox.setText("Make sure to define at least one <FONT COLOR='#800000'>x<sub>slice</sub></FONT> variable")
                 msgBox.setWindowTitle("Warning!")
                 msgBox.exec()
+            tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())]
+            wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
+            tempwr=np.concatenate((tr,wr))
             if self.ui.fycb.isChecked():
-                if self.fy(self.fyList.item(ind).text(),twr[2])>self.fy(self.fyList.item(0).text(),twr[3]):
-                    temp2=twr[2]
-                    twr[2]=self.fy(self.fyList.item(ind).text(),twr[3])
-                    twr[3]=self.fy(self.fyList.item(ind).text(),temp2)
+                if self.fy(self.fyList.item(ind).text(),tempwr[2])>self.fy(self.fyList.item(0).text(),tempwr[3]):
+                    temp2=tempwr[2]
+                    tempwr[2]=self.fy(self.fyList.item(ind).text(),tempwr[3])
+                    tempwr[3]=self.fy(self.fyList.item(ind).text(),temp2)
                 else:
-                    twr[2]=self.fy(self.fyList.item(ind).text(),twr[2])
-                    twr[3]=self.fy(self.fyList.item(ind).text(),twr[3])
-            ax.set_xlim(twr[2],twr[3])
+                    tempwr[2]=self.fy(self.fyList.item(ind).text(),tempwr[2])
+                    tempwr[3]=self.fy(self.fyList.item(ind).text(),tempwr[3])
+            ax.set_xlim(tempwr[2],tempwr[3])
+            #ax.set_xlim(twr[2],twr[3])
             try:
                 if len(nd)==1 and not multmode and not normaty and self.optsSpecW.auto_zlimcb.isChecked():
                     ax.set_ylim(min(self.minmax),max(self.minmax))
@@ -4277,15 +4290,16 @@ class AppWindow(QDialog):
             return line
         elif plmd==1.2:
             cltracker=0
+            twrOld=twr
             for i in range(len(nd)):
                 if self.ui.yrCb.isChecked() and nd==self.getitems(self.ui.dataList):
                     yrnew=self.ui.yrList.item(i).text().split(',')
-                    self.twr[2]=float(yrnew[0])
-                    self.twr[3]=float(yrnew[1])
+                    twr[2]=float(yrnew[0])
+                    twr[3]=float(yrnew[1])
                 elif self.ui.yrCb.isChecked() and nd==self.getitems(self.ui.bgdataList):
                     yrnew=self.ui.yrList.item(i+self.ui.dataList.count()).text().split(',')
-                    self.twr[2]=float(yrnew[0])
-                    self.twr[3]=float(yrnew[1])
+                    twr[2]=float(yrnew[0])
+                    twr[3]=float(yrnew[1])
                 for ti in wt:
                     temp=self.tslice(d[nd[i]],ti)
                     w=d[nd[i]]['w']
@@ -4333,15 +4347,18 @@ class AppWindow(QDialog):
                         unit=''
                     templeg=''.join([templeg,unit])
                     self.legendtext_spec.append(templeg)
+            tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())]
+            wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
+            tempwr=np.concatenate((tr,wr))
             if self.ui.fycb.isChecked():
-                if self.fy(self.fyList.item(ind).text(),twr[2])>self.fy(self.fyList.item(0).text(),twr[3]):
-                    temp2=twr[2]
-                    twr[2]=self.fy(self.fyList.item(ind).text(),twr[3])
-                    twr[3]=self.fy(self.fyList.item(ind).text(),temp2)
+                if self.fy(self.fyList.item(ind).text(),tempwr[2])>self.fy(self.fyList.item(0).text(),tempwr[3]):
+                    temp2=tempwr[2]
+                    tempwr[2]=self.fy(self.fyList.item(ind).text(),tempwr[3])
+                    tempwr[3]=self.fy(self.fyList.item(ind).text(),temp2)
                 else:
-                    twr[2]=self.fy(self.fyList.item(ind).text(),twr[2])
-                    twr[3]=self.fy(self.fyList.item(ind).text(),twr[3])
-            ax.set_xlim(twr[2],twr[3])
+                    tempwr[2]=self.fy(self.fyList.item(ind).text(),tempwr[2])
+                    tempwr[3]=self.fy(self.fyList.item(ind).text(),tempwr[3])
+            ax.set_xlim(tempwr[2],tempwr[3])
             ax.set_ylim(min(self.minmax),max(self.minmax))
             if showleg:
                 if self.optsSpecW.needShortLeg.isChecked():
@@ -4403,7 +4420,18 @@ class AppWindow(QDialog):
                 msgBox.setText("Make sure <FONT COLOR='#800000'>X<sub>slice</sub></FONT> values have same amount of variables as your number of <FONT COLOR='#800000'>Dataset</FONT> you are trying to match")
                 msgBox.setWindowTitle("Warning!")
                 msgBox.exec()
-            ax.set_xlim(twr[2],twr[3])
+            tr=[float(self.ui.xminValue.text()),float(self.ui.xmaxValue.text())]
+            wr=[float(self.ui.yminValue.text()),float(self.ui.ymaxValue.text())]
+            tempwr=np.concatenate((tr,wr))
+            if self.ui.fycb.isChecked():
+                if self.fy(self.fyList.item(ind).text(),tempwr[2])>self.fy(self.fyList.item(0).text(),tempwr[3]):
+                    temp2=tempwr[2]
+                    tempwr[2]=self.fy(self.fyList.item(ind).text(),tempwr[3])
+                    tempwr[3]=self.fy(self.fyList.item(ind).text(),temp2)
+                else:
+                    tempwr[2]=self.fy(self.fyList.item(ind).text(),tempwr[2])
+                    tempwr[3]=self.fy(self.fyList.item(ind).text(),tempwr[3])
+            ax.set_xlim(tempwr[2],tempwr[3])
             ax.set_ylim(min(self.minmax),max(self.minmax))
             if showleg:
                 if self.optsSpecW.needShortLeg.isChecked():
@@ -4695,16 +4723,22 @@ class AppWindow(QDialog):
             self.fitw.ui.xdatabox.setCurrentText('xleft')
     def fitSubmitButtonPushed(self):
         try:
+            self.fitw.xdata=np.array([])
+            self.fitw.ydata=np.array([])
             if self.fitw.ui.ydatabox.currentText()=='yright':
-                self.fitw.xdata=self.axspec.lines[0].get_xdata()
-                self.fitw.ydata=self.axspec.lines[0].get_ydata()
+                for i in range(max(1,len(self.axspec.lines)-2)):
+                    self.fitw.xdata=np.concatenate((self.fitw.xdata,self.axspec.lines[i].get_xdata()))
+                    self.fitw.ydata=np.concatenate((self.fitw.ydata,self.axspec.lines[i].get_ydata()))
                 marker=self.ui.markery.currentText()
                 markerls=self.ui.markerlsy.currentText()
             else:
-                self.fitw.xdata=self.axdyn.lines[0].get_xdata()
-                self.fitw.ydata=self.axdyn.lines[0].get_ydata()
+                for i in range(max(1,len(self.axspec.lines)-2)):
+                    self.fitw.xdata=np.concatenate((self.fitw.xdata,self.axdyn.lines[i].get_xdata()))
+                    self.fitw.ydata=np.concatenate((self.fitw.ydata,self.axdyn.lines[i].get_ydata()))
                 marker=self.ui.markerx.currentText()
                 markerls=self.ui.markerlsx.currentText()
+            
+            print(self.fitw.xdata)
             self.lenofx=max([len(self.fitw.xdata),100])
             #self.lenofx=self.lenofx*100 #This might be needed, not sure why I put this here?
             if self.fitw.ui.nonecb.isChecked():
